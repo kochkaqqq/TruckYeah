@@ -13,7 +13,7 @@ builder.Services.AddSwaggerGen();
 
 builder.Services.AddDbContext<ListingServiceDbContext>(options =>
 {
-    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection"));
+    options.UseNpgsql(builder.Configuration.GetConnectionString(nameof(ListingServiceDbContext)));
 });
 
 builder.Services.AddScoped<ICargosRepository, CargosRepository>();

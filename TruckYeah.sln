@@ -17,15 +17,15 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Shared", "Shared", "{83361F
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Application", "Services\IdentityService\Application\Application.csproj", "{C630A31F-A768-40DF-85D6-6234399D24CA}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebApi", "Services\ListingService\WebApi\WebApi.csproj", "{D1123673-005B-4001-AD10-3F211A26573A}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ListingService.WebApi", "Services\ListingService\ListingService.WebApi\ListingService.WebApi.csproj", "{D1123673-005B-4001-AD10-3F211A26573A}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ListingService", "ListingService", "{D1FA27F7-C3D3-4CCD-885C-6E5F9C29C77F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Domain", "Services\ListingService\Domain\Domain.csproj", "{9002A01D-AF50-485C-83EF-7BC6BFA7413D}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ListingService.Domain", "Services\ListingService\ListingService.Domain\ListingService.Domain.csproj", "{9002A01D-AF50-485C-83EF-7BC6BFA7413D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Application", "Services\ListingService\Application\Application.csproj", "{90259EFE-36FD-4C83-AAA2-C6B230ECA3DF}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ListingService.Application", "Services\ListingService\ListingService.Application\ListingService.Application.csproj", "{90259EFE-36FD-4C83-AAA2-C6B230ECA3DF}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Infrastructure", "Services\ListingService\Infrastructure\Infrastructure.csproj", "{5260C2B3-67BE-4DE8-B8CF-175EBC386AB7}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ListingService.Infrastructure", "Services\ListingService\ListingService.Infrastructure\ListingService.Infrastructure.csproj", "{5260C2B3-67BE-4DE8-B8CF-175EBC386AB7}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

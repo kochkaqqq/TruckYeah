@@ -2,7 +2,7 @@ using ListingService.Domain.Models;
 
 namespace ListingService.Application.Interfaces;
 
-public interface ITruckService
+public interface ITrucksService
 {
     Task<List<Truck>> GetTrucksAsync();
     

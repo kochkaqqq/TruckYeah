@@ -28,8 +28,8 @@ public class Cargo
     public Guid Id { get; set; }
     
     // Основная информация
-    public string Title { get; set; }        // Название груза
-    public string Description { get; set; }  // Описание
+    public string Title { get; set; } = string.Empty;       // Название груза
+    public string Description { get; set; } = string.Empty;  // Описание
     
     // Параметры груза
     public double? WeightKg { get; set; }                     // Вес (кг)
@@ -37,11 +37,11 @@ public class Cargo
     public double? LengthCm { get; set; }                     // Длина (см)
     public double? WidthCm { get; set; }                      // Ширина (см)
     public double? HeightCm { get; set; }                     // Высота (см)
-    public string CargoType { get; set; }     // Тип груза (тент, реф и т.д.)
+    public string CargoType { get; set; } = string.Empty;     // Тип груза (тент, реф и т.д.)
     
     // Маршрут
-    public string RouteFrom { get; set; }     // Откуда
-    public string RouteTo { get; set; }        // Куда
+    public string RouteFrom { get; set; } = string.Empty;     // Откуда
+    public string RouteTo { get; set; } = string.Empty;       // Куда
     public double? DistanceKm { get; set; }                   // Расстояние (км)
     
     // Даты

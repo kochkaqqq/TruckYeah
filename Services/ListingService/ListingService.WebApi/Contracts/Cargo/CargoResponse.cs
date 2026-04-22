@@ -1,11 +1,11 @@
-namespace ListingService.Infrastructure.Entities;
+namespace ListingService.WebApi.Contracts.Cargo;
 
-public class CargoEntity
+public class CargoResponse
 {
     public Guid Id { get; set; }
     
     // Основная информация
-    public string Title { get; set; } = string.Empty;        // Название груза
+    public string Title { get; set; } = string.Empty;       // Название груза
     public string Description { get; set; } = string.Empty;  // Описание
     
     // Параметры груза
@@ -18,7 +18,7 @@ public class CargoEntity
     
     // Маршрут
     public string RouteFrom { get; set; } = string.Empty;     // Откуда
-    public string RouteTo { get; set; } = string.Empty;        // Куда
+    public string RouteTo { get; set; } = string.Empty;       // Куда
     public double? DistanceKm { get; set; }                   // Расстояние (км)
     
     // Даты
@@ -26,10 +26,4 @@ public class CargoEntity
     
     // Стоимость
     public decimal? Price { get; set; }                       // Цена
-    
-    // Пользователь
-    // public Guid UserId { get; set; }                          // ID владельца
-    
-    // Метаданные
-    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 }

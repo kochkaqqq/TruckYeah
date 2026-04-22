@@ -4,11 +4,11 @@ using ListingService.Infrastructure.Interfaces;
 
 namespace ListingService.Application.Services;
 
-public class TruckService : ITruckService
+public class TrucksService : ITrucksService
 {
-    private readonly ITruckRepository _repository;
+    private readonly ITrucksRepository _repository;
     
-    public TruckService(ITruckRepository repository)
+    public TrucksService(ITrucksRepository repository)
     {
         _repository = repository;
     }

@@ -5,11 +5,11 @@ using Microsoft.EntityFrameworkCore;
 
 namespace ListingService.Infrastructure.Implementation;
 
-public class CargoRepository : ICargoRepository
+public class CargosRepository : ICargosRepository
 {
     private readonly ListingServiceDbContext _dbContext;
     
-    public CargoRepository(ListingServiceDbContext dbContext)
+    public CargosRepository(ListingServiceDbContext dbContext)
     {
         _dbContext = dbContext;
     }

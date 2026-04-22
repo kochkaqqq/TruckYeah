@@ -2,7 +2,7 @@ using ListingService.Domain.Models;
 
 namespace ListingService.Infrastructure.Interfaces;
 
-public interface ITruckRepository
+public interface ITrucksRepository
 {
     Task<List<Truck>> Get();
     

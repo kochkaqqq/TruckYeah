@@ -4,23 +4,23 @@ using ListingService.Infrastructure.Interfaces;
 
 namespace ListingService.Application.Services;
 
-public class CargoService : ICargoService
+public class CargosService : ICargosService
 {
-    private readonly ICargoRepository _cargoRepository;
+    private readonly ICargosRepository _cargosRepository;
 
-    public CargoService(ICargoRepository cargoRepository)
+    public CargosService(ICargosRepository cargosRepository)
     {
-        _cargoRepository = cargoRepository;
+        _cargosRepository = cargosRepository;
     }
     
     public async Task<List<Cargo>> GetAllCargosAsync()
     {
-        return await _cargoRepository.Get();
+        return await _cargosRepository.Get();
     }
 
     public async Task<Guid> CreateCargoAsync(Cargo cargo)
     {
-        return await _cargoRepository.Create(cargo);
+        return await _cargosRepository.Create(cargo);
     }
 
     public async Task<Guid> UpdateCargoAsync(Guid id, string title, string description, double? weightKg, double? volumeM3, double? lengthCm,
@@ -35,6 +35,6 @@ public class CargoService : ICargoService
 
     public async Task<Guid> DeleteCargoAsync(Guid id)
     {
-        return await _cargoRepository.Delete(id);
+        return await _cargosRepository.Delete(id);
     }
 }

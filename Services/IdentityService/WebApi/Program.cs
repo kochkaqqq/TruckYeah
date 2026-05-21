@@ -1,9 +1,7 @@
 using Application.Interfaces;
 using Application.Services;
 using Infrastructure;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.IdentityModel.Tokens;
-using System.Text;
+using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -33,6 +31,12 @@ builder.Services.AddControllers();
 builder.Services.AddControllers();
 
 var app = builder.Build();
+
+using (var scope = app.Services.CreateScope())
+{
+    var dbContext = scope.ServiceProvider.GetRequiredService<IDbContext>();
+    dbContext.Database.Migrate();
+}
 
 //app.UseAuthentication();
 

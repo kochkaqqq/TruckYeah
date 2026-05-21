@@ -3,6 +3,7 @@ using System;
 using Infrastructure;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationContext))]
-    partial class ApplicationContextModelSnapshot : ModelSnapshot
+    [Migration("20260507153452_time_type_change")]
+    partial class time_type_change
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -21,40 +24,6 @@ namespace Infrastructure.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
-
-            modelBuilder.Entity("Domain.Entities.Comment", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid>("AutorId")
-                        .HasColumnType("uuid")
-                        .HasColumnName("autor_id");
-
-                    b.Property<float>("Rating")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("float")
-                        .HasDefaultValue(0f)
-                        .HasColumnName("rating");
-
-                    b.Property<Guid>("UserId")
-                        .HasColumnType("uuid")
-                        .HasColumnName("user_id");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("AutorId")
-                        .HasDatabaseName("IX_comments_autor_id");
-
-                    b.HasIndex("UserId")
-                        .HasDatabaseName("IX_comments_user_id");
-
-                    b.HasIndex("AutorId", "UserId")
-                        .HasDatabaseName("IX_comments_autor_id_user_id");
-
-                    b.ToTable("comments", (string)null);
-                });
 
             modelBuilder.Entity("Domain.Entities.Company", b =>
                 {
@@ -65,20 +34,6 @@ namespace Infrastructure.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("companies", (string)null);
-                });
-
-            modelBuilder.Entity("Domain.Entities.Country", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("Id")
-                        .IsUnique();
-
-                    b.ToTable("countries", (string)null);
                 });
 
             modelBuilder.Entity("Domain.Entities.RefreshToken", b =>
@@ -152,71 +107,21 @@ namespace Infrastructure.Migrations
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid")
-                        .HasColumnName("id");
-
-                    b.Property<string>("AvatarLink")
-                        .HasMaxLength(500)
-                        .HasColumnType("varchar(500)")
-                        .HasColumnName("avatar_link");
+                        .HasColumnType("uuid");
 
                     b.Property<string>("PasswordHash")
                         .IsRequired()
-                        .HasMaxLength(255)
-                        .HasColumnType("varchar(255)")
-                        .HasColumnName("password_hash");
-
-                    b.Property<float>("Rating")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("float")
-                        .HasDefaultValue(0f)
-                        .HasColumnName("rating");
-
-                    b.Property<string>("UserType")
-                        .IsRequired()
-                        .HasColumnType("varchar(50)")
-                        .HasColumnName("user_type");
+                        .HasColumnType("text");
 
                     b.Property<Guid?>("companyId")
                         .HasColumnType("uuid")
-                        .HasColumnName("company_id");
-
-                    b.Property<Guid>("countryId")
-                        .HasColumnType("uuid")
-                        .HasColumnName("country_id");
+                        .HasColumnName("companyId");
 
                     b.HasKey("Id");
 
                     b.HasIndex("companyId");
 
-                    b.HasIndex("countryId");
-
                     b.ToTable("users", (string)null);
-                });
-
-            modelBuilder.Entity("Domain.Entities.Comment", b =>
-                {
-                    b.OwnsOne("Domain.ValueObjects.CommentText", "CommentText", b1 =>
-                        {
-                            b1.Property<Guid>("CommentId")
-                                .HasColumnType("uuid");
-
-                            b1.Property<string>("Value")
-                                .IsRequired()
-                                .HasMaxLength(1000)
-                                .HasColumnType("varchar(1000)")
-                                .HasColumnName("comment_text");
-
-                            b1.HasKey("CommentId");
-
-                            b1.ToTable("comments");
-
-                            b1.WithOwner()
-                                .HasForeignKey("CommentId");
-                        });
-
-                    b.Navigation("CommentText")
-                        .IsRequired();
                 });
 
             modelBuilder.Entity("Domain.Entities.Company", b =>
@@ -248,34 +153,6 @@ namespace Infrastructure.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Domain.Entities.Country", b =>
-                {
-                    b.OwnsOne("Domain.ValueObjects.CountryName", "Name", b1 =>
-                        {
-                            b1.Property<Guid>("CountryId")
-                                .HasColumnType("uuid");
-
-                            b1.Property<string>("Value")
-                                .IsRequired()
-                                .HasMaxLength(100)
-                                .HasColumnType("character varying(100)")
-                                .HasColumnName("name");
-
-                            b1.HasKey("CountryId");
-
-                            b1.HasIndex("Value")
-                                .IsUnique();
-
-                            b1.ToTable("countries");
-
-                            b1.WithOwner()
-                                .HasForeignKey("CountryId");
-                        });
-
-                    b.Navigation("Name")
-                        .IsRequired();
-                });
-
             modelBuilder.Entity("Domain.Entities.RefreshToken", b =>
                 {
                     b.HasOne("Domain.Entities.User", "User")
@@ -295,13 +172,6 @@ namespace Infrastructure.Migrations
                         .HasForeignKey("companyId")
                         .OnDelete(DeleteBehavior.SetNull)
                         .HasConstraintName("FK_Users_Companies_CompanyId");
-
-                    b.HasOne("Domain.Entities.Country", "Country")
-                        .WithMany()
-                        .HasForeignKey("countryId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired()
-                        .HasConstraintName("FK_Users_Countries_CountryId");
 
                     b.OwnsOne("Domain.ValueObjects.Email", "Email", b1 =>
                         {
@@ -378,60 +248,15 @@ namespace Infrastructure.Migrations
                                 .HasForeignKey("UserId");
                         });
 
-                    b.OwnsOne("Domain.ValueObjects.Postcode", "Postcode", b1 =>
-                        {
-                            b1.Property<Guid>("UserId")
-                                .HasColumnType("uuid");
-
-                            b1.Property<string>("Value")
-                                .IsRequired()
-                                .HasMaxLength(10)
-                                .HasColumnType("varchar(10)")
-                                .HasColumnName("postcode");
-
-                            b1.HasKey("UserId");
-
-                            b1.ToTable("users");
-
-                            b1.WithOwner()
-                                .HasForeignKey("UserId");
-                        });
-
-                    b.OwnsOne("Domain.ValueObjects.VatId", "VatId", b1 =>
-                        {
-                            b1.Property<Guid>("UserId")
-                                .HasColumnType("uuid");
-
-                            b1.Property<string>("Value")
-                                .IsRequired()
-                                .HasMaxLength(15)
-                                .HasColumnType("varchar(15)")
-                                .HasColumnName("vat_id");
-
-                            b1.HasKey("UserId");
-
-                            b1.ToTable("users");
-
-                            b1.WithOwner()
-                                .HasForeignKey("UserId");
-                        });
-
                     b.Navigation("Company");
-
-                    b.Navigation("Country");
 
                     b.Navigation("Email")
                         .IsRequired();
 
-                    b.Navigation("FullName");
+                    b.Navigation("FullName")
+                        .IsRequired();
 
                     b.Navigation("Phone")
-                        .IsRequired();
-
-                    b.Navigation("Postcode")
-                        .IsRequired();
-
-                    b.Navigation("VatId")
                         .IsRequired();
                 });
 #pragma warning restore 612, 618

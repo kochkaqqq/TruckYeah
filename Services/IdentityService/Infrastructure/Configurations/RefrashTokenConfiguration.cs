@@ -31,17 +31,17 @@ namespace Domain.Entities.Configurations
 
             builder.Property(rt => rt.CreateAt)
                 .HasColumnName("created_at")
-                .HasColumnType("timestamp")
+                .HasColumnType("timestamp with time zone")
                 .IsRequired();
 
             builder.Property(rt => rt.ExpireAt)
                 .HasColumnName("expires_at")
-                .HasColumnType("timestamp")
+                .HasColumnType("timestamp with time zone")
                 .IsRequired();
 
             builder.Property(rt => rt.RevokedAt)
                 .HasColumnName("revoked_at")
-                .HasColumnType("timestamp")
+                .HasColumnType("timestamp with time zone")
                 .IsRequired();
 
             builder.Property(rt => rt.DeviceId)

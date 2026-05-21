@@ -1,5 +1,6 @@
 ﻿using Application.Shared.Dtos.Requests;
 using Application.Shared.Dtos.Responses;
+using Domain.Entities;
 
 namespace Application.Interfaces
 {
@@ -8,5 +9,6 @@ namespace Application.Interfaces
         Task<LoginDtoResponse> RegistrationUserAsync(RegistrationDtoRequest regDto); 
         Task<LoginDtoResponse> LoginUserAsync(LoginDtoRequest logDto);
         Task<LoginDtoResponse> RefreshTokenAsync(string refreshToken);
+        Task<User> GetUserAsync(Guid id);
     }
 }

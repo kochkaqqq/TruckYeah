@@ -8,7 +8,8 @@ namespace Application.Shared.HelpFuntions
         public static string Hash(string rawToken)
         {
             var bytes = SHA256.HashData(Encoding.UTF8.GetBytes(rawToken));
-            return Convert.ToHexString(bytes).ToLower();
+            var res = Convert.ToHexString(bytes).ToLower();
+            return res;
         }
     
         public static bool Verify(string rawToken, string hashedToken)

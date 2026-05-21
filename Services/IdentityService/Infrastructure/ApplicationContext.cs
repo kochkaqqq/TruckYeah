@@ -9,6 +9,8 @@ namespace Infrastructure
         public DbSet<User> Users { get; set; }
         public DbSet<Company> Companies { get; set; }
         public DbSet<RefreshToken> RefreshTokens { get; set; }
+        public DbSet<Country> Countries { get; set; }
+        public DbSet<Comment> Comments { get; set; }
 
         public ApplicationContext(DbContextOptions<ApplicationContext> options) : base(options)
         {

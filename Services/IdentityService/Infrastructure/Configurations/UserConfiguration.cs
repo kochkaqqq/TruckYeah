@@ -13,6 +13,16 @@ namespace Domain.Entities.Configurations
 
             builder.HasKey(u => u.Id);
 
+            builder.Property(u => u.Id)
+                .HasColumnName("id")
+                .IsRequired();
+
+            builder.Property(u => u.PasswordHash)
+                .HasColumnName("password_hash")
+                .HasMaxLength(255)
+                .IsRequired()
+                .HasColumnType("varchar(255)");
+
             builder.OwnsOne(u => u.Email, emailBuilder =>
             {
                 emailBuilder.Property(e => e.Value)
@@ -36,6 +46,41 @@ namespace Domain.Entities.Configurations
                     .IsRequired()
                     .HasColumnType("char(10)")
                     .IsFixedLength();
+            });
+
+            builder.HasOne(u => u.Country)
+                .WithMany()
+                .HasForeignKey("countryId")
+                .IsRequired()
+                .OnDelete(DeleteBehavior.Restrict)
+                .HasConstraintName("FK_Users_Countries_CountryId");
+
+            builder.Property<Guid>("countryId")
+                .HasColumnName("country_id")
+                .IsRequired();
+
+            builder.OwnsOne(u => u.Postcode, postcodeBuilder =>
+            {
+                postcodeBuilder.Property(p => p.Value)
+                    .HasColumnName("postcode")
+                    .HasMaxLength(10)
+                    .IsRequired()
+                    .HasColumnType("varchar(10)");
+            });
+
+            builder.Property(u => u.UserType)
+                .HasColumnName("user_type")
+                .IsRequired()
+                .HasConversion<string>()
+                .HasColumnType("varchar(50)");
+
+            builder.OwnsOne(u => u.VatId, vatIdBuilder =>
+            {
+                vatIdBuilder.Property(v => v.Value)
+                    .HasColumnName("vat_id")
+                    .HasMaxLength(15)
+                    .IsRequired()
+                    .HasColumnType("varchar(15)");
             });
 
             builder.OwnsOne(u => u.FullName, fullNameBuilder =>
@@ -64,8 +109,20 @@ namespace Domain.Entities.Configurations
                 .HasConstraintName("FK_Users_Companies_CompanyId");
 
             builder.Property<Guid?>("companyId")
-                .HasColumnName("companyId")
+                .HasColumnName("company_id")
                 .IsRequired(false);
+
+            builder.Property(u => u.AvatarLink)
+                .HasColumnName("avatar_link")
+                .HasMaxLength(500)
+                .IsRequired(false)
+                .HasColumnType("varchar(500)");
+
+            builder.Property(u => u.Rating)
+                .HasColumnName("rating")
+                .IsRequired()
+                .HasDefaultValue(0.0f)
+                .HasColumnType("float");
         }
     }
 }

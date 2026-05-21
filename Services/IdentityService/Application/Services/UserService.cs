@@ -4,6 +4,7 @@ using Application.Shared.Dtos.Responses;
 using Application.Shared.Exceptions;
 using Application.Shared.HelpFuntions;
 using Domain.Entities;
+using Domain.Enums;
 using Domain.ValueObjects;
 using Microsoft.AspNetCore.Authentication.OAuth;
 using Microsoft.EntityFrameworkCore;
@@ -13,6 +14,7 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace Application.Services
 {
@@ -40,7 +42,7 @@ namespace Application.Services
             }
             else if (logDto.Phone != null)
             {
-                user = await _dbContext.Users.FirstOrDefaultAsync(u => u.Phone.FullNumberWithPlus == logDto.Phone); //TODO process input phone number
+                user = await _dbContext.Users.FirstOrDefaultAsync(u => u.Phone.Number == logDto.Phone.Substring(logDto.Phone.Length - 10)); //TODO process input phone number
             }
 
             if (user == null)
@@ -124,19 +126,44 @@ namespace Application.Services
                 throw new ConflictException(nameof(User), regDto.Email);
 
             var phoneExists = await _dbContext.Users
-                .AnyAsync(u => u.Phone.FullNumberWithPlus == regDto.Phone);
+                .AnyAsync(u => u.Phone.Number == regDto.Phone.Substring(regDto.Phone.Length - 10));
 
             if (phoneExists)
                 throw new ConflictException(nameof(User), regDto.Phone);
+
+            var country = await _dbContext.Countries.FirstOrDefaultAsync(c => c.Id == regDto.CountryId);
+
+            if (country == null)
+                throw new EntityNotFoundException(nameof(Country), regDto.CountryId.ToString());
 
             var user = new User
             {
                 Id = Guid.NewGuid(),
                 Email = new Email(regDto.Email),
                 Phone = new Phone(regDto.Phone),
-                FullName = new FullName(regDto.Name, regDto.Surname, regDto.MiddleName),
-                PasswordHash = PasswordHasher.Hash(regDto.Password)
+                PasswordHash = PasswordHasher.Hash(regDto.Password),
+                Country = country,
+                Postcode = new Postcode(regDto.Postcode),
+                VatId = new VatId(regDto.VatId),
+                UserType = regDto.UserType,
             };
+
+            if (user.UserType == UserType.Business)
+            {
+                if (regDto.CompanyId == null)
+                    throw new ArgumentNullException();
+
+                var company = await _dbContext.Companies.FirstOrDefaultAsync(c => c.Id == regDto.CompanyId)
+                    ?? throw new EntityNotFoundException(nameof(Company), regDto.CompanyId.ToString());
+
+                user.Company = company;
+            }
+            else if (user.UserType == UserType.Private || user.UserType == UserType.Individual)
+            {
+                if (string.IsNullOrWhiteSpace(regDto.Name) || string.IsNullOrWhiteSpace(regDto.Surname))
+                    throw new ArgumentNullException();
+                user.FullName = new FullName(regDto.Name, regDto.Surname, regDto.MiddleName);
+            }
 
             var rawRefreshToken = Convert.ToBase64String(RandomNumberGenerator.GetBytes(64));
             var refreshToken = new RefreshToken
@@ -161,6 +188,14 @@ namespace Application.Services
             };
         }
 
+        public async Task<User> GetUserAsync(Guid id)
+        {
+            var user = await _dbContext.Users.FirstOrDefaultAsync(u => u.Id == id)
+                ?? throw new EntityNotFoundException(nameof(User), id.ToString());
+
+            return user;
+        }
+
         private string GenerateJwtToken(User user)
         {
             var claims = new List<Claim> 
@@ -176,7 +211,7 @@ namespace Application.Services
                     claims: claims,
                     expires: DateTime.UtcNow.Add(TimeSpan.FromMinutes(2)),
                     signingCredentials: new SigningCredentials(
-                        new SymmetricSecurityKey(Encoding.UTF8.GetBytes("secret key")), SecurityAlgorithms.HmacSha256)); //TODO move secret key to configuration
+                        new SymmetricSecurityKey(Encoding.UTF8.GetBytes("your-super-secret-key-with-at-least-32-characters-long")), SecurityAlgorithms.HmacSha256)); //TODO move secret key to configuration
 
             return new JwtSecurityTokenHandler().WriteToken(jwt);
         }

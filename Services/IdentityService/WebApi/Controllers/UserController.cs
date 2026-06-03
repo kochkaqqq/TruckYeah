@@ -2,6 +2,7 @@
 using Application.Shared.Dtos.Requests;
 using Application.Shared.Exceptions;
 using Domain.Exceptions;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace WebApi.Controllers
@@ -75,6 +76,7 @@ namespace WebApi.Controllers
             }
         }
 
+        [Authorize]
         [HttpGet]
         [Route("{id}")]
         public async Task<IActionResult> GetUser([FromRoute] Guid id)

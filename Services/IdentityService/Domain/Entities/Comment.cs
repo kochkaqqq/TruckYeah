@@ -9,5 +9,7 @@ namespace Domain.Entities
         public Guid UserId { get; set; }
         public float Rating { get; set; }
         public CommentText CommentText { get; set; } = null!;
+        public DateTime CreatedAt { get; set; }
+        public DateTime UpdatedAt { get; set; }
     }
 }

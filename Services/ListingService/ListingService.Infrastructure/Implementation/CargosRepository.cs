@@ -33,27 +33,34 @@ public class CargosRepository : ICargosRepository
         return cargoEntity.Id;
     }
 
-    public async Task<Guid> Update(Guid id, string title, string description, double? weightKg, double? volumeM3, double? lengthCm,
-        double? widthCm, double? heightCm, string cargoType, string? routeFrom, string? routeTo, double? distanceKm,
-        DateTime loadDate, decimal? price)
+    public async Task<Guid> Update(Guid id, Cargo cargo)
     {
         await _dbContext.Cargos
             .Where(c => c.Id == id)
             .ExecuteUpdateAsync(s => s
-                .SetProperty(c => c.Title, title)
-                .SetProperty(c => c.Description, description)
-                .SetProperty(c => c.WeightKg, weightKg)
-                .SetProperty(c => c.VolumeM3, volumeM3)
-                .SetProperty(c => c.LengthCm, lengthCm)
-                .SetProperty(c => c.WidthCm, widthCm)
-                .SetProperty(c => c.HeightCm, heightCm)
-                .SetProperty(c => c.CargoType, cargoType)
-                .SetProperty(c => c.RouteFrom, routeFrom)
-                .SetProperty(c => c.RouteTo, routeTo)
-                .SetProperty(c => c.DistanceKm, distanceKm)
-                .SetProperty(c => c.LoadDate, loadDate)
-                .SetProperty(c => c.Price, price));
+                .SetProperty(c => c.Title, cargo.Title)
+                .SetProperty(c => c.CargoName, cargo.CargoName)
+                .SetProperty(c => c.RouteFrom, cargo.RouteFrom)
+                .SetProperty(c => c.RouteTo, cargo.RouteTo)
+                .SetProperty(c => c.RoutePoints, cargo.RoutePoints)
+                .SetProperty(c => c.WeightTons, cargo.WeightTons)
+                .SetProperty(c => c.VolumeM3, cargo.VolumeM3)
+                .SetProperty(c => c.BodyTypeRequired, cargo.BodyTypeRequired)
+                .SetProperty(c => c.LoadingType, cargo.LoadingType)
+                .SetProperty(c => c.LengthCm, cargo.LengthCm)
+                .SetProperty(c => c.WidthCm , cargo.WidthCm)
+                .SetProperty(c => c.HeightCm, cargo.HeightCm)
+                .SetProperty(c => c.PalletsCount, cargo.PalletsCount)
+                .SetProperty(c => c.PackagingType, cargo.PackagingType)
+                .SetProperty(c => c.RequiresCMR, cargo.RequiresCMR)
+                .SetProperty(c => c.RequiresTIR, cargo.RequiresTIR)
+                .SetProperty(c => c.IsADR, cargo.IsADR)
+                .SetProperty(c => c.PaymentType, cargo.PaymentType)
+                .SetProperty(c => c.AllowBargaining, cargo.AllowBargaining)
+                .SetProperty(c => c.PrepaymentPercent, cargo.PrepaymentPercent)
+                .SetProperty(c => c.Notes, cargo.Notes));
         
+        await UpdateRoutePoints(id, cargo.RoutePoints);
         return id;
     }
 
@@ -64,5 +71,24 @@ public class CargosRepository : ICargosRepository
             .ExecuteDeleteAsync();
         
         return id;
+    }
+    
+    private async Task UpdateRoutePoints(Guid cargoId, ICollection<RoutePoint> newRoutePoints)
+    {
+        var oldPoints = _dbContext.RoutePoints
+            .Where(rp => rp.CargoId == cargoId);
+        await _dbContext.RoutePoints
+            .Where(rp => rp.CargoId == cargoId)
+            .ExecuteDeleteAsync();
+        
+        if (newRoutePoints != null && newRoutePoints.Any())
+        {
+            foreach (var point in newRoutePoints)
+            {
+                point.CargoId = cargoId;
+                await _dbContext.RoutePoints.AddAsync(point);
+            }
+            await _dbContext.SaveChangesAsync();
+        }
     }
 }

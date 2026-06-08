@@ -34,6 +34,9 @@ app.UseHttpsRedirection();
 app.UseAuthorization();
 app.MapControllers();
 
+var connStr = builder.Configuration.GetConnectionString(nameof(ListingServiceDbContext));
+Console.WriteLine($"🔗 Connection String: {connStr}");
+Console.WriteLine($"🔗 Is null or empty: {string.IsNullOrEmpty(connStr)}");
 
 app.Run();
 

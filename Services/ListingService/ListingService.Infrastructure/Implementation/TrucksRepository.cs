@@ -33,27 +33,25 @@ public class TrucksRepository : ITrucksRepository
         return truckEntity.Id;
     }
 
-    public async Task<Guid> Update(Guid id, string title, string description, string bodyType, double? capacityKg, double? volumeM3,
-        double? lengthCm, double? widthCm, double? heightCm, string currentLocation, string routeFrom, string routeTo,
-        int? radiusKm, decimal? pricePerKm, string currency)
+    public async Task<Guid> Update(Guid id, Truck truck)
     {
-        await _dbContext.Trucks.Where(t => t.Id == id)
+        await _dbContext.Trucks
+            .Where(t => t.Id == id)
             .ExecuteUpdateAsync(s => s
-                .SetProperty(t => t.Title, title)
-                .SetProperty(t => t.Description, description)
-                .SetProperty(t => t.BodyType, bodyType)
-                .SetProperty(t => t.CapacityKg, capacityKg)
-                .SetProperty(t => t.VolumeM3, volumeM3)
-                .SetProperty(t => t.LengthCm, lengthCm)
-                .SetProperty(t => t.WidthCm, widthCm)
-                .SetProperty(t => t.HeightCm, heightCm)
-                .SetProperty(t => t.CurrentLocation, currentLocation)
-                .SetProperty(t => t.RouteFrom, routeFrom)
-                .SetProperty(t => t.RouteTo, routeTo)
-                .SetProperty(t => t.RadiusKm, radiusKm)
-                .SetProperty(t => t.PricePerKm, pricePerKm)
-                .SetProperty(t => t.Currency, currency));
-
+                .SetProperty(t => t.Title, truck.Title)
+                .SetProperty(t => t.Description, truck.Description)
+                .SetProperty(t => t.RouteFrom, truck.RouteFrom)
+                .SetProperty(t => t.RouteTo, truck.RouteTo)
+                .SetProperty(t => t.CapacityTons, truck.CapacityTons)
+                .SetProperty(t => t.VolumeM3, truck.VolumeM3)
+                .SetProperty(t => t.BodyType, truck.BodyType)
+                .SetProperty(t => t.LoadingType, truck.LoadingType)
+                .SetProperty(t => t.AvailableFrom, truck.AvailableFrom)
+                .SetProperty(t => t.Price, truck.Price)
+                .SetProperty(t => t.PaymentType, truck.PaymentType)
+                .SetProperty(t => t.AllowBargaining, truck.AllowBargaining)
+                .SetProperty(t => t.PrepaymentPercent, truck.PrepaymentPercent));
+        
         return id;
     }
 

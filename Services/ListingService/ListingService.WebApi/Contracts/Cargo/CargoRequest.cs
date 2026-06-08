@@ -1,30 +1,46 @@
+using ListingService.Domain.Enums;
+using ListingService.Domain.Models;
+
 namespace ListingService.WebApi.Contracts.Cargo;
 
 public class CargoRequest
 {
-    // Основная информация
-    public string Title { get; set; } = string.Empty;       // Название груза
-    public string Description { get; set; } = string.Empty;  // Описание
+
+    // === ОСНОВНАЯ ИНФОРМАЦИЯ ===
+    public string Title { get; set; } = string.Empty;          // Заголовок объявления (для списка)
+    public string CargoName { get; set; } = string.Empty;      // Наименование груза (обязательное)
+
+    // === МАРШРУТ ===
+    public string RouteFrom { get; set; } = string.Empty;      // Откуда (обязательное)
+    public string RouteTo { get; set; } = string.Empty;        // Куда (обязательное)
+    public virtual ICollection<RoutePoint> RoutePoints { get; set; } = new List<RoutePoint>(); // Промежуточные точки
+
+    // === ДАТЫ ===
+    public DateTime LoadDateTime { get; set; }                 // Дата и время загрузки (обязательное)
+    public DateTime UnloadDateTime { get; set; }              // Дата и время разгрузки
+
+    // === ПАРАМЕТРЫ ГРУЗА ===
+    public double WeightTons { get; set; }                     // Вес в тоннах (обязательное)
+    public double VolumeM3 { get; set; }                       // Объём в м³ (обязательное)
+    public string BodyTypeRequired { get; set; } = string.Empty; // Тип кузова (обязательное)
+    public LoadingType LoadingType { get; set; }               // Тип загрузки (обязательное)
+
+    // === ГАБАРИТЫ И УПАКОВКА ===
+    public double? LengthCm { get; set; }                      // Длина (см)
+    public double? WidthCm { get; set; }                       // Ширина (см)
+    public double? HeightCm { get; set; }                      // Высота (см)
+    public int? PalletsCount { get; set; }                     // Количество палет
+    public string? PackagingType { get; set; }                 // Тип упаковки
+
+    // === ДОКУМЕНТЫ И ТРЕБОВАНИЯ ===
+    public bool RequiresCMR { get; set; }                      // Требуется CMR
+    public bool RequiresTIR { get; set; }                      // Требуется TIR
+    public bool IsADR { get; set; }                            // Опасный груз (ADR)
+
+    // === ФИНАНСЫ ===
+    public PaymentType PaymentType { get; set; }               // Тип оплаты: наличные / с НДС / без НДС
+    public bool AllowBargaining { get; set; }                  // Возможность торга
+    public decimal? PrepaymentPercent { get; set; }            // Процент предоплаты (0-100)
     
-    // Параметры груза
-    public double? WeightKg { get; set; }                     // Вес (кг)
-    public double? VolumeM3 { get; set; }                     // Объем (м³)
-    public double? LengthCm { get; set; }                     // Длина (см)
-    public double? WidthCm { get; set; }                      // Ширина (см)
-    public double? HeightCm { get; set; }                     // Высота (см)
-    public string CargoType { get; set; } = string.Empty;     // Тип груза (тент, реф и т.д.)
-    
-    // Маршрут
-    public string RouteFrom { get; set; } = string.Empty;     // Откуда
-    public string RouteTo { get; set; } = string.Empty;       // Куда
-    public double? DistanceKm { get; set; }                   // Расстояние (км)
-    
-    // Даты
-    public DateTime LoadDate { get; set; }                    // Дата загрузки
-    
-    // Стоимость
-    public decimal? Price { get; set; }                       // Цена
-    
-    // Пользователь
-    // public Guid UserId { get; set; }                          // ID владельца
+    public string? Notes { get; set; }
 }

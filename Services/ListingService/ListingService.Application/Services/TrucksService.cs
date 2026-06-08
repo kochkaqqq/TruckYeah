@@ -23,14 +23,9 @@ public class TrucksService : ITrucksService
         return await _repository.Create(truck);
     }
 
-    public async Task<Guid> UpdateTruckAsync(Guid id, string title, string description, string bodyType, double? capacityKg, double? volumeM3,
-        double? lengthCm, double? widthCm, double? heightCm, string currentLocation, string routeFrom, string routeTo,
-        int? radiusKm, decimal? pricePerKm, string currency)
+    public async Task<Guid> UpdateTruckAsync(Guid id, Truck truck)
     {
-        return await _repository.Update(id, title, description, bodyType, 
-            capacityKg, volumeM3, lengthCm, widthCm,
-            heightCm, currentLocation, routeFrom, routeTo, 
-            radiusKm, pricePerKm, currency);
+        return await _repository.Update(id, truck);
     }
 
     public async Task<Guid> DeleteTruckAsync(Guid id)

@@ -7,11 +7,28 @@ public static class TruckMapper
 {
     public static Truck MapToModel(this TruckEntity truckEntity)
     {
-        return new Truck(truckEntity.Id, truckEntity.Title, truckEntity.Description, 
-            truckEntity.BodyType, truckEntity.CapacityKg, truckEntity.VolumeM3, 
-            truckEntity.LengthCm, truckEntity.WidthCm,  truckEntity.HeightCm,
-            truckEntity.CurrentLocation, truckEntity.RouteFrom, truckEntity.RouteTo,
-            truckEntity.RadiusKm, truckEntity.PricePerKm, truckEntity.Currency, truckEntity.CreatedAt);
+        var truck = new Truck
+        {
+            Id = truckEntity.Id,
+            Title = truckEntity.Title,
+            Description = truckEntity.Description,
+            RouteFrom = truckEntity.RouteFrom,
+            RouteTo = truckEntity.RouteTo,
+            CapacityTons = truckEntity.CapacityTons,
+            VolumeM3 = truckEntity.VolumeM3,
+            BodyType = truckEntity.BodyType,
+            LoadingType = truckEntity.LoadingType,
+            AvailableFrom = truckEntity.AvailableFrom,
+            Price = truckEntity.Price,
+            PaymentType = truckEntity.PaymentType,
+            AllowBargaining = truckEntity.AllowBargaining,
+            PrepaymentPercent = truckEntity.PrepaymentPercent,
+            Status = truckEntity.Status,
+            CreatedAt = truckEntity.CreatedAt,
+            PublishedAt = truckEntity.PublishedAt,
+            SourceListingId = truckEntity.SourceListingId,
+        };
+        return truck;
     }
 
     public static TruckEntity MapToEntity(this Truck truck)
@@ -19,21 +36,23 @@ public static class TruckMapper
         var truckEntity = new TruckEntity
         {
             Id = truck.Id,
-            Title =  truck.Title,
+            Title = truck.Title,
             Description = truck.Description,
-            BodyType =  truck.BodyType,
-            CapacityKg =  truck.CapacityKg,
-            VolumeM3 =   truck.VolumeM3,
-            LengthCm =   truck.LengthCm,
-            WidthCm =    truck.WidthCm,
-            HeightCm =    truck.HeightCm,
-            CurrentLocation = truck.CurrentLocation,
-            RouteFrom =  truck.RouteFrom,
-            RouteTo =   truck.RouteTo,
-            RadiusKm =   truck.RadiusKm,
-            PricePerKm = truck.PricePerKm,
-            Currency =   truck.Currency,
-            CreatedAt =  truck.CreatedAt
+            RouteFrom = truck.RouteFrom,
+            RouteTo = truck.RouteTo,
+            CapacityTons = truck.CapacityTons,
+            VolumeM3 = truck.VolumeM3,
+            BodyType = truck.BodyType,
+            LoadingType = truck.LoadingType,
+            AvailableFrom = truck.AvailableFrom,
+            Price = truck.Price,
+            PaymentType = truck.PaymentType,
+            AllowBargaining = truck.AllowBargaining,
+            PrepaymentPercent = truck.PrepaymentPercent,
+            Status = truck.Status,
+            CreatedAt = truck.CreatedAt,
+            PublishedAt = truck.PublishedAt,
+            SourceListingId = truck.SourceListingId,
         };
         
         return truckEntity;

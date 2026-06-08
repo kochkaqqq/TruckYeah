@@ -38,9 +38,8 @@ public class CargosController : ControllerBase
     [HttpPut("{id:guid}")]
     public async Task<ActionResult<Guid>> UpdateCargo(Guid id, [FromBody] CargoRequest request)
     {
-        var cargoId = await _cargosService.UpdateCargoAsync(id, request.Title, request.Description, 
-            request.WeightKg, request.VolumeM3, request.LengthCm, request.WidthCm, request.HeightCm,
-            request.CargoType, request.RouteFrom, request.RouteTo, request.DistanceKm, request.LoadDate, request.Price);
+        var cargo =  request.MapToModel();
+        var cargoId = await _cargosService.UpdateCargoAsync(id, cargo);
         
         return Ok(cargoId);
     }

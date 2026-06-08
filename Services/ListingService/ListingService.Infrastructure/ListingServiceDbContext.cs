@@ -1,3 +1,4 @@
+using ListingService.Domain.Models;
 using ListingService.Infrastructure.Entities;
 using Microsoft.EntityFrameworkCore;
 
@@ -13,4 +14,5 @@ public class ListingServiceDbContext : DbContext
 
     public DbSet<CargoEntity> Cargos { get; set; }
     public DbSet<TruckEntity>  Trucks { get; set; }
+    public DbSet<RoutePoint> RoutePoints { get; set; }
 }

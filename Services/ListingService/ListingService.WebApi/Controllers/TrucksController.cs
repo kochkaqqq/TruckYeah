@@ -39,10 +39,8 @@ public class TrucksController : ControllerBase
     [HttpPut("{id:guid}")]
     public async Task<ActionResult<Guid>> UpdateTruck(Guid id, [FromBody] TruckRequest request)
     {
-        var truckId = await _trucksService.UpdateTruckAsync(id, request.Title, request.Description, 
-            request.BodyType, request.CapacityKg, request.VolumeM3, request.LengthCm, 
-            request.WidthCm, request.HeightCm, request.CurrentLocation, request.RouteFrom, 
-            request.RouteTo, request.RadiusKm, request.PricePerKm, request.Currency);
+        var truck = request.MapToModel();
+        var truckId = await _trucksService.UpdateTruckAsync(id, truck);
         
         return Ok(truckId);
     }

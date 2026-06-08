@@ -8,11 +8,7 @@ public interface ICargosService
     
     Task<Guid> CreateCargoAsync(Cargo cargo);
     
-    Task<Guid> UpdateCargoAsync(Guid id, string title, string description, 
-        double? weightKg, double? volumeM3, double? lengthCm, 
-        double? widthCm, double? heightCm, string cargoType, 
-        string? routeFrom, string? routeTo, double? distanceKm, 
-        DateTime loadDate, decimal? price);
+    Task<Guid> UpdateCargoAsync(Guid id, Cargo cargo);
     
     Task<Guid> DeleteCargoAsync(Guid id);
 }

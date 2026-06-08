@@ -8,11 +8,7 @@ public interface ITrucksService
     
     Task<Guid> CreateTruckAsync(Truck truck);
     
-    Task<Guid> UpdateTruckAsync(Guid id, string title, string description, string bodyType, 
-        double? capacityKg, double? volumeM3,  double? lengthCm, 
-        double? widthCm, double? heightCm,  string currentLocation, 
-        string routeFrom, string routeTo, int? radiusKm, 
-        decimal? pricePerKm,  string currency);
+    Task<Guid> UpdateTruckAsync(Guid id, Truck truck);
     
     Task<Guid> DeleteTruckAsync(Guid id);
 }

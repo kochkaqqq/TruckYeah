@@ -20,17 +20,13 @@ public class CargosService : ICargosService
 
     public async Task<Guid> CreateCargoAsync(Cargo cargo)
     {
+        cargo.Id = Guid.NewGuid();
         return await _cargosRepository.Create(cargo);
     }
 
-    public async Task<Guid> UpdateCargoAsync(Guid id, string title, string description, double? weightKg, double? volumeM3, double? lengthCm,
-        double? widthCm, double? heightCm, string cargoType, string? routeFrom, string? routeTo, double? distanceKm,
-        DateTime loadDate, decimal? price)
+    public async Task<Guid> UpdateCargoAsync(Guid id, Cargo cargo)
     {
-        return await UpdateCargoAsync(id, title, description, weightKg, 
-            volumeM3, lengthCm, widthCm, heightCm, 
-            cargoType, routeFrom, routeTo, 
-            distanceKm, loadDate, price);
+        return await _cargosRepository.Update(id, cargo);
     }
 
     public async Task<Guid> DeleteCargoAsync(Guid id)

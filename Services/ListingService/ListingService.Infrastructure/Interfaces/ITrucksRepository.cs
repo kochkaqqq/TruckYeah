@@ -8,11 +8,7 @@ public interface ITrucksRepository
     
     Task<Guid> Create(Truck truck);
     
-    Task<Guid> Update(Guid id, string title, string description, string bodyType, 
-        double? capacityKg, double? volumeM3,  double? lengthCm, 
-        double? widthCm, double? heightCm,  string currentLocation, 
-        string routeFrom, string routeTo, int? radiusKm, 
-        decimal? pricePerKm,  string currency);
+    Task<Guid> Update(Guid id, Truck truck);
     
     Task<Guid> Delete(Guid id);
 }

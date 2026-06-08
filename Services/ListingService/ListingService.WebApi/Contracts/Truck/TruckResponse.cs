@@ -1,36 +1,32 @@
+using ListingService.Domain.Enums;
+
 namespace ListingService.WebApi.Contracts.Truck;
 
 public class TruckResponse
 {
-    public Guid Id { get; set; }
-    
-    // Основная информация
-    public string Title { get; set; } = string.Empty;         // Название (напр. "Фура 20т")
-    public string Description { get; set; } = string.Empty;   // Описание
-    
-    // Параметры транспорта
-    public string BodyType { get; set; } = string.Empty;      // Тип кузова (тент, реф, борт и т.д.)
-    public double? CapacityKg { get; set; }                   // Грузоподъемность (кг)
-    public double? VolumeM3 { get; set; }                     // Объем кузова (м³)
-    public double? LengthCm { get; set; }                     // Длина кузова (см)
-    public double? WidthCm { get; set; }                      // Ширина кузова (см)
-    public double? HeightCm { get; set; }                     // Высота кузова (см)
-    
-    // Местоположение
-    public string CurrentLocation { get; set; } = string.Empty; // Где находится
-    
-    // Маршрут (где готова работать)
-    public string RouteFrom { get; set; } = string.Empty;     // Откуда
-    public string RouteTo { get; set; } = string.Empty;       // Куда
-    public int? RadiusKm { get; set; }                        // Радиус работы (км)
-    
-    
-    // Стоимость
-    public decimal? PricePerKm { get; set; }                  // Цена за км
-    public string Currency { get; set; } = "EUR";
-    
-    
-    // Пользователь
-    //public Guid UserId { get; set; }                          // ID владельца
-    
+    // === ОСНОВНАЯ ИНФОРМАЦИЯ ===
+    public string Title { get; set; } = string.Empty; // Заголовок объявления (напр. "Фура 20т")
+    public string? Description { get; set; } // Дополнительное описание
+
+    // === МАРШРУТ / ЗОНА РАБОТЫ ===
+    public string RouteFrom { get; set; } = string.Empty; // Откуда (обязательное)
+    public string RouteTo { get; set; } = string.Empty; // Куда (обязательное)
+
+    // === ПАРАМЕТРЫ ТРАНСПОРТА ===
+    public double CapacityTons { get; set; } // Грузоподъёмность в тоннах (обязательное)
+    public double VolumeM3 { get; set; } // Объём кузова в м³ (обязательное)
+    public string BodyType { get; set; } = string.Empty; // Тип кузова (обязательное)
+    public LoadingType LoadingType { get; set; } // Тип загрузки
+
+    // === ДОСТУПНОСТЬ ===
+    public DateTime AvailableFrom { get; set; } // Дата готовности (обязательное)
+
+    // === СТАВКА ===
+    public decimal? Price { get; set; } // Ставка за перевозку (обязательное)
+
+    // === ФИНАНСЫ ===
+    public PaymentType PaymentType { get; set; } // Тип оплаты: наличные / с НДС / без НДС
+    public bool AllowBargaining { get; set; } // Возможность торга
+    public decimal? PrepaymentPercent { get; set; } // Требуемый процент предоплаты
+
 }

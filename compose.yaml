@@ -1,16 +1,21 @@
-﻿services:
+﻿version: "3.9"
+
+services:
+  # ========== Ваша существующая инфраструктура БД ==========
   postgres:
     image: postgres:16
     container_name: truckyeah_db
     environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres123
-      POSTGRES_DB: db
+      POSTGRES_USER: "postgres"
+      POSTGRES_PASSWORD: "123"
+      POSTGRES_DB: "db"
     ports:
-      - "5434:5432"
+      - "5433:5432"
     volumes:
       - pgdata:/var/lib/postgresql/data
     restart: unless-stopped
+    networks:
+      - truckyeah-net
 
   pgadmin:
     image: dpage/pgadmin4:latest
@@ -23,7 +28,67 @@
     depends_on:
       - postgres
     restart: unless-stopped
+    networks:
+      - truckyeah-net
+
+  # ========== Фронтенд (React + Vite + Nginx) ==========
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: truckyeah_frontend
+    ports:
+      - "3000:80"  # Доступ к приложению: http://localhost:3000
+    environment:
+      - VITE_API_URL=http://localhost:5000  # Для сборки (подставляется в статический код)
+    depends_on:
+      - backend
+    restart: unless-stopped
+    networks:
+      - truckyeah-net
+    # Для разработки с hot-reload (опционально, раскомментируйте при необходимости):
+    # volumes:
+    #   - ./frontend:/app:cached
+    #   - /app/node_modules
+    # command: npm run dev -- --host 0.0.0.0
+
+  # ========== Бэкенд (C# ASP.NET Core) ==========
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile  # Убедитесь, что в папке backend/ есть Dockerfile для .NET
+    container_name: truckyeah_backend
+    ports:
+      - "5000:8080"  # ASP.NET Core по умолчанию слушает 8080 в контейнере
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://+:8080
+      - ConnectionStrings__DefaultConnection=Host=postgres;Database=db;Username=postgres;Password=123;Port=5432
+      - ConnectionStrings__RedisConnection=redis:6379  # если используете Redis
+    depends_on:
+      - postgres
+    restart: unless-stopped
+    networks:
+      - truckyeah-net
+    volumes:
+      - ./backend/logs:/app/logs  # для логов приложения (опционально)
+
+  # ========== Опционально: Redis для кэширования ==========
+  # redis:
+  #   image: redis:7-alpine
+  #   container_name: truckyeah_redis
+  #   ports:
+  #     - "6379:6379"
+  #   volumes:
+  #     - redis_data:/data
+  #   networks:
+  #     - truckyeah-net
+  #   restart: unless-stopped
+
+networks:
+  truckyeah-net:
+    driver: bridge
 
 volumes:
   pgdata:
-
+  # redis_data:  # раскомментируйте, если добавите Redis

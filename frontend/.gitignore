@@ -3,22 +3,27 @@ node_modules/
 package-lock.json
 yarn.lock
 pnpm-lock.yaml
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
 
 # ============ Build Output ============
 dist/
 dist-ssr/
 build/
 .vite/
+.vite/
 coverage/
+*.tsbuildinfo
 
-# ============ Logs ============
-logs/
-*.log
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-pnpm-debug.log*
-lerna-debug.log*
+# ============ Environment ============
+.env
+.env.local
+.env.production
+.env.development
+.env.test
 
 # ============ Editor ============
 .vscode/
@@ -27,14 +32,38 @@ lerna-debug.log*
 *.swp
 *.swo
 *~
+.DS_Store
 
-# ============ Environment ============
-.env
-.env.local
-.env.production
-.env.development
+# ============ Frontend Specific ============
+.husky/
+.prettierrc
+.prettierrc.json
+.prettierrc.yml
+.prettierrc.yaml
+.prettierignore
+eslint.config.js
+eslint.config.mjs
+eslint.config.cjs
+.stylelintrc
+.stylelintignore
+nginx.conf
+dockerfile
+Dockerfile
+docker-compose.yml
+README.md
 
+# ============ Testing ============
+.nyc_output/
+jest.config.js
+jest.setup.js
+vitest.config.ts
+playwright.config.ts
+cypress/
+test-results/
 
 # ============ Misc ============
-*.tsbuildinfo
-.nyc_output/
+*.log
+logs/
+tmp/
+temp/
+.cache/

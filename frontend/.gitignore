@@ -15,6 +15,8 @@ dist-ssr/
 build/
 .vite/
 .vite/
+vite.config.js
+vite.config.d.ts
 coverage/
 *.tsbuildinfo
 

@@ -4,11 +4,9 @@ namespace ListingService.Infrastructure.Interfaces;
 
 public interface ITrucksRepository
 {
-    Task<List<Truck>> Get();
-    
+    Task<List<Truck>> Search(TruckSearchCriteria criteria, bool publishedOnly, Guid? userId = null);
+    Task<Truck?> GetById(Guid id);
     Task<Guid> Create(Truck truck);
-    
-    Task<Guid> Update(Guid id, Truck truck);
-    
-    Task<Guid> Delete(Guid id);
+    Task Update(Truck truck);
+    Task Delete(Guid id);
 }

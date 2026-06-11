@@ -5,36 +5,30 @@ namespace ListingService.Infrastructure.Entities;
 public class TruckEntity
 {
     public Guid Id { get; set; }
-    //public Guid UserId { get; set; } // ID владельца (перевозчика)
+    public Guid UserId { get; set; }
 
-    // === ОСНОВНАЯ ИНФОРМАЦИЯ ===
-    public string Title { get; set; } = string.Empty;          // Заголовок объявления (напр. "Фура 20т")
-    public string? Description { get; set; }                   // Дополнительное описание
+    public string Title { get; set; } = string.Empty;
+    public string? Description { get; set; }
 
-    // === МАРШРУТ / ЗОНА РАБОТЫ ===
-    public string RouteFrom { get; set; } = string.Empty;      // Откуда (обязательное)
-    public string RouteTo { get; set; } = string.Empty;        // Куда (обязательное)
+    public string RouteFrom { get; set; } = string.Empty;
+    public string RouteTo { get; set; } = string.Empty;
 
-    // === ПАРАМЕТРЫ ТРАНСПОРТА ===
-    public double CapacityTons { get; set; }                   // Грузоподъёмность в тоннах (обязательное)
-    public double VolumeM3 { get; set; }                       // Объём кузова в м³ (обязательное)
-    public string BodyType { get; set; } = string.Empty;       // Тип кузова (обязательное)
-    public LoadingType LoadingType { get; set; }               // Тип загрузки
+    public double CapacityTons { get; set; }
+    public double VolumeM3 { get; set; }
+    public string BodyType { get; set; } = string.Empty;
+    public LoadingType LoadingType { get; set; }
+    public int CrewDriversCount { get; set; } = 1;
 
-    // === ДОСТУПНОСТЬ ===
-    public DateTime AvailableFrom { get; set; }                // Дата готовности (обязательное)
+    public DateTime AvailableFrom { get; set; }
+    public decimal Price { get; set; }
 
-    // === СТАВКА ===
-    public decimal? Price { get; set; }                        // Ставка за перевозку (обязательное)
+    public PaymentType PaymentType { get; set; }
+    public bool AllowBargaining { get; set; }
+    public decimal? PrepaymentPercent { get; set; }
 
-    // === ФИНАНСЫ ===
-    public PaymentType PaymentType { get; set; }               // Тип оплаты: наличные / с НДС / без НДС
-    public bool AllowBargaining { get; set; }                  // Возможность торга
-    public decimal? PrepaymentPercent { get; set; }            // Требуемый процент предоплаты
-
-    // === ПУБЛИКАЦИЯ И АРХИВ ===
-    public ListingStatus Status { get; set; }                  // Статус объявления
-    public DateTime CreatedAt { get; set; }                    // Дата создания
-    public DateTime? PublishedAt { get; set; }                 // Дата публикации
-    public Guid? SourceListingId { get; set; }                 // ID исходного объявления (при копировании)
+    public ListingStatus Status { get; set; }
+    public ListingVisibility Visibility { get; set; }
+    public DateTime CreatedAt { get; set; }
+    public DateTime? PublishedAt { get; set; }
+    public Guid? SourceListingId { get; set; }
 }

@@ -1,4 +1,6 @@
+using ListingService.Domain.Enums;
 using ListingService.Domain.Models;
+using ListingService.Infrastructure.Entities;
 using ListingService.Infrastructure.Interfaces;
 using ListingService.Infrastructure.Mappers;
 using Microsoft.EntityFrameworkCore;
@@ -13,53 +15,136 @@ public class TrucksRepository : ITrucksRepository
     {
         _dbContext = dbContext;
     }
-    
-    public async Task<List<Truck>> Get()
+
+    public async Task<List<Truck>> Search(TruckSearchCriteria criteria, bool publishedOnly, Guid? userId = null)
     {
-        var truckEntities = await _dbContext.Trucks
-            .AsNoTracking()
+        var query = _dbContext.Trucks.AsNoTracking().AsQueryable();
+
+        if (publishedOnly)
+        {
+            query = query.Where(t => t.Status == ListingStatus.Published);
+        }
+
+        if (userId.HasValue)
+        {
+            query = query.Where(t => t.UserId == userId.Value);
+        }
+
+        if (!string.IsNullOrWhiteSpace(criteria.RouteFrom))
+        {
+            query = query.Where(t => EF.Functions.ILike(t.RouteFrom, $"%{criteria.RouteFrom}%"));
+        }
+
+        if (!string.IsNullOrWhiteSpace(criteria.RouteTo))
+        {
+            query = query.Where(t => EF.Functions.ILike(t.RouteTo, $"%{criteria.RouteTo}%"));
+        }
+
+        if (criteria.AvailableDate.HasValue)
+        {
+            var date = criteria.AvailableDate.Value.Date;
+            var nextDate = date.AddDays(1);
+            query = query.Where(t => t.AvailableFrom >= date && t.AvailableFrom < nextDate);
+        }
+
+        if (criteria.CapacityFrom.HasValue)
+        {
+            query = query.Where(t => t.CapacityTons >= criteria.CapacityFrom.Value);
+        }
+
+        if (criteria.CapacityTo.HasValue)
+        {
+            query = query.Where(t => t.CapacityTons <= criteria.CapacityTo.Value);
+        }
+
+        if (criteria.VolumeFrom.HasValue)
+        {
+            query = query.Where(t => t.VolumeM3 >= criteria.VolumeFrom.Value);
+        }
+
+        if (criteria.VolumeTo.HasValue)
+        {
+            query = query.Where(t => t.VolumeM3 <= criteria.VolumeTo.Value);
+        }
+
+        if (!string.IsNullOrWhiteSpace(criteria.BodyType))
+        {
+            query = query.Where(t => EF.Functions.ILike(t.BodyType, $"%{criteria.BodyType}%"));
+        }
+
+        if (criteria.LoadingType.HasValue)
+        {
+            query = query.Where(t => t.LoadingType == criteria.LoadingType.Value);
+        }
+
+        var entities = await query
+            .OrderByDescending(t => t.PublishedAt ?? t.CreatedAt)
             .ToListAsync();
 
-        var trucks = truckEntities.Select(t => t.MapToModel());
-        
-        return trucks.ToList();
+        return entities.Select(t => t.MapToModel()).ToList();
+    }
+
+    public async Task<Truck?> GetById(Guid id)
+    {
+        var entity = await _dbContext.Trucks
+            .AsNoTracking()
+            .FirstOrDefaultAsync(t => t.Id == id);
+
+        return entity?.MapToModel();
     }
 
     public async Task<Guid> Create(Truck truck)
     {
-        var truckEntity = truck.MapToEntity();
-        await _dbContext.Trucks.AddAsync(truckEntity);
+        var entity = truck.MapToEntity();
+        await _dbContext.Trucks.AddAsync(entity);
         await _dbContext.SaveChangesAsync();
-        return truckEntity.Id;
+        return entity.Id;
     }
 
-    public async Task<Guid> Update(Guid id, Truck truck)
+    public async Task Update(Truck truck)
     {
-        await _dbContext.Trucks
-            .Where(t => t.Id == id)
-            .ExecuteUpdateAsync(s => s
-                .SetProperty(t => t.Title, truck.Title)
-                .SetProperty(t => t.Description, truck.Description)
-                .SetProperty(t => t.RouteFrom, truck.RouteFrom)
-                .SetProperty(t => t.RouteTo, truck.RouteTo)
-                .SetProperty(t => t.CapacityTons, truck.CapacityTons)
-                .SetProperty(t => t.VolumeM3, truck.VolumeM3)
-                .SetProperty(t => t.BodyType, truck.BodyType)
-                .SetProperty(t => t.LoadingType, truck.LoadingType)
-                .SetProperty(t => t.AvailableFrom, truck.AvailableFrom)
-                .SetProperty(t => t.Price, truck.Price)
-                .SetProperty(t => t.PaymentType, truck.PaymentType)
-                .SetProperty(t => t.AllowBargaining, truck.AllowBargaining)
-                .SetProperty(t => t.PrepaymentPercent, truck.PrepaymentPercent));
-        
-        return id;
+        var entity = await _dbContext.Trucks.FirstOrDefaultAsync(t => t.Id == truck.Id);
+
+        if (entity is null)
+        {
+            throw new KeyNotFoundException("Truck was not found.");
+        }
+
+        ApplyTruck(entity, truck);
+        await _dbContext.SaveChangesAsync();
     }
 
-    public async Task<Guid> Delete(Guid id)
+    public async Task Delete(Guid id)
     {
-        await _dbContext.Trucks
+        var affectedRows = await _dbContext.Trucks
             .Where(t => t.Id == id)
             .ExecuteDeleteAsync();
-        return id;
+
+        if (affectedRows == 0)
+        {
+            throw new KeyNotFoundException("Truck was not found.");
+        }
+    }
+
+    private static void ApplyTruck(TruckEntity entity, Truck truck)
+    {
+        entity.Title = truck.Title;
+        entity.Description = truck.Description;
+        entity.RouteFrom = truck.RouteFrom;
+        entity.RouteTo = truck.RouteTo;
+        entity.CapacityTons = truck.CapacityTons;
+        entity.VolumeM3 = truck.VolumeM3;
+        entity.BodyType = truck.BodyType;
+        entity.LoadingType = truck.LoadingType;
+        entity.CrewDriversCount = truck.CrewDriversCount;
+        entity.AvailableFrom = truck.AvailableFrom;
+        entity.Price = truck.Price;
+        entity.PaymentType = truck.PaymentType;
+        entity.AllowBargaining = truck.AllowBargaining;
+        entity.PrepaymentPercent = truck.PrepaymentPercent;
+        entity.Status = truck.Status;
+        entity.Visibility = truck.Visibility;
+        entity.PublishedAt = truck.PublishedAt;
+        entity.SourceListingId = truck.SourceListingId;
     }
 }

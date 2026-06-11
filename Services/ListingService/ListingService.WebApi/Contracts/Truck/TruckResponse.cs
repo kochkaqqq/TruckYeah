@@ -4,29 +4,25 @@ namespace ListingService.WebApi.Contracts.Truck;
 
 public class TruckResponse
 {
-    // === ОСНОВНАЯ ИНФОРМАЦИЯ ===
-    public string Title { get; set; } = string.Empty; // Заголовок объявления (напр. "Фура 20т")
-    public string? Description { get; set; } // Дополнительное описание
-
-    // === МАРШРУТ / ЗОНА РАБОТЫ ===
-    public string RouteFrom { get; set; } = string.Empty; // Откуда (обязательное)
-    public string RouteTo { get; set; } = string.Empty; // Куда (обязательное)
-
-    // === ПАРАМЕТРЫ ТРАНСПОРТА ===
-    public double CapacityTons { get; set; } // Грузоподъёмность в тоннах (обязательное)
-    public double VolumeM3 { get; set; } // Объём кузова в м³ (обязательное)
-    public string BodyType { get; set; } = string.Empty; // Тип кузова (обязательное)
-    public LoadingType LoadingType { get; set; } // Тип загрузки
-
-    // === ДОСТУПНОСТЬ ===
-    public DateTime AvailableFrom { get; set; } // Дата готовности (обязательное)
-
-    // === СТАВКА ===
-    public decimal? Price { get; set; } // Ставка за перевозку (обязательное)
-
-    // === ФИНАНСЫ ===
-    public PaymentType PaymentType { get; set; } // Тип оплаты: наличные / с НДС / без НДС
-    public bool AllowBargaining { get; set; } // Возможность торга
-    public decimal? PrepaymentPercent { get; set; } // Требуемый процент предоплаты
-
+    public Guid Id { get; set; }
+    public Guid UserId { get; set; }
+    public string Title { get; set; } = string.Empty;
+    public string? Description { get; set; }
+    public string RouteFrom { get; set; } = string.Empty;
+    public string RouteTo { get; set; } = string.Empty;
+    public double CapacityTons { get; set; }
+    public double VolumeM3 { get; set; }
+    public string BodyType { get; set; } = string.Empty;
+    public LoadingType LoadingType { get; set; }
+    public int CrewDriversCount { get; set; }
+    public DateTime AvailableFrom { get; set; }
+    public decimal Price { get; set; }
+    public PaymentType PaymentType { get; set; }
+    public bool AllowBargaining { get; set; }
+    public decimal? PrepaymentPercent { get; set; }
+    public ListingStatus Status { get; set; }
+    public ListingVisibility Visibility { get; set; }
+    public DateTime CreatedAt { get; set; }
+    public DateTime? PublishedAt { get; set; }
+    public Guid? SourceListingId { get; set; }
 }

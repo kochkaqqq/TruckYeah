@@ -7,9 +7,10 @@ public static class TruckMapper
 {
     public static Truck MapToModel(this TruckEntity truckEntity)
     {
-        var truck = new Truck
+        return new Truck
         {
             Id = truckEntity.Id,
+            UserId = truckEntity.UserId,
             Title = truckEntity.Title,
             Description = truckEntity.Description,
             RouteFrom = truckEntity.RouteFrom,
@@ -18,24 +19,26 @@ public static class TruckMapper
             VolumeM3 = truckEntity.VolumeM3,
             BodyType = truckEntity.BodyType,
             LoadingType = truckEntity.LoadingType,
+            CrewDriversCount = truckEntity.CrewDriversCount,
             AvailableFrom = truckEntity.AvailableFrom,
             Price = truckEntity.Price,
             PaymentType = truckEntity.PaymentType,
             AllowBargaining = truckEntity.AllowBargaining,
             PrepaymentPercent = truckEntity.PrepaymentPercent,
             Status = truckEntity.Status,
+            Visibility = truckEntity.Visibility,
             CreatedAt = truckEntity.CreatedAt,
             PublishedAt = truckEntity.PublishedAt,
-            SourceListingId = truckEntity.SourceListingId,
+            SourceListingId = truckEntity.SourceListingId
         };
-        return truck;
     }
 
     public static TruckEntity MapToEntity(this Truck truck)
     {
-        var truckEntity = new TruckEntity
+        return new TruckEntity
         {
             Id = truck.Id,
+            UserId = truck.UserId,
             Title = truck.Title,
             Description = truck.Description,
             RouteFrom = truck.RouteFrom,
@@ -44,17 +47,17 @@ public static class TruckMapper
             VolumeM3 = truck.VolumeM3,
             BodyType = truck.BodyType,
             LoadingType = truck.LoadingType,
+            CrewDriversCount = truck.CrewDriversCount,
             AvailableFrom = truck.AvailableFrom,
             Price = truck.Price,
             PaymentType = truck.PaymentType,
             AllowBargaining = truck.AllowBargaining,
             PrepaymentPercent = truck.PrepaymentPercent,
             Status = truck.Status,
+            Visibility = truck.Visibility,
             CreatedAt = truck.CreatedAt,
             PublishedAt = truck.PublishedAt,
-            SourceListingId = truck.SourceListingId,
+            SourceListingId = truck.SourceListingId
         };
-        
-        return truckEntity;
     }
 }

@@ -1,45 +1,45 @@
 using ListingService.Domain.Enums;
-using ListingService.Domain.Models;
 
 namespace ListingService.WebApi.Contracts.Cargo;
 
 public class CargoResponse
 {
-    // === ОСНОВНАЯ ИНФОРМАЦИЯ ===
-    public string Title { get; set; } = string.Empty;          // Заголовок объявления (для списка)
-    public string CargoName { get; set; } = string.Empty;      // Наименование груза (обязательное)
-
-    // === МАРШРУТ ===
-    public string RouteFrom { get; set; } = string.Empty;      // Откуда (обязательное)
-    public string RouteTo { get; set; } = string.Empty;        // Куда (обязательное)
-    public virtual ICollection<RoutePoint> RoutePoints { get; set; } = new List<RoutePoint>(); // Промежуточные точки
-
-    // === ДАТЫ ===
-    public DateTime LoadDateTime { get; set; }                 // Дата и время загрузки (обязательное)
-    public DateTime UnloadDateTime { get; set; }              // Дата и время разгрузки
-
-    // === ПАРАМЕТРЫ ГРУЗА ===
-    public double WeightTons { get; set; }                     // Вес в тоннах (обязательное)
-    public double VolumeM3 { get; set; }                       // Объём в м³ (обязательное)
-    public string BodyTypeRequired { get; set; } = string.Empty; // Тип кузова (обязательное)
-    public LoadingType LoadingType { get; set; }               // Тип загрузки (обязательное)
-
-    // === ГАБАРИТЫ И УПАКОВКА ===
-    public double? LengthCm { get; set; }                      // Длина (см)
-    public double? WidthCm { get; set; }                       // Ширина (см)
-    public double? HeightCm { get; set; }                      // Высота (см)
-    public int? PalletsCount { get; set; }                     // Количество палет
-    public string? PackagingType { get; set; }                 // Тип упаковки
-
-    // === ДОКУМЕНТЫ И ТРЕБОВАНИЯ ===
-    public bool RequiresCMR { get; set; }                      // Требуется CMR
-    public bool RequiresTIR { get; set; }                      // Требуется TIR
-    public bool IsADR { get; set; }                            // Опасный груз (ADR)
-
-    // === ФИНАНСЫ ===
-    public PaymentType PaymentType { get; set; }               // Тип оплаты: наличные / с НДС / без НДС
-    public bool AllowBargaining { get; set; }                  // Возможность торга
-    public decimal? PrepaymentPercent { get; set; }            // Процент предоплаты (0-100)
-    
+    public Guid Id { get; set; }
+    public Guid UserId { get; set; }
+    public string Title { get; set; } = string.Empty;
+    public string CargoName { get; set; } = string.Empty;
+    public string RouteFrom { get; set; } = string.Empty;
+    public string RouteTo { get; set; } = string.Empty;
+    public List<RoutePointResponse> RoutePoints { get; set; } = new();
+    public DateTime LoadDateTime { get; set; }
+    public DateTime UnloadDateTime { get; set; }
+    public double WeightTons { get; set; }
+    public double VolumeM3 { get; set; }
+    public string BodyTypeRequired { get; set; } = string.Empty;
+    public LoadingType LoadingType { get; set; }
+    public double? LengthCm { get; set; }
+    public double? WidthCm { get; set; }
+    public double? HeightCm { get; set; }
+    public int? PalletsCount { get; set; }
+    public string? PackagingType { get; set; }
+    public bool RequiresCMR { get; set; }
+    public bool RequiresTIR { get; set; }
+    public bool IsADR { get; set; }
+    public bool RequiresTwoDrivers { get; set; }
+    public PaymentType PaymentType { get; set; }
+    public bool AllowBargaining { get; set; }
+    public decimal? PrepaymentPercent { get; set; }
+    public decimal? StartingPrice { get; set; }
+    public bool BiddingEnabled { get; set; }
+    public decimal? MinBidStep { get; set; }
+    public ListingStatus Status { get; set; }
+    public ListingVisibility Visibility { get; set; }
+    public DateTime CreatedAt { get; set; }
+    public DateTime? PublishedAt { get; set; }
+    public bool BoostToTop { get; set; }
+    public DateTime? BoostedUntil { get; set; }
+    public bool IsTemplate { get; set; }
+    public string? TemplateName { get; set; }
+    public Guid? SourceListingId { get; set; }
     public string? Notes { get; set; }
 }

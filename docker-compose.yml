@@ -1,37 +1,98 @@
-version: "3.9"
 services:
   frontend:
-    build: ./frontend
+    build:
+      context: ./frontend
+      dockerfile: dockerfile
+    container_name: truckyeah-frontend
     ports:
       - "3000:80"
-    environment:
-      - VITE_API_URL=http://localhost:5000
     depends_on:
-      - backend
-    volumes:
-      - ./frontend:/app:cached
-      - /app/node_modules
+      - identity-service
+      - listing-service
+    networks:
+      - truckyeah
+    restart: unless-stopped
 
-  backend:
-    build: ./backend
-    ports:
-      - "5000:5000"
+  identity-service:
+    build:
+      context: ./Services/IdentityService
+      dockerfile: dockerfile
+    container_name: truckyeah-identity-service
     environment:
-      - ASPNETCORE_URLS=http://+:5000
-      - ConnectionStrings__DefaultConnection=Server=db;Database=truckyeah;User=postgres;Password=postgres
+      ASPNETCORE_ENVIRONMENT: Development
+      ASPNETCORE_URLS: http://+:8080
+      ConnectionStrings__DefaultConnection: Host=identity-db;Port=5432;Database=truckyeah_identity;Username=postgres;Password=postgres;Include Error Detail=true
+    ports:
+      - "5001:8080"
     depends_on:
-      - db
+      identity-db:
+        condition: service_healthy
+    networks:
+      - truckyeah
+    restart: unless-stopped
 
-  db:
-    image: postgres:15-alpine
-    ports:
-      - "5432:5432"
+  listing-service:
+    build:
+      context: ./Services/ListingService
+      dockerfile: Dockerfile
+    container_name: truckyeah-listing-service
     environment:
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=postgres
-      - POSTGRES_DB=truckyeah
+      ASPNETCORE_ENVIRONMENT: Development
+      ASPNETCORE_URLS: http://+:8080
+      ConnectionStrings__ListingServiceDbContext: Host=listing-db;Port=5432;Database=truckyeah_listing;Username=postgres;Password=postgres123
+    ports:
+      - "5002:8080"
+    depends_on:
+      listing-db:
+        condition: service_healthy
+    networks:
+      - truckyeah
+    restart: unless-stopped
+
+  identity-db:
+    image: postgres:16-alpine
+    container_name: truckyeah-identity-db
+    environment:
+      POSTGRES_DB: truckyeah_identity
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5433:5432"
     volumes:
-      - postgres_data:/var/lib/postgresql/data
+      - identity-db-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d truckyeah_identity"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    networks:
+      - truckyeah
+    restart: unless-stopped
+
+  listing-db:
+    image: postgres:16-alpine
+    container_name: truckyeah-listing-db
+    environment:
+      POSTGRES_DB: truckyeah_listing
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres123
+    ports:
+      - "5434:5432"
+    volumes:
+      - listing-db-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d truckyeah_listing"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    networks:
+      - truckyeah
+    restart: unless-stopped
+
+networks:
+  truckyeah:
+    driver: bridge
 
 volumes:
-  postgres_data:
+  identity-db-data:
+  listing-db-data:

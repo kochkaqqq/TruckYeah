@@ -1,17 +1,17 @@
 export const ENDPOINTS = {
   auth: {
-    login: '/api/auth/login',
-    register: '/api/auth/register',
-    me: '/api/auth/me',
+    login: '/api/users/login',
+    register: '/api/users/register',
+    byId: (id: string) => `/api/users/${id}`,
   },
   orders: {
-    list: '/api/orders',
-    byId: (id: string) => `/api/orders/${id}`,
-    create: '/api/orders',
-    update: (id: string) => `/api/orders/${id}`,
+    list: '/Cargos',
+    byId: (id: string) => `/Cargos/${id}`,
+    create: '/Cargos',
+    update: (id: string) => `/Cargos/${id}`,
   },
   carriers: {
-    list: '/api/carriers',
-    byId: (id: string) => `/api/carriers/${id}`,
+    list: '/Trucks',
+    byId: (id: string) => `/Trucks/${id}`,
   },
 } as const;

@@ -34,6 +34,12 @@ app.UseHttpsRedirection();
 app.UseAuthorization();
 app.MapControllers();
 
+using (var scope = app.Services.CreateScope())
+{
+    var dbContext = scope.ServiceProvider.GetRequiredService<ListingServiceDbContext>();
+    dbContext.Database.Migrate();
+}
+
 var connStr = builder.Configuration.GetConnectionString(nameof(ListingServiceDbContext));
 Console.WriteLine($"🔗 Connection String: {connStr}");
 Console.WriteLine($"🔗 Is null or empty: {string.IsNullOrEmpty(connStr)}");

@@ -9,7 +9,7 @@ namespace Domain.ValueObjects
             @"^(AT|BE|BG|CY|CZ|DE|DK|EE|EL|ES|FI|FR|HR|HU|IE|IT|LT|LU|LV|MT|NL|PL|PT|RO|SE|SI|SK)[A-Z0-9]{2,13}$",
             RegexOptions.Compiled | RegexOptions.IgnoreCase);
 
-        public string Value { get; init; }
+        public string Value { get; init; } = string.Empty;
 
         public VatId() { }
 

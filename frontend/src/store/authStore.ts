@@ -1,70 +1,46 @@
 import { create } from 'zustand';
+import { UserType } from '../api/client';
 
 export interface User {
   id: string;
   email: string;
-  phone: string;
+  phone?: string;
+  name?: string;
+  surname?: string;
   fullName?: string;
-  userType?: 'client' | 'carrier';
-  company?: string;
+  userType?: UserType | 'client' | 'carrier' | string;
   isProfileCompleted: boolean;
 }
 
 interface AuthState {
-  user: User | null;
+  currentUser: User | null;
   isAuthenticated: boolean;
-  login: (email: string, phone: string) => void;
-  register: (email: string, phone: string, password: string) => void;
-  setCurrentUser: (user: User) => void;
+  user: User | null;
+  setCurrentUser: (user: User | null) => void;
   logout: () => void;
 }
 
 export const useAuthStore = create<AuthState>((set) => ({
-  user: null,
+  currentUser: null,
   isAuthenticated: false,
+  user: null,
   
-  login: (email, phone) => {
-    const user: User = {
-      id: '1',
-      email,
-      phone,
-      isProfileCompleted: false,
-    };
-    set({ user, isAuthenticated: true });
+  setCurrentUser: (user) => set({ 
+    currentUser: user,
+    isAuthenticated: !!user,
+    user: user
+  }),
+  
+  logout: () => {
+    localStorage.removeItem('authToken');
+    set({ 
+      currentUser: null,
+      isAuthenticated: false,
+      user: null
+    });
   },
-  
-  register: (email, phone, _password) => {
-    const user: User = {
-      id: '1',
-      email,
-      phone,
-      isProfileCompleted: false,
-    };
-    set({ user, isAuthenticated: true });
-  },
-  
-  setCurrentUser: (user) => set({ user, isAuthenticated: true }),
-  
-  logout: () => set({ user: null, isAuthenticated: false }),
 }));
 
-// Вспомогательные функции
 export const getCurrentUser = (): User | null => {
-  return useAuthStore.getState().user;
-};
-
-export const isAuthenticated = (): boolean => {
-  return useAuthStore.getState().isAuthenticated;
-};
-
-export const loginUser = (email: string, phone: string) => {
-  useAuthStore.getState().login(email, phone);
-};
-
-export const registerUser = (email: string, phone: string, password: string) => {
-  useAuthStore.getState().register(email, phone, password);
-};
-
-export const logoutUser = () => {
-  useAuthStore.getState().logout();
+  return useAuthStore.getState().currentUser;
 };

@@ -1,9 +1,10 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuthStore } from '../../store/authStore';
 import { isValidEmail, isValidPhone, isValidPassword } from '../../utils/validation';
 import { formatPhone, getDigitsFromPhone } from '../../utils/phoneMask';
 import { Toast } from '../../components/ui/Toast';
+import { api, UserType, Country } from '../../api/client';
 import './AuthPage.css';
 
 type AuthMode = 'select' | 'login' | 'register';
@@ -20,10 +21,54 @@ export const AuthPage = () => {
   const [phone, setPhone] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+  const [name, setName] = useState('');
+  const [surname, setSurname] = useState('');
+  const [vatId, setVatId] = useState('');
+  const [userType, setUserType] = useState<UserType>(1); // ✅ Явно 1 = Private
+  const [selectedCountryId, setSelectedCountryId] = useState<string>('');
+  const [countries, setCountries] = useState<Country[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
   const [toast, setToast] = useState<ToastData | null>(null);
 
-  const { login, register } = useAuthStore();
+  const { setCurrentUser } = useAuthStore();
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const loadCountries = async () => {
+      try {
+        console.log('Загрузка стран...');
+        const data = await api.countries.getAll();
+        console.log('Страны загружены:', data);
+
+        const normalizedCountries = data.map((country: any) => ({
+          id: country.id,
+          name:
+            typeof country.name === 'object' && country.name !== null
+              ? country.name.value
+              : country.name,
+        }));
+
+        console.log('Нормализованные страны:', normalizedCountries);
+
+        setCountries(normalizedCountries);
+        if (normalizedCountries.length > 0) {
+          setSelectedCountryId(normalizedCountries[0].id);
+        }
+      } catch (error) {
+        console.error('Ошибка загрузки стран:', error);
+        const fallbackCountries = [
+          { id: '1', name: 'Russia' },
+          { id: '2', name: 'Belarus' },
+          { id: '3', name: 'Kazakhstan' },
+        ];
+        setCountries(fallbackCountries);
+        setSelectedCountryId(fallbackCountries[0].id);
+        showToast('Не удалось загрузить список стран', 'error');
+      }
+    };
+
+    loadCountries();
+  }, []);
 
   const showToast = (message: string, type: ToastType) => {
     setToast({ message, type });
@@ -46,7 +91,7 @@ export const AuthPage = () => {
     }
   };
 
-  const handleLogin = (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
 
     const identifier = email || getDigitsFromPhone(phone);
@@ -75,12 +120,59 @@ export const AuthPage = () => {
       return;
     }
 
-    login(email, getDigitsFromPhone(phone));
-    showToast('Вход выполнен успешно!', 'success');
-    setTimeout(() => navigate('/'), 1000);
+    setIsLoading(true);
+    try {
+      const loginData: any = {
+        password,
+        userAgent: typeof navigator !== 'undefined' ? navigator.userAgent : '',
+        ipAddress: '127.0.0.1',
+        deviceId: 'browser-' + Date.now().toString(),
+      };
+
+      if (email) loginData.email = email;
+      if (getDigitsFromPhone(phone)) loginData.phone = getDigitsFromPhone(phone);
+
+      console.log('Отправка логина:', loginData);
+
+      const response = await api.users.login(loginData);
+      console.log('Ответ логина:', response);
+
+      if (response.jwtToken) {
+        localStorage.setItem('authToken', response.jwtToken);
+      }
+      if (response.refreshToken) {
+        localStorage.setItem('refreshToken', response.refreshToken);
+      }
+
+      if (response.user) {
+        setCurrentUser({
+          id: response.user.id,
+          email: response.user.email,
+          phone: response.user.phone || '',
+          name: response.user.name,
+          surname: response.user.surname,
+          isProfileCompleted: response.user.isProfileCompleted,
+        });
+      } else {
+        setCurrentUser({
+          id: '1',
+          email,
+          phone: getDigitsFromPhone(phone),
+          isProfileCompleted: true,
+        });
+      }
+
+      showToast('Вход выполнен успешно!', 'success');
+      setTimeout(() => navigate('/'), 1000);
+    } catch (error: any) {
+      console.error('Ошибка входа:', error);
+      showToast(error.message || 'Ошибка входа. Проверьте данные', 'error');
+    } finally {
+      setIsLoading(false);
+    }
   };
 
-  const handleRegister = (e: React.FormEvent) => {
+  const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
 
     if (!email) {
@@ -103,6 +195,16 @@ export const AuthPage = () => {
       return;
     }
 
+    if (!name.trim()) {
+      showToast('Введите имя', 'error');
+      return;
+    }
+
+    if (!surname.trim()) {
+      showToast('Введите фамилию', 'error');
+      return;
+    }
+
     if (!password) {
       showToast('Введите пароль', 'error');
       return;
@@ -118,9 +220,79 @@ export const AuthPage = () => {
       return;
     }
 
-    register(email, getDigitsFromPhone(phone), password);
-    showToast('Регистрация успешна! Заполните профиль', 'success');
-    setTimeout(() => navigate('/profile/edit'), 1000);
+    if (!selectedCountryId) {
+      showToast('Выберите страну', 'error');
+      return;
+    }
+
+    // ✅ Проверка VAT ID для компаний
+    if (userType === 0 && !vatId.trim()) {
+      showToast('Для компании необходимо указать VAT ID', 'error');
+      return;
+    }
+
+    setIsLoading(true);
+    try {
+      const registerData = {
+        email,
+        phone: getDigitsFromPhone(phone),
+        password,
+        userType,
+        name: name.trim(),
+        surname: surname.trim(),
+        middleName: undefined,
+        countryId: selectedCountryId,
+        postcode: '000000',
+        vatId: vatId.trim(),
+        companyId: '00000000-0000-0000-0000-000000000000',
+        avatarLink: '',
+        deviceId: 'browser-' + Date.now().toString(),
+        userAgent: typeof navigator !== 'undefined' ? navigator.userAgent : '',
+        ipAddress: '127.0.0.1',
+      };
+
+      console.log('Отправка регистрации:');
+      console.log(JSON.stringify(registerData, null, 2));
+
+      const response = await api.users.register(registerData);
+      console.log('Ответ регистрации:', response);
+
+      if (response.jwtToken) {
+        localStorage.setItem('authToken', response.jwtToken);
+      }
+      if (response.refreshToken) {
+        localStorage.setItem('refreshToken', response.refreshToken);
+      }
+
+      if (response.user) {
+        setCurrentUser({
+          id: response.user.id,
+          email: response.user.email,
+          phone: response.user.phone || '',
+          name: response.user.name,
+          surname: response.user.surname,
+          isProfileCompleted: response.user.isProfileCompleted,
+        });
+      } else {
+        setCurrentUser({
+          id: '1',
+          email,
+          phone: getDigitsFromPhone(phone),
+          isProfileCompleted: true,
+        });
+      }
+
+      showToast('Регистрация успешна!', 'success');
+      setTimeout(() => navigate('/'), 1000);
+    } catch (error: any) {
+      console.error('Ошибка регистрации:', error);
+      showToast(
+        error.message || 'Ошибка регистрации. Возможно, пользователь уже существует',
+        'error'
+      );
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -185,6 +357,7 @@ export const AuthPage = () => {
                   placeholder="example@ati.su"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
+                  required
                 />
               </div>
 
@@ -196,6 +369,80 @@ export const AuthPage = () => {
                   placeholder="+7 (999) 999-99-99"
                   value={phone}
                   onChange={handlePhoneChange}
+                  required
+                />
+              </div>
+
+              <div className="auth__field-row">
+                <div className="auth__field">
+                  <label className="auth__label">Фамилия</label>
+                  <input
+                    type="text"
+                    className="auth__input"
+                    placeholder="Ivanov"
+                    value={surname}
+                    onChange={(e) => setSurname(e.target.value)}
+                    required
+                  />
+                </div>
+
+                <div className="auth__field">
+                  <label className="auth__label">Имя</label>
+                  <input
+                    type="text"
+                    className="auth__input"
+                    placeholder="Ivan"
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                    required
+                  />
+                </div>
+              </div>
+
+              <div className="auth__field">
+                <label className="auth__label">Тип пользователя</label>
+                <select
+                  className="auth__input"
+                  value={userType}
+                  onChange={(e) => setUserType(Number(e.target.value))}
+                  required
+                >
+                  <option value={1}>Частное лицо</option>
+                  <option value={2}>Индивидуальный предприниматель</option>
+                  <option value={0}>Компания</option>
+                </select>
+              </div>
+
+              <div className="auth__field">
+                <label className="auth__label">Страна</label>
+                <select
+                  className="auth__input"
+                  value={selectedCountryId}
+                  onChange={(e) => setSelectedCountryId(e.target.value)}
+                  required
+                >
+                  {countries.length === 0 ? (
+                    <option value="">Загрузка...</option>
+                  ) : (
+                    countries.map((country) => (
+                      <option key={country.id} value={country.id}>
+                        {typeof country.name === 'string'
+                          ? country.name
+                          : (country.name as any)?.value || 'Unknown'}
+                      </option>
+                    ))
+                  )}
+                </select>
+              </div>
+
+              <div className="auth__field">
+                <label className="auth__label">VAT ID (опционально, для компаний обязательно)</label>
+                <input
+                  type="text"
+                  className="auth__input"
+                  placeholder="DE123456789"
+                  value={vatId}
+                  onChange={(e) => setVatId(e.target.value)}
                 />
               </div>
 
@@ -207,6 +454,7 @@ export const AuthPage = () => {
                   placeholder="Минимум 6 символов"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
+                  required
                 />
               </div>
 
@@ -218,11 +466,16 @@ export const AuthPage = () => {
                   placeholder="Повторите пароль"
                   value={confirmPassword}
                   onChange={(e) => setConfirmPassword(e.target.value)}
+                  required
                 />
               </div>
 
-              <button type="submit" className="auth__btn auth__btn--primary">
-                Зарегистрироваться
+              <button
+                type="submit"
+                className="auth__btn auth__btn--primary"
+                disabled={isLoading}
+              >
+                {isLoading ? 'Регистрация...' : 'Зарегистрироваться'}
               </button>
 
               <button
@@ -261,8 +514,12 @@ export const AuthPage = () => {
                 />
               </div>
 
-              <button type="submit" className="auth__btn auth__btn--primary">
-                Войти
+              <button
+                type="submit"
+                className="auth__btn auth__btn--primary"
+                disabled={isLoading}
+              >
+                {isLoading ? 'Вход...' : 'Войти'}
               </button>
 
               <button

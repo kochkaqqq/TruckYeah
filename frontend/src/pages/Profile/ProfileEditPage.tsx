@@ -1,5 +1,6 @@
 import { useNavigate } from 'react-router-dom';
 import { useAuthStore } from '../../store/authStore';
+import { UserType } from '../../api/client';
 import './ProfilePage.css';
 
 export const ProfilePage = () => {
@@ -10,6 +11,13 @@ export const ProfilePage = () => {
     navigate('/auth');
     return null;
   }
+
+  const getUserTypeLabel = (type?: any) => {
+    if (type === UserType.Business || type === 'business' || type === 0) return 'Компания';
+    if (type === UserType.Private || type === 'private' || type === 1) return 'Частное лицо';
+    if (type === UserType.Individual || type === 'individual' || type === 2) return 'ИП';
+    return 'Не указан';
+  };
 
   return (
     <div className="profile">
@@ -25,9 +33,9 @@ export const ProfilePage = () => {
           </p>
           <ul className="profile__list">
             <li>📧 Email: {user.email}</li>
-            <li>📱 Телефон: {user.phone}</li>
+            <li>📱 Телефон: {user.phone || 'Не указан'}</li>
             <li>👤 ФИО: {user.fullName || 'Не заполнено'}</li>
-            <li>🚛 Тип: {user.userType === 'client' ? 'Клиент' : user.userType === 'carrier' ? 'Перевозчик' : 'Не указан'}</li>
+            <li>🚛 Тип: {getUserTypeLabel(user.userType)}</li>
           </ul>
           <button
             className="profile__back"

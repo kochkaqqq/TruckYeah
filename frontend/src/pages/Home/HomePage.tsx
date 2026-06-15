@@ -1,6 +1,5 @@
 import { Link } from 'react-router-dom';
 import { useState, useEffect, useRef } from 'react';
-import TruckIcon from '../../assets/icons/truck.svg?react';
 import './HomePage.css';
 
 export const HomePage = () => {
@@ -34,6 +33,7 @@ export const HomePage = () => {
     <div className="home">
       <section className="home__hero">
         <div className="home__hero-inner">
+          {/* Сначала текст */}
           <h1 className="home__title">
             Биржа грузоперевозок и крупнейшая экосистема сервисов<br />
             для транспортной логистики
@@ -42,11 +42,23 @@ export const HomePage = () => {
             Помогаем находить грузы, проверенных перевозчиков и экономить за счёт автоматизации процессов
           </p>
           
+          {/* Потом грузовик */}
           <div className="home__truck-wrapper">
-            <TruckIcon className="home__truck" />
+            <svg className="home__truck" viewBox="0 0 1200 600" xmlns="http://www.w3.org/2000/svg">
+              <rect x="50" y="150" width="700" height="300" rx="15" stroke="white" strokeWidth="8" fill="none"/>
+              <rect x="780" y="200" width="300" height="250" rx="15" stroke="white" strokeWidth="8" fill="none"/>
+              <rect x="820" y="230" width="220" height="120" rx="8" stroke="white" strokeWidth="6" fill="none"/>
+              <circle cx="200" cy="480" r="50" stroke="white" strokeWidth="8" fill="none"/>
+              <circle cx="350" cy="480" r="50" stroke="white" strokeWidth="8" fill="none"/>
+              <circle cx="500" cy="480" r="50" stroke="white" strokeWidth="8" fill="none"/>
+              <circle cx="850" cy="480" r="50" stroke="white" strokeWidth="8" fill="none"/>
+              <circle cx="1000" cy="480" r="50" stroke="white" strokeWidth="8" fill="none"/>
+              <line x1="0" y1="540" x2="1200" y2="540" stroke="white" strokeWidth="6"/>
+            </svg>
           </div>
         </div>
 
+        {/* Индикатор скролла внизу */}
         {showScrollHint && (
           <div className="scroll-indicator">
             <div className="scroll-indicator__mouse">

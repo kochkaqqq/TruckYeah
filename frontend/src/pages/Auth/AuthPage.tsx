@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAuthStore } from '../../store/authStore';
 import { isValidEmail, isValidPhone, isValidPassword } from '../../utils/validation';
 import { formatPhone, getDigitsFromPhone } from '../../utils/phoneMask';
+import { parseJwt } from '../../utils/jwt';
 import { Toast } from '../../components/ui/Toast';
 import { api, UserType, Country } from '../../api/client';
 import './AuthPage.css';
@@ -24,7 +25,7 @@ export const AuthPage = () => {
   const [name, setName] = useState('');
   const [surname, setSurname] = useState('');
   const [vatId, setVatId] = useState('');
-  const [userType, setUserType] = useState<UserType>(1); // ✅ Явно 1 = Private
+  const [userType, setUserType] = useState<UserType>(1);
   const [selectedCountryId, setSelectedCountryId] = useState<string>('');
   const [countries, setCountries] = useState<Country[]>([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -137,29 +138,35 @@ export const AuthPage = () => {
       const response = await api.users.login(loginData);
       console.log('Ответ логина:', response);
 
+      // ✅ Сохраняем токены
       if (response.jwtToken) {
         localStorage.setItem('authToken', response.jwtToken);
-      }
-      if (response.refreshToken) {
-        localStorage.setItem('refreshToken', response.refreshToken);
+
+        // ✅ Парсим JWT и извлекаем данные пользователя
+        const userData = parseJwt(response.jwtToken);
+        console.log('Данные из JWT:', userData);
+
+        if (userData) {
+          // Разбираем fullName на name и surname
+          const fullName = userData.name || '';
+          const nameParts = fullName.trim().split(' ');
+          const userSurname = nameParts[0] || '';
+          const userName = nameParts[1] || '';
+
+          setCurrentUser({
+            id: userData.id || 'unknown',
+            email: userData.email || email,
+            phone: userData.phone || getDigitsFromPhone(phone),
+            name: userName,
+            surname: userSurname,
+            fullName: fullName,
+            isProfileCompleted: true,
+          });
+        }
       }
 
-      if (response.user) {
-        setCurrentUser({
-          id: response.user.id,
-          email: response.user.email,
-          phone: response.user.phone || '',
-          name: response.user.name,
-          surname: response.user.surname,
-          isProfileCompleted: response.user.isProfileCompleted,
-        });
-      } else {
-        setCurrentUser({
-          id: '1',
-          email,
-          phone: getDigitsFromPhone(phone),
-          isProfileCompleted: true,
-        });
+      if (response.refreshToken) {
+        localStorage.setItem('refreshToken', response.refreshToken);
       }
 
       showToast('Вход выполнен успешно!', 'success');
@@ -225,7 +232,6 @@ export const AuthPage = () => {
       return;
     }
 
-    // ✅ Проверка VAT ID для компаний
     if (userType === 0 && !vatId.trim()) {
       showToast('Для компании необходимо указать VAT ID', 'error');
       return;
@@ -257,29 +263,34 @@ export const AuthPage = () => {
       const response = await api.users.register(registerData);
       console.log('Ответ регистрации:', response);
 
+      // ✅ Сохраняем токены
       if (response.jwtToken) {
         localStorage.setItem('authToken', response.jwtToken);
-      }
-      if (response.refreshToken) {
-        localStorage.setItem('refreshToken', response.refreshToken);
+
+        // ✅ Парсим JWT и извлекаем данные пользователя
+        const userData = parseJwt(response.jwtToken);
+        console.log('Данные из JWT:', userData);
+
+        if (userData) {
+          const fullName = userData.name || '';
+          const nameParts = fullName.trim().split(' ');
+          const userSurname = nameParts[0] || '';
+          const userName = nameParts[1] || '';
+
+          setCurrentUser({
+            id: userData.id || 'unknown',
+            email: userData.email || email,
+            phone: userData.phone || getDigitsFromPhone(phone),
+            name: userName,
+            surname: userSurname,
+            fullName: fullName,
+            isProfileCompleted: true,
+          });
+        }
       }
 
-      if (response.user) {
-        setCurrentUser({
-          id: response.user.id,
-          email: response.user.email,
-          phone: response.user.phone || '',
-          name: response.user.name,
-          surname: response.user.surname,
-          isProfileCompleted: response.user.isProfileCompleted,
-        });
-      } else {
-        setCurrentUser({
-          id: '1',
-          email,
-          phone: getDigitsFromPhone(phone),
-          isProfileCompleted: true,
-        });
+      if (response.refreshToken) {
+        localStorage.setItem('refreshToken', response.refreshToken);
       }
 
       showToast('Регистрация успешна!', 'success');
@@ -511,6 +522,7 @@ export const AuthPage = () => {
                   placeholder="Введите пароль"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
+                  required
                 />
               </div>
 

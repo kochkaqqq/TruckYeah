@@ -3,6 +3,7 @@ import { Header } from './components/layout/Header';
 import { HomePage } from './pages/Home/HomePage';
 import { AuthPage } from './pages/Auth/AuthPage';
 import { ProfilePage } from './pages/Profile/ProfilePage';
+import { ProfileEditPage } from './pages/Profile/ProfileEditPage';
 
 const PlaceholderPage = ({ title }: { title: string }) => (
   <div style={{
@@ -30,6 +31,7 @@ function App() {
             <Route path="/" element={<HomePage />} />
             <Route path="/auth" element={<AuthPage />} />
             <Route path="/profile" element={<ProfilePage />} />
+            <Route path="/profile/edit" element={<ProfileEditPage />} />
             <Route path="/cargo" element={<PlaceholderPage title="Грузы" />} />
             <Route path="/vehicles" element={<PlaceholderPage title="Машины" />} />
             <Route path="/my-orders" element={<PlaceholderPage title="Ваши заказы" />} />

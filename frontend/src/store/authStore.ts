@@ -10,6 +10,8 @@ export interface User {
   fullName?: string;
   userType?: UserType | 'client' | 'carrier' | string;
   isProfileCompleted: boolean;
+  city?: string;
+  company?: string;
 }
 
 interface AuthState {
@@ -17,6 +19,7 @@ interface AuthState {
   isAuthenticated: boolean;
   user: User | null;
   setCurrentUser: (user: User | null) => void;
+  updateUser: (data: Partial<User>) => void;
   logout: () => void;
 }
 
@@ -30,9 +33,18 @@ export const useAuthStore = create<AuthState>((set) => ({
     isAuthenticated: !!user,
     user: user
   }),
+
+  updateUser: (data) => set((state) => {
+    const updatedUser = state.user ? { ...state.user, ...data } : null;
+    return {
+      currentUser: updatedUser,
+      user: updatedUser,
+    };
+  }),
   
   logout: () => {
     localStorage.removeItem('authToken');
+    localStorage.removeItem('refreshToken');
     set({ 
       currentUser: null,
       isAuthenticated: false,

@@ -1,0 +1,240 @@
+.chat {
+  min-height: 100vh;
+  background: #1a1a1e;
+  display: flex;
+  flex-direction: column;
+}
+
+.chat__container {
+  max-width: 900px;
+  margin: 0 auto;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+/* Шапка */
+.chat__header {
+  background: #2a2a35;
+  border-radius: 12px;
+  padding: 15px 20px;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  margin-bottom: 20px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+}
+
+.chat__back-btn {
+  background: #3a3a45;
+  color: #ffffff;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: all 0.3s ease;
+}
+
+.chat__back-btn:hover {
+  background: #4a4a55;
+}
+
+.chat__user-info {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  flex: 1;
+}
+
+.chat__avatar-wrapper {
+  position: relative;
+}
+
+.chat__online-indicator {
+  position: absolute;
+  bottom: 2px;
+  right: 2px;
+  width: 12px;
+  height: 12px;
+  background: #4CAF50;
+  border: 2px solid #2a2a35;
+  border-radius: 50%;
+}
+
+.chat__user-details {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.chat__user-name {
+  color: #ffffff;
+  font-size: 17px;
+  font-weight: 600;
+  margin: 0;
+}
+
+.chat__user-status {
+  color: #888888;
+  font-size: 13px;
+}
+
+/* Сообщения */
+.chat__messages {
+  flex: 1;
+  overflow-y: auto;
+  padding: 20px 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.chat__message {
+  display: flex;
+  width: 100%;
+  animation: messageSlideIn 0.3s ease;
+}
+
+@keyframes messageSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ✅ Свои сообщения — СПРАВА, чуть светлее серый */
+.chat__message--mine {
+  justify-content: flex-end;
+}
+
+.chat__message--mine .chat__message-bubble {
+  background: #4a4a55; /* Светлее серый */
+  border-bottom-right-radius: 4px;
+  border-bottom-left-radius: 18px;
+  border-top-left-radius: 18px;
+  border-top-right-radius: 18px;
+}
+
+/* ✅ Чужие сообщения — СЛЕВА, чуть темнее серый */
+.chat__message--other {
+  justify-content: flex-start;
+}
+
+.chat__message--other .chat__message-bubble {
+  background: #2d2d38; /* Темнее серый */
+  border-bottom-left-radius: 4px;
+  border-bottom-right-radius: 18px;
+  border-top-left-radius: 18px;
+  border-top-right-radius: 18px;
+}
+
+.chat__message-bubble {
+  max-width: 70%;
+  padding: 12px 18px;
+  border-radius: 18px;
+  position: relative;
+}
+
+.chat__message-text {
+  color: #ffffff;
+  font-size: 15px;
+  margin: 0 0 5px 0;
+  line-height: 1.4;
+  word-wrap: break-word;
+}
+
+.chat__message-time {
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 11px;
+  display: block;
+  text-align: right;
+}
+
+/* Ввод сообщения */
+.chat__input-area {
+  background: #2a2a35;
+  border-radius: 12px;
+  padding: 15px 20px;
+  display: flex;
+  gap: 15px;
+  align-items: flex-end;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+}
+
+.chat__input {
+  flex: 1;
+  background: #1a1a1e;
+  border: 1px solid #3a3a45;
+  border-radius: 10px;
+  padding: 12px 15px;
+  color: #ffffff;
+  font-size: 15px;
+  outline: none;
+  resize: none;
+  max-height: 120px;
+  font-family: inherit;
+  transition: all 0.3s ease;
+}
+
+.chat__input:focus {
+  border-color: #4a4a55;
+}
+
+.chat__input::placeholder {
+  color: #888888;
+}
+
+.chat__send-btn {
+  background: #4a4a55;
+  color: #ffffff;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 10px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  white-space: nowrap;
+}
+
+.chat__send-btn:hover:not(:disabled) {
+  background: #5a5a65;
+}
+
+.chat__send-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.chat__loading {
+  text-align: center;
+  padding: 60px 20px;
+  color: #888888;
+  font-size: 16px;
+}
+
+@media (max-width: 768px) {
+  .chat__container {
+    padding: 10px;
+  }
+
+  .chat__header {
+    padding: 10px 15px;
+  }
+
+  .chat__message-bubble {
+    max-width: 85%;
+  }
+
+  .chat__input-area {
+    padding: 10px 15px;
+  }
+}

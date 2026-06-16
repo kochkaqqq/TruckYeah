@@ -111,7 +111,7 @@
 }
 
 .profile__btn--primary {
-  background: var(--color-accent, #667eea);
+  background: var(--color-accent, #666666);
   color: #ffffff;
 }
 
@@ -364,7 +364,7 @@
 }
 
 .profile__input:focus {
-  border-color: var(--color-accent, #667eea);
+  border-color: var(--color-accent, #666666);
   background: rgba(255, 255, 255, 0.08);
   box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.2);
 }

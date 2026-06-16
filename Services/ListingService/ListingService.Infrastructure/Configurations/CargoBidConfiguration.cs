@@ -1,3 +1,4 @@
+using ListingService.Domain.Enums;
 using ListingService.Infrastructure.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
@@ -12,9 +13,12 @@ public class CargoBidConfiguration : IEntityTypeConfiguration<CargoBidEntity>
         builder.Property(b => b.CargoId).IsRequired();
         builder.Property(b => b.CarrierUserId).IsRequired();
         builder.Property(b => b.Price).IsRequired().HasPrecision(12, 2);
+        builder.Property(b => b.Status).IsRequired().HasConversion<string>().HasDefaultValue(BidStatus.Active);
         builder.Property(b => b.CreatedAt).IsRequired().HasDefaultValueSql("CURRENT_TIMESTAMP");
+        builder.Property(b => b.AcceptedAt);
 
         builder.HasIndex(b => b.CargoId);
         builder.HasIndex(b => new { b.CargoId, b.CarrierUserId });
+        builder.HasIndex(b => b.Status);
     }
 }

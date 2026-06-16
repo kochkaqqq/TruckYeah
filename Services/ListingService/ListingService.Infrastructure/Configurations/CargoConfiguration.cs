@@ -39,6 +39,8 @@ public class CargoConfiguration : IEntityTypeConfiguration<CargoEntity>
         builder.Property(c => c.StartingPrice).HasPrecision(12, 2);
         builder.Property(c => c.BiddingEnabled).HasDefaultValue(false);
         builder.Property(c => c.MinBidStep).HasPrecision(12, 2);
+        builder.Property(c => c.AcceptedBidId);
+        builder.Property(c => c.BiddingClosedAt);
 
         builder.Property(c => c.Status)
             .IsRequired()
@@ -59,6 +61,7 @@ public class CargoConfiguration : IEntityTypeConfiguration<CargoEntity>
         builder.HasIndex(c => c.Visibility);
         builder.HasIndex(c => c.LoadDateTime);
         builder.HasIndex(c => c.BiddingEnabled);
+        builder.HasIndex(c => c.AcceptedBidId);
 
         builder.HasMany(c => c.RoutePoints)
             .WithOne()

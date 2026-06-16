@@ -31,6 +31,7 @@ public class CargosService : ICargosService
 
     public async Task<Guid> CreateCargoAsync(Cargo cargo)
     {
+        ApplyCalculatedCargoFields(cargo);
         ValidateCargo(cargo);
         cargo.Id = Guid.NewGuid();
         cargo.CreatedAt = DateTime.UtcNow;
@@ -43,6 +44,7 @@ public class CargosService : ICargosService
 
     public async Task<Guid> UpdateCargoAsync(Guid id, Guid userId, Cargo cargo)
     {
+        ApplyCalculatedCargoFields(cargo);
         ValidateCargo(cargo);
 
         var existing = await GetExistingCargo(id);
@@ -55,6 +57,8 @@ public class CargosService : ICargosService
         cargo.PublishedAt = existing.PublishedAt;
         cargo.SourceListingId = existing.SourceListingId;
         cargo.BoostedUntil = existing.BoostedUntil;
+        cargo.AcceptedBidId = existing.AcceptedBidId;
+        cargo.BiddingClosedAt = existing.BiddingClosedAt;
         AssignRoutePointIds(cargo);
 
         await _cargosRepository.Update(cargo);
@@ -130,10 +134,18 @@ public class CargosService : ICargosService
             throw new InvalidOperationException("Bids are available only for published cargos with enabled bidding.");
         }
 
+        if (cargo.AcceptedBidId.HasValue)
+        {
+            throw new InvalidOperationException("Bidding is already closed for this cargo.");
+        }
+
         if (cargo.UserId == carrierUserId)
         {
             throw new InvalidOperationException("Cargo owner cannot bid on their own cargo.");
         }
+
+        var currentBids = await _cargosRepository.GetBids(cargoId);
+        EnsureBidMeetsMinimumStep(cargo, currentBids, price);
 
         var bid = new CargoBid
         {
@@ -141,10 +153,57 @@ public class CargosService : ICargosService
             CargoId = cargoId,
             CarrierUserId = carrierUserId,
             Price = price,
+            Status = BidStatus.Active,
             CreatedAt = DateTime.UtcNow
         };
 
         return await _cargosRepository.CreateBid(bid);
+    }
+
+    public async Task<Guid> AcceptCargoBidAsync(Guid cargoId, Guid bidId, Guid ownerUserId)
+    {
+        var cargo = await GetExistingCargo(cargoId);
+        EnsureOwner(cargo.UserId, ownerUserId);
+
+        if (!cargo.BiddingEnabled)
+        {
+            throw new InvalidOperationException("Bidding is not enabled for this cargo.");
+        }
+
+        if (cargo.AcceptedBidId.HasValue)
+        {
+            throw new InvalidOperationException("A bid has already been accepted for this cargo.");
+        }
+
+        var bids = await _cargosRepository.GetBids(cargoId);
+        var acceptedBid = bids.FirstOrDefault(b => b.Id == bidId)
+            ?? throw new KeyNotFoundException("Cargo bid was not found.");
+
+        if (acceptedBid.Status != BidStatus.Active)
+        {
+            throw new InvalidOperationException("Only active bids can be accepted.");
+        }
+
+        var acceptedAt = DateTime.UtcNow;
+        foreach (var bid in bids.Where(b => b.Status == BidStatus.Active))
+        {
+            if (bid.Id == bidId)
+            {
+                bid.Status = BidStatus.Accepted;
+                bid.AcceptedAt = acceptedAt;
+            }
+            else
+            {
+                bid.Status = BidStatus.Rejected;
+            }
+        }
+
+        cargo.AcceptedBidId = bidId;
+        cargo.BiddingClosedAt = acceptedAt;
+        await _cargosRepository.Update(cargo);
+        await _cargosRepository.UpdateBids(bids);
+
+        return bidId;
     }
 
     private async Task<Cargo> GetExistingCargo(Guid id)
@@ -196,6 +255,8 @@ public class CargosService : ICargosService
             StartingPrice = source.StartingPrice,
             BiddingEnabled = source.BiddingEnabled,
             MinBidStep = source.MinBidStep,
+            AcceptedBidId = null,
+            BiddingClosedAt = null,
             Visibility = source.Visibility,
             BoostToTop = false,
             IsTemplate = isTemplate,
@@ -229,14 +290,62 @@ public class CargosService : ICargosService
             throw new ArgumentException("Volume must be greater than zero.");
         if (string.IsNullOrWhiteSpace(cargo.BodyTypeRequired))
             throw new ArgumentException("Body type is required.");
+        if (cargo.LengthCm is <= 0)
+            throw new ArgumentException("Length must be greater than zero.");
+        if (cargo.WidthCm is <= 0)
+            throw new ArgumentException("Width must be greater than zero.");
+        if (cargo.HeightCm is <= 0)
+            throw new ArgumentException("Height must be greater than zero.");
+        if (cargo.PalletsCount is <= 0)
+            throw new ArgumentException("Pallet count must be greater than zero.");
         if (cargo.PalletsCount < 0)
             throw new ArgumentException("Pallet count cannot be negative.");
         if (cargo.PrepaymentPercent is < 0 or > 100)
             throw new ArgumentException("Prepayment percent must be from 0 to 100.");
         if (cargo.StartingPrice is <= 0)
             throw new ArgumentException("Starting price must be greater than zero.");
+        if (cargo.BiddingEnabled && !cargo.StartingPrice.HasValue)
+            throw new ArgumentException("Starting price is required when bidding is enabled.");
         if (cargo.BiddingEnabled && (!cargo.MinBidStep.HasValue || cargo.MinBidStep is <= 0))
             throw new ArgumentException("Minimum bid step must be greater than zero when bidding is enabled.");
+    }
+
+    private static void ApplyCalculatedCargoFields(Cargo cargo)
+    {
+        if (cargo.VolumeM3 > 0 ||
+            !cargo.LengthCm.HasValue ||
+            !cargo.WidthCm.HasValue ||
+            !cargo.HeightCm.HasValue ||
+            !cargo.PalletsCount.HasValue ||
+            cargo.PalletsCount <= 0)
+        {
+            return;
+        }
+
+        var volumeM3 = cargo.LengthCm.Value * cargo.WidthCm.Value * cargo.HeightCm.Value * cargo.PalletsCount.Value / 1_000_000d;
+        cargo.VolumeM3 = Math.Round(volumeM3, 3, MidpointRounding.AwayFromZero);
+    }
+
+    private static void EnsureBidMeetsMinimumStep(Cargo cargo, IEnumerable<CargoBid> bids, decimal price)
+    {
+        var activeBids = bids
+            .Where(b => b.Status == BidStatus.Active)
+            .ToList();
+
+        var currentBestPrice = activeBids.Count > 0
+            ? activeBids.Min(b => b.Price)
+            : cargo.StartingPrice;
+
+        if (!currentBestPrice.HasValue || !cargo.MinBidStep.HasValue)
+        {
+            return;
+        }
+
+        var maxAllowedPrice = currentBestPrice.Value - cargo.MinBidStep.Value;
+        if (price > maxAllowedPrice)
+        {
+            throw new InvalidOperationException($"Bid price must be at least {cargo.MinBidStep.Value} lower than the current best price.");
+        }
     }
 
     private static void AssignRoutePointIds(Cargo cargo)

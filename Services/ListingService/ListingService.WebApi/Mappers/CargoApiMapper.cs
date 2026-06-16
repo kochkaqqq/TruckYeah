@@ -83,6 +83,8 @@ public static class CargoApiMapper
             StartingPrice = cargo.StartingPrice,
             BiddingEnabled = cargo.BiddingEnabled,
             MinBidStep = cargo.MinBidStep,
+            AcceptedBidId = cargo.AcceptedBidId,
+            BiddingClosedAt = cargo.BiddingClosedAt,
             Status = cargo.Status,
             Visibility = cargo.Visibility,
             CreatedAt = cargo.CreatedAt,
@@ -133,7 +135,11 @@ public static class CargoApiMapper
             CargoName = query.CargoName,
             LoadingType = query.LoadingType,
             OnlyWithBidding = query.OnlyWithBidding,
-            Visibility = query.Visibility
+            Visibility = query.Visibility,
+            Page = query.Page,
+            PageSize = query.PageSize,
+            SortBy = query.SortBy,
+            SortDirection = query.SortDirection
         };
     }
 
@@ -145,7 +151,9 @@ public static class CargoApiMapper
             CargoId = bid.CargoId,
             CarrierUserId = bid.CarrierUserId,
             Price = bid.Price,
-            CreatedAt = bid.CreatedAt
+            Status = bid.Status,
+            CreatedAt = bid.CreatedAt,
+            AcceptedAt = bid.AcceptedAt
         };
     }
 }

@@ -95,10 +95,7 @@ public class CargosRepository : ICargosRepository
             query = query.Where(c => c.Visibility == criteria.Visibility.Value);
         }
 
-        var now = DateTime.UtcNow;
-        var entities = await query
-            .OrderByDescending(c => c.BoostToTop && (!c.BoostedUntil.HasValue || c.BoostedUntil > now))
-            .ThenByDescending(c => c.PublishedAt ?? c.CreatedAt)
+        var entities = await ApplyPaging(ApplySorting(query, criteria), criteria.Page, criteria.PageSize)
             .ToListAsync();
 
         return entities.Select(c => c.MapToModel()).ToList();
@@ -186,6 +183,24 @@ public class CargosRepository : ICargosRepository
         return entity.Id;
     }
 
+    public async Task UpdateBids(IEnumerable<CargoBid> bids)
+    {
+        var bidList = bids.ToList();
+        var bidIds = bidList.Select(b => b.Id).ToList();
+        var entities = await _dbContext.CargoBids
+            .Where(b => bidIds.Contains(b.Id))
+            .ToListAsync();
+
+        foreach (var entity in entities)
+        {
+            var bid = bidList.First(b => b.Id == entity.Id);
+            entity.Status = bid.Status;
+            entity.AcceptedAt = bid.AcceptedAt;
+        }
+
+        await _dbContext.SaveChangesAsync();
+    }
+
     private static void ApplyCargo(CargoEntity entity, Cargo cargo)
     {
         entity.Title = cargo.Title;
@@ -213,6 +228,8 @@ public class CargosRepository : ICargosRepository
         entity.StartingPrice = cargo.StartingPrice;
         entity.BiddingEnabled = cargo.BiddingEnabled;
         entity.MinBidStep = cargo.MinBidStep;
+        entity.AcceptedBidId = cargo.AcceptedBidId;
+        entity.BiddingClosedAt = cargo.BiddingClosedAt;
         entity.Status = cargo.Status;
         entity.Visibility = cargo.Visibility;
         entity.PublishedAt = cargo.PublishedAt;
@@ -222,5 +239,49 @@ public class CargosRepository : ICargosRepository
         entity.TemplateName = cargo.TemplateName;
         entity.SourceListingId = cargo.SourceListingId;
         entity.Notes = cargo.Notes;
+    }
+
+    private static IOrderedQueryable<CargoEntity> ApplySorting(IQueryable<CargoEntity> query, CargoSearchCriteria criteria)
+    {
+        var now = DateTime.UtcNow;
+        var boostedQuery = query.OrderByDescending(c => c.BoostToTop && (!c.BoostedUntil.HasValue || c.BoostedUntil > now));
+        var descending = !string.Equals(criteria.SortDirection, "asc", StringComparison.OrdinalIgnoreCase);
+
+        return criteria.SortBy?.Trim().ToLowerInvariant() switch
+        {
+            "price" or "startingprice" => descending
+                ? boostedQuery.ThenByDescending(c => c.StartingPrice)
+                : boostedQuery.ThenBy(c => c.StartingPrice),
+            "loaddate" or "loaddatetime" => descending
+                ? boostedQuery.ThenByDescending(c => c.LoadDateTime)
+                : boostedQuery.ThenBy(c => c.LoadDateTime),
+            "weight" or "weighttons" => descending
+                ? boostedQuery.ThenByDescending(c => c.WeightTons)
+                : boostedQuery.ThenBy(c => c.WeightTons),
+            "volume" or "volumem3" => descending
+                ? boostedQuery.ThenByDescending(c => c.VolumeM3)
+                : boostedQuery.ThenBy(c => c.VolumeM3),
+            "createdat" => descending
+                ? boostedQuery.ThenByDescending(c => c.CreatedAt)
+                : boostedQuery.ThenBy(c => c.CreatedAt),
+            _ => descending
+                ? boostedQuery.ThenByDescending(c => c.PublishedAt ?? c.CreatedAt)
+                : boostedQuery.ThenBy(c => c.PublishedAt ?? c.CreatedAt)
+        };
+    }
+
+    private static IQueryable<T> ApplyPaging<T>(IQueryable<T> query, int? page, int? pageSize)
+    {
+        if (!page.HasValue && !pageSize.HasValue)
+        {
+            return query;
+        }
+
+        var normalizedPage = Math.Max(page.GetValueOrDefault(1), 1);
+        var normalizedPageSize = Math.Clamp(pageSize.GetValueOrDefault(50), 1, 100);
+
+        return query
+            .Skip((normalizedPage - 1) * normalizedPageSize)
+            .Take(normalizedPageSize);
     }
 }

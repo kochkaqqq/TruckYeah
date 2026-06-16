@@ -11,4 +11,5 @@ public interface ICargosRepository
     Task Delete(Guid id);
     Task<List<CargoBid>> GetBids(Guid cargoId);
     Task<Guid> CreateBid(CargoBid bid);
+    Task UpdateBids(IEnumerable<CargoBid> bids);
 }

@@ -77,8 +77,13 @@ public class TrucksRepository : ITrucksRepository
             query = query.Where(t => t.LoadingType == criteria.LoadingType.Value);
         }
 
-        var entities = await query
-            .OrderByDescending(t => t.PublishedAt ?? t.CreatedAt)
+        if (!string.IsNullOrWhiteSpace(criteria.AdditionalEquipment))
+        {
+            query = query.Where(t => t.AdditionalEquipment != null &&
+                                     EF.Functions.ILike(t.AdditionalEquipment, $"%{criteria.AdditionalEquipment}%"));
+        }
+
+        var entities = await ApplyPaging(ApplySorting(query, criteria), criteria.Page, criteria.PageSize)
             .ToListAsync();
 
         return entities.Select(t => t.MapToModel()).ToList();
@@ -137,6 +142,7 @@ public class TrucksRepository : ITrucksRepository
         entity.BodyType = truck.BodyType;
         entity.LoadingType = truck.LoadingType;
         entity.CrewDriversCount = truck.CrewDriversCount;
+        entity.AdditionalEquipment = truck.AdditionalEquipment;
         entity.AvailableFrom = truck.AvailableFrom;
         entity.Price = truck.Price;
         entity.PaymentType = truck.PaymentType;
@@ -146,5 +152,47 @@ public class TrucksRepository : ITrucksRepository
         entity.Visibility = truck.Visibility;
         entity.PublishedAt = truck.PublishedAt;
         entity.SourceListingId = truck.SourceListingId;
+    }
+
+    private static IOrderedQueryable<TruckEntity> ApplySorting(IQueryable<TruckEntity> query, TruckSearchCriteria criteria)
+    {
+        var descending = !string.Equals(criteria.SortDirection, "asc", StringComparison.OrdinalIgnoreCase);
+
+        return criteria.SortBy?.Trim().ToLowerInvariant() switch
+        {
+            "price" => descending
+                ? query.OrderByDescending(t => t.Price)
+                : query.OrderBy(t => t.Price),
+            "availabledate" or "availablefrom" => descending
+                ? query.OrderByDescending(t => t.AvailableFrom)
+                : query.OrderBy(t => t.AvailableFrom),
+            "capacity" or "capacitytons" => descending
+                ? query.OrderByDescending(t => t.CapacityTons)
+                : query.OrderBy(t => t.CapacityTons),
+            "volume" or "volumem3" => descending
+                ? query.OrderByDescending(t => t.VolumeM3)
+                : query.OrderBy(t => t.VolumeM3),
+            "createdat" => descending
+                ? query.OrderByDescending(t => t.CreatedAt)
+                : query.OrderBy(t => t.CreatedAt),
+            _ => descending
+                ? query.OrderByDescending(t => t.PublishedAt ?? t.CreatedAt)
+                : query.OrderBy(t => t.PublishedAt ?? t.CreatedAt)
+        };
+    }
+
+    private static IQueryable<T> ApplyPaging<T>(IQueryable<T> query, int? page, int? pageSize)
+    {
+        if (!page.HasValue && !pageSize.HasValue)
+        {
+            return query;
+        }
+
+        var normalizedPage = Math.Max(page.GetValueOrDefault(1), 1);
+        var normalizedPageSize = Math.Clamp(pageSize.GetValueOrDefault(50), 1, 100);
+
+        return query
+            .Skip((normalizedPage - 1) * normalizedPageSize)
+            .Take(normalizedPageSize);
     }
 }

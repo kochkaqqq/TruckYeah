@@ -18,6 +18,7 @@ public class TruckEntity
     public string BodyType { get; set; } = string.Empty;
     public LoadingType LoadingType { get; set; }
     public int CrewDriversCount { get; set; } = 1;
+    public string? AdditionalEquipment { get; set; }
 
     public DateTime AvailableFrom { get; set; }
     public decimal Price { get; set; }

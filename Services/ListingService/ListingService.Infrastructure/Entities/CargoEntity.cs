@@ -40,6 +40,8 @@ public class CargoEntity
     public decimal? StartingPrice { get; set; }
     public bool BiddingEnabled { get; set; }
     public decimal? MinBidStep { get; set; }
+    public Guid? AcceptedBidId { get; set; }
+    public DateTime? BiddingClosedAt { get; set; }
 
     public ListingStatus Status { get; set; }
     public ListingVisibility Visibility { get; set; }

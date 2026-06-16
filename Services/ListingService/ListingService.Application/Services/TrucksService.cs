@@ -105,6 +105,7 @@ public class TrucksService : ITrucksService
             BodyType = source.BodyType,
             LoadingType = source.LoadingType,
             CrewDriversCount = source.CrewDriversCount,
+            AdditionalEquipment = source.AdditionalEquipment,
             AvailableFrom = source.AvailableFrom,
             Price = source.Price,
             PaymentType = source.PaymentType,
@@ -147,6 +148,8 @@ public class TrucksService : ITrucksService
             throw new ArgumentException("Crew drivers count must be 1 or 2.");
         if (truck.PrepaymentPercent is < 0 or > 100)
             throw new ArgumentException("Prepayment percent must be from 0 to 100.");
+        if (truck.AdditionalEquipment?.Length > 1000)
+            throw new ArgumentException("Additional equipment description cannot be longer than 1000 characters.");
     }
 
     private static void EnsureOwner(Guid ownerUserId, Guid currentUserId)

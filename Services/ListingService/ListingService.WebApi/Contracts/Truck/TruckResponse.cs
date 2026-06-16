@@ -15,6 +15,7 @@ public class TruckResponse
     public string BodyType { get; set; } = string.Empty;
     public LoadingType LoadingType { get; set; }
     public int CrewDriversCount { get; set; }
+    public string? AdditionalEquipment { get; set; }
     public DateTime AvailableFrom { get; set; }
     public decimal Price { get; set; }
     public PaymentType PaymentType { get; set; }

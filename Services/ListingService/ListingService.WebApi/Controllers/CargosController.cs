@@ -184,6 +184,20 @@ public class CargosController : ControllerBase
         }
     }
 
+    [Authorize]
+    [HttpPost("{id:guid}/bids/{bidId:guid}/accept")]
+    public async Task<ActionResult<Guid>> AcceptCargoBid(Guid id, Guid bidId)
+    {
+        try
+        {
+            return Ok(await _cargosService.AcceptCargoBidAsync(id, bidId, GetCurrentUserId()));
+        }
+        catch (Exception ex)
+        {
+            return ToActionResult(ex);
+        }
+    }
+
     private Guid GetCurrentUserId()
     {
         var value = User.FindFirstValue(ClaimTypes.NameIdentifier);

@@ -16,4 +16,8 @@ public class CargoSearchQuery
     public LoadingType? LoadingType { get; set; }
     public bool? OnlyWithBidding { get; set; }
     public ListingVisibility? Visibility { get; set; }
+    public int? Page { get; set; }
+    public int? PageSize { get; set; }
+    public string? SortBy { get; set; }
+    public string? SortDirection { get; set; }
 }

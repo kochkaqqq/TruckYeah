@@ -19,6 +19,7 @@ public static class TruckApiMapper
             BodyType = request.BodyType,
             LoadingType = request.LoadingType,
             CrewDriversCount = request.CrewDriversCount,
+            AdditionalEquipment = request.AdditionalEquipment,
             AvailableFrom = request.AvailableFrom,
             Price = request.Price,
             PaymentType = request.PaymentType,
@@ -43,6 +44,7 @@ public static class TruckApiMapper
             BodyType = truck.BodyType,
             LoadingType = truck.LoadingType,
             CrewDriversCount = truck.CrewDriversCount,
+            AdditionalEquipment = truck.AdditionalEquipment,
             AvailableFrom = truck.AvailableFrom,
             Price = truck.Price,
             PaymentType = truck.PaymentType,
@@ -68,7 +70,12 @@ public static class TruckApiMapper
             VolumeFrom = query.VolumeFrom,
             VolumeTo = query.VolumeTo,
             BodyType = query.BodyType,
-            LoadingType = query.LoadingType
+            LoadingType = query.LoadingType,
+            AdditionalEquipment = query.AdditionalEquipment,
+            Page = query.Page,
+            PageSize = query.PageSize,
+            SortBy = query.SortBy,
+            SortDirection = query.SortDirection
         };
     }
 }

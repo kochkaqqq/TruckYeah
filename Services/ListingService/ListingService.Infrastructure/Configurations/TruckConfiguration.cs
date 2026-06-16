@@ -23,6 +23,7 @@ public class TruckConfiguration : IEntityTypeConfiguration<TruckEntity>
         builder.Property(t => t.BodyType).IsRequired().HasMaxLength(50);
         builder.Property(t => t.LoadingType).IsRequired().HasConversion<string>();
         builder.Property(t => t.CrewDriversCount).IsRequired().HasDefaultValue(1);
+        builder.Property(t => t.AdditionalEquipment).HasMaxLength(1000);
         builder.Property(t => t.AvailableFrom).IsRequired();
         builder.Property(t => t.Price).IsRequired().HasPrecision(12, 2);
 

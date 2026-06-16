@@ -13,7 +13,9 @@ public static class CargoBidMapper
             CargoId = entity.CargoId,
             CarrierUserId = entity.CarrierUserId,
             Price = entity.Price,
-            CreatedAt = entity.CreatedAt
+            Status = entity.Status,
+            CreatedAt = entity.CreatedAt,
+            AcceptedAt = entity.AcceptedAt
         };
     }
 
@@ -25,7 +27,9 @@ public static class CargoBidMapper
             CargoId = bid.CargoId,
             CarrierUserId = bid.CarrierUserId,
             Price = bid.Price,
-            CreatedAt = bid.CreatedAt
+            Status = bid.Status,
+            CreatedAt = bid.CreatedAt,
+            AcceptedAt = bid.AcceptedAt
         };
     }
 }

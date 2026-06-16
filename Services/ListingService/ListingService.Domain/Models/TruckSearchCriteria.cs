@@ -13,4 +13,9 @@ public class TruckSearchCriteria
     public double? VolumeTo { get; set; }
     public string? BodyType { get; set; }
     public LoadingType? LoadingType { get; set; }
+    public string? AdditionalEquipment { get; set; }
+    public int? Page { get; set; }
+    public int? PageSize { get; set; }
+    public string? SortBy { get; set; }
+    public string? SortDirection { get; set; }
 }

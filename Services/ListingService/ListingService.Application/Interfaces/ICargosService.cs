@@ -16,4 +16,5 @@ public interface ICargosService
     Task<Guid> SaveCargoTemplateAsync(Guid id, Guid userId, string? templateName);
     Task<List<CargoBid>> GetCargoBidsAsync(Guid cargoId, Guid ownerUserId);
     Task<Guid> CreateCargoBidAsync(Guid cargoId, Guid carrierUserId, decimal price);
+    Task<Guid> AcceptCargoBidAsync(Guid cargoId, Guid bidId, Guid ownerUserId);
 }

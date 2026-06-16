@@ -9,6 +9,7 @@ services:
     depends_on:
       - identity-service
       - listing-service
+      - chat-service
     networks:
       - truckyeah
     restart: unless-stopped
@@ -44,6 +45,24 @@ services:
       - "5002:8080"
     depends_on:
       listing-db:
+        condition: service_healthy
+    networks:
+      - truckyeah
+    restart: unless-stopped
+
+  chat-service:
+    build:
+      context: ./Services/ChatService
+      dockerfile: Dockerfile
+    container_name: truckyeah-chat-service
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      ASPNETCORE_URLS: http://+:8080
+      ConnectionStrings__ChatServiceDbContext: Host=chat-db;Port=5432;Database=truckyeah_chat;Username=postgres;Password=postgres123
+    ports:
+      - "5003:8080"
+    depends_on:
+      chat-db:
         condition: service_healthy
     networks:
       - truckyeah
@@ -89,6 +108,26 @@ services:
       - truckyeah
     restart: unless-stopped
 
+  chat-db:
+    image: postgres:16-alpine
+    container_name: truckyeah-chat-db
+    environment:
+      POSTGRES_DB: truckyeah_chat
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres123
+    ports:
+      - "5435:5432"
+    volumes:
+      - chat-db-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d truckyeah_chat"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    networks:
+      - truckyeah
+    restart: unless-stopped
+
 networks:
   truckyeah:
     driver: bridge
@@ -96,3 +135,4 @@ networks:
 volumes:
   identity-db-data:
   listing-db-data:
+  chat-db-data:

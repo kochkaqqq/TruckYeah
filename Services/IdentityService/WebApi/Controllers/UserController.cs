@@ -28,15 +28,15 @@ namespace WebApi.Controllers
             }
             catch (ValidationException ex)
             {
-                throw new NotImplementedException();
+                return BadRequest(new { message = ex.Message });
             }
             catch (ConflictException ex)
             {
-                throw new NotImplementedException();
+                return Conflict(new { message = ex.Message });
             }
             catch (Exception ex)
             {
-                return BadRequest(new { message = ex.Message });
+                return StatusCode(500, new { message = "Internal server error", details = ex.Message });
             }
         }
 
@@ -48,13 +48,21 @@ namespace WebApi.Controllers
                 var result = await _userService.LoginUserAsync(loginDto);
                 return Ok(result);
             }
-            catch (EntityNotFoundException)
+            catch (EntityNotFoundException ex)
             {
-                throw new NotImplementedException();
+                return NotFound(new { message = ex.Message });
+            }
+            catch (UnauthorizedException ex)
+            {
+                return Unauthorized(new { message = ex.Message });
+            }
+            catch (ValidationException ex)
+            {
+                return BadRequest(new { message = ex.Message });
             }
             catch (Exception ex)
             {
-                return BadRequest(new { message = ex.Message });
+                return StatusCode(500, new { message = "Internal server error", details = ex.Message });
             }
         }
 
@@ -68,11 +76,15 @@ namespace WebApi.Controllers
             }
             catch (EntityNotFoundException ex)
             {
-                throw new NotImplementedException();
+                return NotFound(new { message = ex.Message });
             }
             catch (UnauthorizedException ex)
             {
-                throw new NotImplementedException();
+                return Unauthorized(new { message = ex.Message });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "Internal server error", details = ex.Message });
             }
         }
 
@@ -86,13 +98,13 @@ namespace WebApi.Controllers
                 var res = await _userService.GetUserAsync(id);
                 return Ok(res);
             }
-            catch (EntityNotFoundException)
+            catch (EntityNotFoundException ex)
             {
-                throw; //TODO logging, handle errors
+                return NotFound(new { message = ex.Message });
             }
-            catch
+            catch (Exception ex)
             {
-                throw; //TODO logging, handle errors
+                return StatusCode(500, new { message = "Internal server error", details = ex.Message });
             }
         }
     }

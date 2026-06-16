@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
 import { useState, useEffect, useRef } from 'react';
-import TruckIcon from '../../assets/icons/truck.svg?react';
+import TruckSVG from '../../assets/icons/truck.svg'; 
 import './HomePage.css';
 
 export const HomePage = () => {
@@ -42,8 +42,9 @@ export const HomePage = () => {
             Помогаем находить грузы, проверенных перевозчиков и экономить за счёт автоматизации процессов
           </p>
           
+          {/* ✅ Используем импортированный SVG */}
           <div className="home__truck-wrapper">
-            <TruckIcon className="home__truck" />
+            <img src={TruckSVG} alt="Грузовик" className="home__truck" />
           </div>
         </div>
 
@@ -56,6 +57,7 @@ export const HomePage = () => {
         )}
       </section>
 
+      {/* ... остальной код остаётся без изменений ... */}
       <div className="home__content" ref={contentRef}>
         <div className="home__container">
           <section className="home__section">

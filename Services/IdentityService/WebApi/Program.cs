@@ -14,6 +14,7 @@ builder.Services.InjectInfrastructure(builder.Configuration.GetConnectionString(
     ?? throw new Exception());
 
 builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<ICountryService, CountryService>();
 
 builder.Services.AddControllers();
 
@@ -21,6 +22,21 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>
 {
     c.SwaggerDoc("v1", new OpenApiInfo { Title = "My API", Version = "v1" });
+});
+
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowFrontend", policy =>
+    {
+        policy.WithOrigins(
+                "http://localhost:3000",
+                "http://localhost:5173",
+                "http://localhost"
+            )
+            .AllowAnyHeader()
+            .AllowAnyMethod()
+            .AllowCredentials();
+    });
 });
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
@@ -35,11 +51,9 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             ClockSkew = TimeSpan.Zero,
             ValidateIssuerSigningKey = true,
             IssuerSigningKey = new SymmetricSecurityKey(
-                Encoding.UTF8.GetBytes("secret key")) //TODO move secret key to configuration
+                Encoding.UTF8.GetBytes("secret key"))
         };
     });
-
-builder.Services.AddControllers();
 
 var app = builder.Build();
 
@@ -49,6 +63,7 @@ using (var scope = app.Services.CreateScope())
     dbContext.Database.Migrate();
 }
 
+app.UseCors("AllowFrontend");
 app.UseAuthentication();
 
 app.UseSwagger();

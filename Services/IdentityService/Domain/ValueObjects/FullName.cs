@@ -6,11 +6,10 @@ namespace Domain.ValueObjects
     public class FullName : IEquatable<FullName>
     {
         private static readonly Regex NamePartRegex = new Regex(
-            @"^[A-Za-z\.\-]{1,50}\z",
-            RegexOptions.Singleline | RegexOptions.Compiled);
-
-        public string FirstName { get; init; }
-        public string LastName { get; init; }
+             @"^[A-Za-zА-Яа-яЁё\.\-]{1,50}\z",
+             RegexOptions.Singleline | RegexOptions.Compiled);
+        public string FirstName { get; init; } = string.Empty;
+        public string LastName { get; init; } = string.Empty;
         public string? MiddleName { get; init; }
 
         public string FullNameString => MiddleName == null
@@ -26,7 +25,7 @@ namespace Domain.ValueObjects
         public FullName(string lastName, string firstName, string? middleName = null)
         {
             if (!IsValidNamePart(lastName))
-                throw new ValidationException(nameof(FullName), "Last name must be 1-50 characters long and can only contain Latin letters, dots, and hyphens.");
+                throw new ValidationException(nameof(FullName), "Last name must be 1-50 characters long and can only contain letters (Latin or Cyrillic), dots, and hyphens.");
 
             if (!IsValidNamePart(firstName))
                 throw new ValidationException(nameof(FullName), "First name must be 1-50 characters long and can only contain Latin letters, dots, and hyphens.");
@@ -67,7 +66,7 @@ namespace Domain.ValueObjects
             if (!NamePartRegex.IsMatch(trimmed))
                 return false;
 
-            if (!Regex.IsMatch(trimmed, @"[A-Za-z]"))
+            if (!Regex.IsMatch(trimmed, @"[A-Za-zА-Яа-яЁё]"))
                 return false;
 
             return true;

@@ -6,15 +6,12 @@ using Application.Shared.HelpFuntions;
 using Domain.Entities;
 using Domain.Enums;
 using Domain.ValueObjects;
-using Microsoft.AspNetCore.Authentication.OAuth;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
-using static System.Net.Mime.MediaTypeNames;
 
 namespace Application.Services
 {
@@ -42,12 +39,13 @@ namespace Application.Services
             }
             else if (logDto.Phone != null)
             {
-                user = await _dbContext.Users.FirstOrDefaultAsync(u => u.Phone.Number == logDto.Phone.Substring(logDto.Phone.Length - 10)); //TODO process input phone number
+                user = await _dbContext.Users.FirstOrDefaultAsync(u => u.Phone.Number == logDto.Phone.Substring(logDto.Phone.Length - 10));
             }
 
             if (user == null)
             {
-                throw new EntityNotFoundException(nameof(User), logDto.Email ?? logDto.Phone);
+                var identifier = logDto.Email ?? logDto.Phone ?? "unknown";
+                throw new EntityNotFoundException(nameof(User), identifier);
             }
 
             if (!PasswordHasher.Verify(logDto.Password, user.PasswordHash))
@@ -67,7 +65,6 @@ namespace Application.Services
             };
 
             await _dbContext.RefreshTokens.AddAsync(refreshToken);
-
             await _dbContext.SaveChangesAsync();
 
             return new LoginDtoResponse
@@ -87,8 +84,6 @@ namespace Application.Services
 
             if (refreshToken == null)
                 throw new EntityNotFoundException(nameof(RefreshToken), rawRefreshToken);
-
-            //TODO Add token leak detection
 
             if (refreshToken.ExpireAt < DateTime.UtcNow)
                 throw new UnauthorizedException("Refresh token expired.");
@@ -144,25 +139,35 @@ namespace Application.Services
                 PasswordHash = PasswordHasher.Hash(regDto.Password),
                 Country = country,
                 Postcode = new Postcode(regDto.Postcode),
-                VatId = new VatId(regDto.VatId),
                 UserType = regDto.UserType,
             };
 
             if (user.UserType == UserType.Business)
             {
+                if (string.IsNullOrWhiteSpace(regDto.VatId) || !VatId.IsValid(regDto.VatId))
+                    throw new ArgumentException("Valid VAT ID is required for Business users");
+
+                user.VatId = new VatId(regDto.VatId);
+
                 if (regDto.CompanyId == null)
-                    throw new ArgumentNullException();
+                    throw new ArgumentNullException(nameof(regDto.CompanyId), "CompanyId is required for Business users");
 
                 var company = await _dbContext.Companies.FirstOrDefaultAsync(c => c.Id == regDto.CompanyId)
-                    ?? throw new EntityNotFoundException(nameof(Company), regDto.CompanyId.ToString());
+                    ?? throw new EntityNotFoundException(nameof(Company), regDto.CompanyId.Value.ToString());
 
                 user.Company = company;
             }
             else if (user.UserType == UserType.Private || user.UserType == UserType.Individual)
             {
                 if (string.IsNullOrWhiteSpace(regDto.Name) || string.IsNullOrWhiteSpace(regDto.Surname))
-                    throw new ArgumentNullException();
+                    throw new ArgumentNullException(nameof(regDto.Name), "Name and Surname are required for Private users");
+
                 user.FullName = new FullName(regDto.Name, regDto.Surname, regDto.MiddleName);
+
+                if (!string.IsNullOrWhiteSpace(regDto.VatId) && VatId.IsValid(regDto.VatId))
+                {
+                    user.VatId = new VatId(regDto.VatId);
+                }
             }
 
             var rawRefreshToken = Convert.ToBase64String(RandomNumberGenerator.GetBytes(64));
@@ -198,20 +203,24 @@ namespace Application.Services
 
         private string GenerateJwtToken(User user)
         {
-            var claims = new List<Claim> 
-            { 
-                new(ClaimTypes.Email, user.Email.Value), 
-                new(ClaimTypes.MobilePhone, user.Phone.FullNumberWithPlus),  
-                new(ClaimTypes.Name, user.FullName.ToString()),
+            var claims = new List<Claim>
+            {
+                new(ClaimTypes.Email, user.Email.Value),
+                new(ClaimTypes.MobilePhone, user.Phone.FullNumberWithPlus),
                 new(ClaimTypes.NameIdentifier, user.Id.ToString())
             };
+
+            if (user.FullName != null)
+            {
+                claims.Add(new Claim(ClaimTypes.Name, user.FullName.ToString()));
+            }
 
             var jwt = new JwtSecurityToken(
                     issuer: "indentity-service",
                     claims: claims,
                     expires: DateTime.UtcNow.Add(TimeSpan.FromMinutes(2)),
                     signingCredentials: new SigningCredentials(
-                        new SymmetricSecurityKey(Encoding.UTF8.GetBytes("your-super-secret-key-with-at-least-32-characters-long")), SecurityAlgorithms.HmacSha256)); //TODO move secret key to configuration
+                        new SymmetricSecurityKey(Encoding.UTF8.GetBytes("your-super-secret-key-with-at-least-32-characters-long")), SecurityAlgorithms.HmacSha256));
 
             return new JwtSecurityTokenHandler().WriteToken(jwt);
         }

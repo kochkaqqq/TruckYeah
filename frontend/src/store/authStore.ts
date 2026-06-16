@@ -8,7 +8,7 @@ export interface User {
   name?: string;
   surname?: string;
   fullName?: string;
-  userType?: UserType | 'client' | 'carrier' | string;
+  userType?: UserType | string;
   isProfileCompleted: boolean;
   city?: string;
   company?: string;
@@ -27,28 +27,30 @@ export const useAuthStore = create<AuthState>((set) => ({
   currentUser: null,
   isAuthenticated: false,
   user: null,
-  
-  setCurrentUser: (user) => set({ 
-    currentUser: user,
-    isAuthenticated: !!user,
-    user: user
-  }),
 
-  updateUser: (data) => set((state) => {
-    const updatedUser = state.user ? { ...state.user, ...data } : null;
-    return {
-      currentUser: updatedUser,
-      user: updatedUser,
-    };
-  }),
-  
+  setCurrentUser: (user) =>
+    set({
+      currentUser: user,
+      isAuthenticated: !!user,
+      user: user,
+    }),
+
+  updateUser: (data) =>
+    set((state) => {
+      const updatedUser = state.user ? { ...state.user, ...data } : null;
+      return {
+        currentUser: updatedUser,
+        user: updatedUser,
+      };
+    }),
+
   logout: () => {
     localStorage.removeItem('authToken');
     localStorage.removeItem('refreshToken');
-    set({ 
+    set({
       currentUser: null,
       isAuthenticated: false,
-      user: null
+      user: null,
     });
   },
 }));

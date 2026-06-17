@@ -5,6 +5,9 @@
 # Logs
 Logs/
 
+# Local secrets
+.env
+
 # Generated files
 project.lock.json
 .vs/

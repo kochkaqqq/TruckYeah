@@ -10,6 +10,7 @@ services:
       - identity-service
       - listing-service
       - chat-service
+      - route-service
     networks:
       - truckyeah
     restart: unless-stopped
@@ -63,6 +64,25 @@ services:
       - "5003:8080"
     depends_on:
       chat-db:
+        condition: service_healthy
+    networks:
+      - truckyeah
+    restart: unless-stopped
+
+  route-service:
+    build:
+      context: ./Services/RouteService
+      dockerfile: Dockerfile
+    container_name: truckyeah-route-service
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      ASPNETCORE_URLS: http://+:8080
+      ConnectionStrings__RouteServiceDbContext: Host=route-db;Port=5432;Database=truckyeah_route;Username=postgres;Password=postgres123
+      OpenRouteService__ApiKey: ${OPENROUTESERVICE_API_KEY:-}
+    ports:
+      - "5004:8080"
+    depends_on:
+      route-db:
         condition: service_healthy
     networks:
       - truckyeah
@@ -128,6 +148,26 @@ services:
       - truckyeah
     restart: unless-stopped
 
+  route-db:
+    image: postgres:16-alpine
+    container_name: truckyeah-route-db
+    environment:
+      POSTGRES_DB: truckyeah_route
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres123
+    ports:
+      - "5436:5432"
+    volumes:
+      - route-db-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d truckyeah_route"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    networks:
+      - truckyeah
+    restart: unless-stopped
+
 networks:
   truckyeah:
     driver: bridge
@@ -136,3 +176,4 @@ volumes:
   identity-db-data:
   listing-db-data:
   chat-db-data:
+  route-db-data:

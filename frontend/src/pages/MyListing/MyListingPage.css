@@ -1,0 +1,370 @@
+.my-listing {
+  min-height: 100vh;
+  background: #1a1a1e;
+  padding: 40px 20px;
+}
+
+.my-listing__container {
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.my-listing__loading {
+  text-align: center;
+  padding: 60px 20px;
+  color: #888888;
+  font-size: 18px;
+}
+
+/* Заголовок */
+.my-listing__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 40px;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+
+.my-listing__title {
+  color: #ffffff;
+  font-size: 32px;
+  font-weight: 700;
+  margin: 0;
+}
+
+.my-listing__actions {
+  display: flex;
+  gap: 15px;
+}
+
+.my-listing__btn {
+  padding: 12px 24px;
+  border-radius: 10px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  border: none;
+  transition: all 0.3s ease;
+}
+
+.my-listing__btn--add-cargo {
+  background: #666666;
+  color: #ffffff;
+}
+
+.my-listing__btn--add-cargo:hover {
+  background: #777777;
+  transform: translateY(-2px);
+}
+
+.my-listing__btn--add-truck {
+  background: #4a4a55;
+  color: #ffffff;
+}
+
+.my-listing__btn--add-truck:hover {
+  background: #5a5a65;
+  transform: translateY(-2px);
+}
+
+/* Секции */
+.my-listing__section {
+  margin-bottom: 40px;
+}
+
+.my-listing__section-title {
+  color: #ffffff;
+  font-size: 24px;
+  font-weight: 600;
+  margin: 0 0 20px 0;
+  padding-bottom: 12px;
+  border-bottom: 2px solid #3a3a45;
+}
+
+/* Заголовок таблицы */
+.my-listing__table-header {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 15px;
+  padding: 15px 20px;
+  background: #2a2a35;
+  border-radius: 10px 10px 0 0;
+  font-weight: 600;
+  color: #cccccc;
+  font-size: 14px;
+}
+
+.my-listing__th {
+  text-align: left;
+}
+
+/* Список */
+.my-listing__list {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* Карточка */
+.my-listing__card {
+  background: #2a2a35;
+  border-radius: 10px;
+  padding: 20px;
+  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+  position: relative;
+}
+
+.my-listing__card-row {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 15px;
+  margin-bottom: 20px;
+}
+
+.my-listing__card-cell {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.my-listing__country {
+  background: #e8e8e8;
+  color: #1a1a1e;
+  padding: 10px;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 13px;
+}
+
+.my-listing__distance {
+  color: #888888;
+  font-size: 12px;
+  margin-top: 5px;
+}
+
+.my-listing__city {
+  background: #e8e8e8;
+  color: #1a1a1e;
+  padding: 10px;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 13px;
+}
+
+.my-listing__address {
+  color: #888888;
+  font-size: 12px;
+}
+
+.my-listing__weight {
+  background: #e8e8e8;
+  color: #1a1a1e;
+  padding: 10px;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 13px;
+}
+
+.my-listing__cargo-name {
+  color: #888888;
+  font-size: 12px;
+}
+
+.my-listing__transport-type {
+  background: #e8e8e8;
+  color: #1a1a1e;
+  padding: 10px;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 13px;
+}
+
+.my-listing__transport-note {
+  color: #888888;
+  font-size: 12px;
+}
+
+.my-listing__price {
+  background: #e8e8e8;
+  color: #1a1a1e;
+  padding: 10px;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 13px;
+}
+
+.my-listing__price-note {
+  color: #888888;
+  font-size: 12px;
+}
+
+/* Действия */
+.my-listing__card-actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-bottom: 15px;
+}
+
+.my-listing__action-btn {
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  border: 1px solid transparent;
+  transition: all 0.3s ease;
+  background: #3a3a45;
+  color: #ffffff;
+}
+
+.my-listing__action-btn:hover {
+  transform: translateY(-2px);
+}
+
+.my-listing__action-btn--edit:hover {
+  background: #4a4a55;
+}
+
+.my-listing__action-btn--archive:hover {
+  background: #ff9800;
+  color: #ffffff;
+}
+
+.my-listing__action-btn--publish:hover {
+  background: #4CAF50;
+  color: #ffffff;
+}
+
+.my-listing__action-btn--copy:hover {
+  background: #2196F3;
+  color: #ffffff;
+}
+
+.my-listing__action-btn--delete {
+  background: transparent;
+  border-color: #f44336;
+  color: #f44336;
+}
+
+.my-listing__action-btn--delete:hover {
+  background: #f44336;
+  color: #ffffff;
+}
+
+/* Статус */
+.my-listing__status {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+}
+
+.my-listing__status-badge {
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.my-listing__status-badge--draft {
+  background: rgba(255, 152, 0, 0.2);
+  color: #FF9800;
+  border: 1px solid rgba(255, 152, 0, 0.3);
+}
+
+.my-listing__status-badge--published {
+  background: rgba(76, 175, 80, 0.2);
+  color: #4CAF50;
+  border: 1px solid rgba(76, 175, 80, 0.3);
+}
+
+.my-listing__status-badge--archived {
+  background: rgba(158, 158, 158, 0.2);
+  color: #9E9E9E;
+  border: 1px solid rgba(158, 158, 158, 0.3);
+}
+
+.my-listing__status-badge--completed {
+  background: rgba(102, 102, 102, 0.2);
+  color: #cccccc;
+  border: 1px solid rgba(102, 102, 102, 0.3);
+}
+
+/* Пустое состояние */
+.my-listing__empty {
+  text-align: center;
+  padding: 60px 20px;
+  background: #2a2a35;
+  border-radius: 10px;
+}
+
+.my-listing__empty p {
+  color: #888888;
+  font-size: 16px;
+  margin-bottom: 20px;
+}
+
+.my-listing__empty-btn {
+  background: #666666;
+  color: #ffffff;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 10px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.my-listing__empty-btn:hover {
+  background: #777777;
+  transform: translateY(-2px);
+}
+
+/* Адаптивность */
+@media (max-width: 1024px) {
+  .my-listings__table-header,
+  .my-listings__card-row {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .my-listing__th:nth-child(n+4),
+  .my-listing__card-cell:nth-child(n+4) {
+    display: none;
+  }
+}
+
+@media (max-width: 768px) {
+  .my-listing__table-header,
+  .my-listing__card-row {
+    grid-template-columns: 1fr;
+  }
+
+  .my-listing__th {
+    display: none;
+  }
+
+  .my-listing__card {
+    padding: 15px;
+  }
+
+  .my-listing__card-cell {
+    margin-bottom: 15px;
+  }
+
+  .my-listing__header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .my-listing__actions {
+    width: 100%;
+    flex-direction: column;
+  }
+
+  .my-listing__btn {
+    width: 100%;
+  }
+}

@@ -226,6 +226,52 @@ export interface CargoBidResponse {
   acceptedAt?: string | null;
 }
 
+// ====== Типы для машин ======
+export interface CreateTruckRequest {
+  title?: string;
+  description?: string;
+  routeFrom?: string;
+  routeTo?: string;
+  capacityTons: number;
+  volumeM3: number;
+  bodyType?: string;
+  loadingType: LoadingType;
+  crewDriversCount?: number;
+  additionalEquipment?: string;
+  availableFrom: string;
+  price: number;
+  paymentType: PaymentType;
+  allowBargaining?: boolean;
+  prepaymentPercent?: number;
+  visibility?: ListingVisibility;
+}
+
+export interface TruckResponse extends CreateTruckRequest {
+  id: string;
+  userId: string;
+  status: ListingStatus;
+  createdAt: string;
+  publishedAt?: string | null;
+  sourceListingId?: string | null;
+}
+
+export interface TruckSearchParams {
+  RouteFrom?: string;
+  RouteTo?: string;
+  AvailableDate?: string;
+  CapacityFrom?: number;
+  CapacityTo?: number;
+  VolumeFrom?: number;
+  VolumeTo?: number;
+  BodyType?: string;
+  LoadingType?: LoadingType;
+  AdditionalEquipment?: string;
+  Page?: number;
+  PageSize?: number;
+  SortBy?: string;
+  SortDirection?: string;
+}
+
 // ====== Логика refresh token ======
 let isRefreshing = false;
 let refreshSubscribers: Array<(token: string) => void> = [];
@@ -471,7 +517,7 @@ export const api = {
       }, CHAT_BASE_URL),
   },
 
-  // 🚛 ListingService API (порт 5002)
+  // 📦 ListingService API (порт 5002) — Грузы
   cargos: {
     search: (params: CargoSearchParams = {}) => {
       const queryParams = new URLSearchParams();
@@ -531,5 +577,55 @@ export const api = {
 
     acceptBid: (cargoId: string, bidId: string) =>
       request<string>(`/Cargos/${cargoId}/bids/${bidId}/accept`, { method: 'POST' }, LISTING_BASE_URL),
+  },
+
+  // 🚛 ListingService API (порт 5002) — Машины
+  trucks: {
+    search: (params: TruckSearchParams = {}) => {
+      const queryParams = new URLSearchParams();
+      Object.entries(params).forEach(([key, value]) => {
+        if (value !== undefined && value !== null && value !== '') {
+          queryParams.append(key, value.toString());
+        }
+      });
+      const queryString = queryParams.toString();
+      return request<TruckResponse[]>(
+        `/Trucks${queryString ? '?' + queryString : ''}`,
+        { method: 'GET' },
+        LISTING_BASE_URL
+      );
+    },
+
+    getById: (id: string) =>
+      request<TruckResponse>(`/Trucks/${id}`, { method: 'GET' }, LISTING_BASE_URL),
+
+    create: (data: CreateTruckRequest) => {
+      console.log('🚛 trucks.create - Отправка на сервер:', data);
+      return request<string>('/Trucks', {
+        method: 'POST',
+        body: JSON.stringify(data),
+      }, LISTING_BASE_URL);
+    },
+
+    update: (id: string, data: CreateTruckRequest) =>
+      request<string>(`/Trucks/${id}`, {
+        method: 'PUT',
+        body: JSON.stringify(data),
+      }, LISTING_BASE_URL),
+
+    delete: (id: string) =>
+      request<string>(`/Trucks/${id}`, { method: 'DELETE' }, LISTING_BASE_URL),
+
+    getMyTrucks: () =>
+      request<TruckResponse[]>('/Trucks/my', { method: 'GET' }, LISTING_BASE_URL),
+
+    publish: (id: string) =>
+      request<string>(`/Trucks/${id}/publish`, { method: 'POST' }, LISTING_BASE_URL),
+
+    archive: (id: string) =>
+      request<string>(`/Trucks/${id}/archive`, { method: 'POST' }, LISTING_BASE_URL),
+
+    copy: (id: string) =>
+      request<string>(`/Trucks/${id}/copy`, { method: 'POST' }, LISTING_BASE_URL),
   },
 };

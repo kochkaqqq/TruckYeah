@@ -31,7 +31,7 @@ export const AuthPage = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [toast, setToast] = useState<ToastData | null>(null);
 
-  const { setCurrentUser } = useAuthStore();
+  const {  login } = useAuthStore();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -153,7 +153,7 @@ export const AuthPage = () => {
           const userSurname = nameParts[0] || '';
           const userName = nameParts[1] || '';
 
-          setCurrentUser({
+          const user = {
             id: userData.id || 'unknown',
             email: userData.email || email,
             phone: userData.phone || getDigitsFromPhone(phone),
@@ -161,7 +161,9 @@ export const AuthPage = () => {
             surname: userSurname,
             fullName: fullName,
             isProfileCompleted: true,
-          });
+          };
+
+          login(user); 
         }
       }
 
@@ -277,7 +279,7 @@ export const AuthPage = () => {
           const userSurname = nameParts[0] || '';
           const userName = nameParts[1] || '';
 
-          setCurrentUser({
+          login({
             id: userData.id || 'unknown',
             email: userData.email || email,
             phone: userData.phone || getDigitsFromPhone(phone),

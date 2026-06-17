@@ -1,0 +1,317 @@
+.vehicles-page {
+  min-height: 100vh;
+  background: #1a1a1e;
+  padding: 40px 20px;
+}
+
+.vehicles-page__container {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+/* Заголовок */
+.vehicles-page__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 30px;
+  flex-wrap: wrap;
+  gap: 15px;
+}
+
+.vehicles-page__title {
+  color: #ffffff;
+  font-size: 32px;
+  font-weight: 700;
+  margin: 0;
+}
+
+.vehicles-page__add-btn {
+  background: #666666;
+  color: #ffffff;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 10px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.vehicles-page__add-btn:hover {
+  background: #777777;
+  transform: translateY(-2px);
+  box-shadow: 0 5px 20px rgba(102, 102, 102, 0.4);
+}
+
+/* Форма поиска */
+.vehicles-page__filters {
+  background: #2a2a35;
+  border-radius: 15px;
+  padding: 25px;
+  margin-bottom: 30px;
+  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+}
+
+.vehicles-page__filter-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 15px;
+  margin-bottom: 15px;
+}
+
+.vehicles-page__filter-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.vehicles-page__label {
+  color: #e0e0e0;
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.vehicles-page__input {
+  background: #1a1a1e;
+  border: 1px solid #3a3a45;
+  border-radius: 8px;
+  padding: 10px 14px;
+  color: #ffffff;
+  font-size: 14px;
+  outline: none;
+  transition: all 0.3s ease;
+}
+
+.vehicles-page__input:focus {
+  border-color: #666666;
+}
+
+.vehicles-page__input::placeholder {
+  color: #888888;
+}
+
+.vehicles-page__select {
+  cursor: pointer;
+  appearance: none;
+  -webkit-appearance: none;
+  background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23ffffff' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+  background-size: 16px;
+  padding-right: 35px;
+}
+
+.vehicles-page__select option {
+  background: #2a2a35;
+  color: #ffffff;
+}
+
+.vehicles-page__filter-actions {
+  display: flex;
+  gap: 15px;
+  margin-top: 10px;
+}
+
+.vehicles-page__btn {
+  padding: 12px 30px;
+  border-radius: 10px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  border: none;
+  transition: all 0.3s ease;
+}
+
+.vehicles-page__btn--primary {
+  background: #666666;
+  color: #ffffff;
+}
+
+.vehicles-page__btn--primary:hover:not(:disabled) {
+  background: #777777;
+  transform: translateY(-2px);
+  box-shadow: 0 5px 20px rgba(102, 102, 102, 0.4);
+}
+
+.vehicles-page__btn--secondary {
+  background: #3a3a45;
+  color: #ffffff;
+  border: 2px solid #4a4a55;
+}
+
+.vehicles-page__btn--secondary:hover {
+  background: #4a4a55;
+}
+
+/* Результаты */
+.vehicles-page__results {
+  margin-top: 20px;
+}
+
+.vehicles-page__results-title {
+  color: #ffffff;
+  font-size: 24px;
+  font-weight: 600;
+  margin-bottom: 20px;
+}
+
+.vehicles-page__loading,
+.vehicles-page__empty {
+  text-align: center;
+  padding: 60px 20px;
+  color: #888888;
+  font-size: 16px;
+}
+
+.vehicles-page__list {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* Карточка машины */
+.truck-card {
+  background: #2a2a35;
+  border-radius: 15px;
+  padding: 25px;
+  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+  transition: all 0.3s ease;
+  border: 1px solid #3a3a45;
+}
+
+.truck-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.4);
+  border-color: #4a4a55;
+}
+
+.truck-card__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.truck-card__route {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: #ffffff;
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.truck-card__from,
+.truck-card__to {
+  color: #ffffff;
+}
+
+.truck-card__arrow {
+  color: #666666;
+  font-size: 20px;
+}
+
+.truck-card__date {
+  color: #a0a0a0;
+  font-size: 14px;
+}
+
+.truck-card__details {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 15px;
+  margin-bottom: 20px;
+  padding: 15px;
+  background: #1a1a1e;
+  border-radius: 10px;
+}
+
+.truck-card__detail {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.truck-card__detail-label {
+  color: #888888;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.truck-card__detail-value {
+  color: #e0e0e0;
+  font-size: 15px;
+  font-weight: 500;
+}
+
+.truck-card__price {
+  font-size: 28px;
+  font-weight: 700;
+  color: #cccccc;
+  margin-bottom: 20px;
+  text-align: right;
+}
+
+.truck-card__actions {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.truck-card__btn {
+  flex: 1;
+  min-width: 140px;
+  padding: 12px 20px;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  border: none;
+  transition: all 0.3s ease;
+}
+
+.truck-card__btn--contacts {
+  background: #3a3a45;
+  color: #ffffff;
+  border: 1px solid #4a4a55;
+}
+
+.truck-card__btn--contacts:hover {
+  background: #4a4a55;
+  transform: translateY(-2px);
+}
+
+.truck-card__btn--chat {
+  background: #4a4a55;
+  color: #ffffff;
+  border: 1px solid #5a5a65;
+}
+
+.truck-card__btn--chat:hover {
+  background: #5a5a65;
+  transform: translateY(-2px);
+}
+
+/* Адаптивность */
+@media (max-width: 768px) {
+  .vehicles-page__filter-row {
+    grid-template-columns: 1fr;
+  }
+
+  .truck-card__header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .truck-card__actions {
+    flex-direction: column;
+  }
+
+  .truck-card__btn {
+    width: 100%;
+  }
+}

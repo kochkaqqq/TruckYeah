@@ -20,12 +20,14 @@ interface AuthState {
   user: User | null;
   setCurrentUser: (user: User | null) => void;
   updateUser: (data: Partial<User>) => void;
+  login: (user: User) => void;
   logout: () => void;
 }
 
 export const useAuthStore = create<AuthState>((set) => ({
+  // ✅ Инициализация из localStorage
   currentUser: null,
-  isAuthenticated: false,
+  isAuthenticated: !!localStorage.getItem('authToken'), // ✅ Ключевое исправление
   user: null,
   
   setCurrentUser: (user) => set({ 
@@ -41,6 +43,15 @@ export const useAuthStore = create<AuthState>((set) => ({
       user: updatedUser,
     };
   }),
+
+  // ✅ Добавляем метод login
+  login: (user) => {
+    set({
+      currentUser: user,
+      isAuthenticated: true,
+      user: user,
+    });
+  },
   
   logout: () => {
     localStorage.removeItem('authToken');

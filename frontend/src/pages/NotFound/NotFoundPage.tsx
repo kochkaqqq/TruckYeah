@@ -1,22 +1,20 @@
-import { Link } from 'react-router-dom';
-import truckImage from '../../assets/icons/truck-404.png';
+import { useNavigate } from 'react-router-dom';
+import truckImage from '../../assets/icons/logo.png';
 import './NotFoundPage.css';
 
 export const NotFoundPage = () => {
+  const navigate = useNavigate();
+
+  const handleClick = () => {
+    navigate('/');
+  };
+
   return (
-    <div className="not-found">
+    <div className="not-found" onClick={handleClick}>
       <div className="not-found__container">
-        {/* Грузовик */}
         <div className="not-found__truck">
-          <img src={truckImage} alt="404 - Грузовик не найден" />
+          <img src={truckImage} alt="404" />
         </div>
-        
-        
-        
-        {/* Кнопка */}
-        <Link to="/" className="not-found__btn">
-          Вернуться на главную
-        </Link>
       </div>
     </div>
   );

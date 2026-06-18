@@ -45,3 +45,21 @@
 .header__link:hover {
   color: var(--color-text-primary);
 }
+
+.header__logo {
+  display: flex;
+  align-items: center;
+  text-decoration: none;
+  padding: 0;
+}
+
+.header__logo-img {
+  height: 40px;
+  width: auto;
+  transition: transform 0.2s ease, opacity 0.2s ease;
+}
+
+.header__logo-img:hover {
+  transform: scale(1.05);
+  opacity: 0.9;
+}

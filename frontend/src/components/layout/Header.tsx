@@ -6,7 +6,7 @@ export const Header = () => {
     <header className="header">
       <div className="header__container">
         <Link to="/" className="header__logo">
-          ati.su
+          TruckYeah
         </Link>
         
         <nav className="header__nav">
@@ -18,7 +18,6 @@ export const Header = () => {
           <Link to="/profile" className="header__link">Профиль</Link>
         </nav>
 
-        
         <div className="header__actions">
           {/* Здесь потом будет аватар или кнопка выхода */}
         </div>

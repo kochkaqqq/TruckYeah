@@ -19,7 +19,7 @@ namespace WebApi.Controllers
         }
 
         [HttpPost("register")]
-        public async Task<IActionResult> Register([FromBody] RegistrationDtoRequest regDto)
+        public async Task<IActionResult> Register([FromBody] UserDtoRequest regDto)
         {
             try
             {
@@ -105,6 +105,62 @@ namespace WebApi.Controllers
             catch (Exception ex)
             {
                 return StatusCode(500, new { message = "Internal server error", details = ex.Message });
+            }
+        }
+
+        [Authorize(Policy = "Admin")]
+        [HttpPut]
+        [Route("update-user")]
+        public async Task<IActionResult> UpdateUserByAdmin([FromBody] UpdateUserRequestDto requestDto)
+        {
+            try
+            {
+                var res = await _userService.UpdateUserAsync(requestDto);
+                return Ok(res);
+            }
+            catch (EntityNotFoundException ex)
+            {
+                return NotFound(new { message = ex.Message });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "Internal server error", details = ex.Message });
+            }
+        }
+
+        [Authorize(Policy = "Admin")]
+        [HttpDelete]
+        [Route("delete")]
+        public async Task<IActionResult> DeleteUser([FromBody] Guid userId)
+        {
+            try
+            {
+                await _userService.DeleteUserAsync(userId);
+                return Ok();    
+            }
+            catch (EntityNotFoundException ex)
+            {
+                return NotFound(new { message = ex.Message });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "Internal server error", details = ex.Message });
+            }
+        }
+
+        [Authorize(Policy = "Admin")]
+        [HttpGet]
+        [Route("all-users")]
+        public async Task<IActionResult> GetUsers()
+        {
+            try
+            {
+                var res = await _userService.GetUsersAsync();
+                return Ok(res);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
             }
         }
     }

@@ -73,17 +73,28 @@ builder.Services.AddAuthentication(options =>
     options.TokenValidationParameters = new TokenValidationParameters
     {
         ValidateIssuer = true,
-        ValidIssuer = "indentity-service",
+        ValidIssuers = new[]
+        {
+            "identity-service",
+            "admin-service"
+        },
+
         ValidateAudience = false,
+
         ValidateLifetime = true,
         ClockSkew = TimeSpan.Zero,
+
         ValidateIssuerSigningKey = true,
         IssuerSigningKey = new SymmetricSecurityKey(
             Encoding.UTF8.GetBytes("your-super-secret-key-with-at-least-32-characters-long"))
     };
 });
 
-builder.Services.AddAuthorization();
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy("AdminOnly", policy =>
+        policy.RequireRole("Admin"));
+});
 
 var app = builder.Build();
 

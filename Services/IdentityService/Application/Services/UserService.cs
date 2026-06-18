@@ -112,7 +112,7 @@ namespace Application.Services
             };
         }
 
-        public async Task<LoginDtoResponse> RegistrationUserAsync(RegistrationDtoRequest regDto)
+        public async Task<LoginDtoResponse> RegistrationUserAsync(UserDtoRequest regDto)
         {
             var emailExists = await _dbContext.Users
                 .AnyAsync(u => u.Email.Value == regDto.Email);
@@ -201,6 +201,79 @@ namespace Application.Services
             return user;
         }
 
+        public async Task<UserDtoResponse> UpdateUserAsync(UpdateUserRequestDto request)
+        {
+            var user = await _dbContext.Users.FirstOrDefaultAsync(u => u.Id == request.Id)
+                ?? throw new EntityNotFoundException(nameof(User), request.Id.ToString());
+
+            if (!string.IsNullOrWhiteSpace(request.Email))
+            {
+                user.Email = new Email(request.Email);
+            }
+
+            if (!string.IsNullOrWhiteSpace(request.Phone))
+            {
+                user.Phone = new Phone(request.Phone);
+            }
+
+            if (request.CountryId.HasValue)
+            {
+                var dbCountry = await _dbContext.Countries.FirstOrDefaultAsync(c => c.Id == request.CountryId)
+                    ?? throw new EntityNotFoundException(nameof(Country), request.CountryId.ToString());
+                user.Country = dbCountry;
+            }
+
+            if (!string.IsNullOrWhiteSpace(request.Postcode))
+            {
+                user.Postcode = new Postcode(request.Postcode);
+            }
+
+            if (request.UserType != default)
+            {
+                user.UserType = request.UserType;
+            }
+
+            if (!string.IsNullOrWhiteSpace(request.VatId))
+            {
+                user.VatId = new VatId(request.VatId);
+            }
+
+            if (request.CompanyId.HasValue && request.CompanyId.Value != Guid.Empty)
+            {
+                var company = await _dbContext.Companies.FirstOrDefaultAsync(c => c.Id == request.CountryId)
+                    ?? throw new EntityNotFoundException(nameof(Company), request.CompanyId.ToString());
+                user.Company = company;
+            }
+
+            if (!string.IsNullOrWhiteSpace(request.AvatarLink))
+            {
+                user.AvatarLink = request.AvatarLink;
+            }
+
+            if (request.Rating.HasValue)
+            {
+                user.Rating = request.Rating.Value;
+            }
+
+            await _dbContext.SaveChangesAsync();
+
+            return new UserDtoResponse()
+            {
+                Email = user.Email.Value,
+                Phone = user.Phone.FullNumber,
+                Country = user.Country.Name.Value,
+                Postcode = user.Postcode.Value,
+                UserType = user.UserType,
+                VatId = user.VatId.Value,
+                Name = user.FullName?.FirstName, 
+                LastName = user.FullName?.LastName, 
+                MiddleName = user.FullName?.MiddleName, 
+                CompanyId = user.Company?.Id,
+                CompanyName = user.Company?.Name.Value,
+                AvatarLink = user.AvatarLink
+            };
+        }
+
         private string GenerateJwtToken(User user)
         {
             var claims = new List<Claim>
@@ -223,6 +296,36 @@ namespace Application.Services
                         new SymmetricSecurityKey(Encoding.UTF8.GetBytes("your-super-secret-key-with-at-least-32-characters-long")), SecurityAlgorithms.HmacSha256));
 
             return new JwtSecurityTokenHandler().WriteToken(jwt);
+        }
+
+        public async Task DeleteUserAsync(Guid userId)
+        {
+            var user = await _dbContext.Users.FirstOrDefaultAsync(u => u.Id == userId)
+                ?? throw new EntityNotFoundException(nameof(User), userId.ToString());
+
+            _dbContext.Users.Remove(user);
+            await _dbContext.SaveChangesAsync();
+        }
+
+        public async Task<ICollection<UserDtoResponse>> GetUsersAsync()
+        {
+            return await _dbContext.Users.AsNoTracking()
+                .Include(u => u.Country)
+                .Include(u => u.Company).Select(user => new UserDtoResponse()
+                {
+                    Email = user.Email.Value,
+                    Phone = user.Phone.FullNumber,
+                    Country = user.Country.Name.Value,
+                    Postcode = user.Postcode.Value,
+                    UserType = user.UserType,
+                    VatId = user.VatId.Value,
+                    Name = user.FullName == null ? string.Empty : user.FullName.FirstName,
+                    LastName = user.FullName == null ? string.Empty : user.FullName.LastName,
+                    MiddleName = user.FullName == null ? string.Empty : user.FullName.MiddleName,
+                    CompanyId = user.Company == null ? null : user.Company.Id,
+                    CompanyName = user.Company == null ? null : user.Company.Name.Value,
+                    AvatarLink = user.AvatarLink
+                }).ToListAsync();
         }
     }
 }

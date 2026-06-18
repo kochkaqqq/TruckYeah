@@ -1,21 +1,22 @@
-using System.Text;
-using ListingService.Application.Interfaces;
-using ListingService.Application.Services;
-using ListingService.Infrastructure;
-using ListingService.Infrastructure.Implementation;
-using ListingService.Infrastructure.Interfaces;
+using AdminService.Application.Interfaces;
+using AdminService.Infastructure;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddControllers();
+builder.Services.InjectInfrastructure(builder.Configuration.GetConnectionString("DefaultConnection")
+    ?? throw new Exception());
+
+builder.Services.AddHttpClient();
+
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>
 {
-    c.SwaggerDoc("v1", new OpenApiInfo { Title = "ListingService API", Version = "v1" });
+    c.SwaggerDoc("v1", new OpenApiInfo { Title = "IdentityService API", Version = "v1" });
     c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
     {
         Description = "Paste JWT token without the Bearer prefix.",
@@ -41,28 +42,8 @@ builder.Services.AddSwaggerGen(c =>
     });
 });
 
-builder.Services.AddDbContext<ListingServiceDbContext>(options =>
-{
-    options.UseNpgsql(builder.Configuration.GetConnectionString(nameof(ListingServiceDbContext)));
-});
+builder.Services.AddControllers();
 
-// ✅ CORS для фронтенда
-builder.Services.AddCors(options =>
-{
-    options.AddPolicy("AllowFrontend", policy =>
-    {
-        policy.WithOrigins(
-                "http://localhost:3000",
-                "http://localhost:5173",
-                "http://localhost"
-            )
-            .AllowAnyHeader()
-            .AllowAnyMethod()
-            .AllowCredentials();
-    });
-});
-
-// ✅ JWT Authentication с явным указанием схем
 builder.Services.AddAuthentication(options =>
 {
     options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -73,11 +54,7 @@ builder.Services.AddAuthentication(options =>
     options.TokenValidationParameters = new TokenValidationParameters
     {
         ValidateIssuer = true,
-        ValidIssuers = new[]
-        {
-            "identity-service",
-            "admin-service"
-        },
+        ValidIssuer = "admin-service",
 
         ValidateAudience = false,
 
@@ -96,31 +73,19 @@ builder.Services.AddAuthorization(options =>
         policy.RequireRole("Admin"));
 });
 
-builder.Services.AddAuthorization();
-
-builder.Services.AddScoped<ICargosRepository, CargosRepository>();
-builder.Services.AddScoped<ITrucksRepository, TrucksRepository>();
-builder.Services.AddScoped<ICargosService, CargosService>();
-builder.Services.AddScoped<ITrucksService, TrucksService>();
-
 var app = builder.Build();
 
 using (var scope = app.Services.CreateScope())
 {
-    var dbContext = scope.ServiceProvider.GetRequiredService<ListingServiceDbContext>();
+    var dbContext = scope.ServiceProvider.GetRequiredService<IDbContext>();
     dbContext.Database.Migrate();
 }
 
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
-
-// ✅ Порядок middleware важен!
-app.UseCors("AllowFrontend");
 app.UseAuthentication();
 app.UseAuthorization();
+
+app.UseSwagger();
+app.UseSwaggerUI();
 
 app.MapControllers();
 

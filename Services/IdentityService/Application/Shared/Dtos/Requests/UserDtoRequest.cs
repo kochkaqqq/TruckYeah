@@ -2,7 +2,7 @@
 
 namespace Application.Shared.Dtos.Requests
 {
-    public class RegistrationDtoRequest
+    public class UserDtoRequest
     {
         public string Password { get; set; } = null!;
         public string Email { get; set; } = null!;

@@ -1,0 +1,1163 @@
+{
+  "openapi": "3.0.4",
+  "info": {
+    "title": "ModeratorService API",
+    "description": "API административной панели TruckYeah для управления пользователями и модерации объявлений.",
+    "version": "v1"
+  },
+  "servers": [
+    {
+      "url": "http://localhost:5005",
+      "description": "Прямой доступ к ModeratorService"
+    },
+    {
+      "url": "http://localhost:3000",
+      "description": "Доступ через frontend nginx"
+    }
+  ],
+  "paths": {
+    "/api/moderator/login": {
+      "post": {
+        "tags": [
+          "Authentication"
+        ],
+        "summary": "Вход модератора",
+        "description": "Проверяет учётные данные в IdentityService и возвращает пару JWT/refresh token. Endpoint доступен без авторизации.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LoginRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Успешный вход",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LoginResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          }
+        }
+      }
+    },
+    "/api/moderator/logout": {
+      "post": {
+        "tags": [
+          "Authentication"
+        ],
+        "summary": "Выход модератора",
+        "description": "Отзывает переданный refresh token. Требуется роль Moderator.",
+        "security": [
+          {
+            "Bearer": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "string",
+                "description": "Refresh token, полученный при входе",
+                "example": "base64-refresh-token"
+              }
+            }
+          }
+        },
+        "responses": {
+          "204": {
+            "description": "Выход выполнен"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          }
+        }
+      }
+    },
+    "/api/moderator/users": {
+      "get": {
+        "tags": [
+          "Users"
+        ],
+        "summary": "Получить всех пользователей",
+        "description": "Возвращает пользователей, отсортированных по дате регистрации от новых к старым.",
+        "security": [
+          {
+            "Bearer": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Список пользователей",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/AdminUserResponse"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          }
+        }
+      }
+    },
+    "/api/moderator/users/{id}/block": {
+      "post": {
+        "tags": [
+          "Users"
+        ],
+        "summary": "Заблокировать пользователя",
+        "description": "Устанавливает статус Blocked и отзывает активные refresh-токены пользователя. Учётную запись модератора блокировать нельзя.",
+        "security": [
+          {
+            "Bearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/UserId"
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Пользователь заблокирован"
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          }
+        }
+      }
+    },
+    "/api/moderator/users/{id}/unblock": {
+      "post": {
+        "tags": [
+          "Users"
+        ],
+        "summary": "Разблокировать пользователя",
+        "security": [
+          {
+            "Bearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/UserId"
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Пользователь разблокирован"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          }
+        }
+      }
+    },
+    "/api/moderator/cargos": {
+      "get": {
+        "tags": [
+          "Cargos"
+        ],
+        "summary": "Получить все грузы",
+        "description": "Возвращает нетиповые грузовые объявления всех пользователей независимо от статуса.",
+        "security": [
+          {
+            "Bearer": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Список грузов",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/CargoResponse"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          }
+        }
+      }
+    },
+    "/api/moderator/cargos/{id}/approve": {
+      "post": {
+        "tags": [
+          "Cargos"
+        ],
+        "summary": "Одобрить груз",
+        "description": "Переводит груз из PendingModeration в Published.",
+        "security": [
+          {
+            "Bearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/ListingId"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Идентификатор одобренного груза",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Identifier"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          }
+        }
+      }
+    },
+    "/api/moderator/cargos/{id}/reject": {
+      "post": {
+        "tags": [
+          "Cargos"
+        ],
+        "summary": "Отклонить груз",
+        "description": "Переводит груз из PendingModeration в Rejected и сохраняет обязательную причину.",
+        "security": [
+          {
+            "Bearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/ListingId"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RejectListingRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Идентификатор отклонённого груза",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Identifier"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          }
+        }
+      }
+    },
+    "/api/moderator/trucks": {
+      "get": {
+        "tags": [
+          "Trucks"
+        ],
+        "summary": "Получить все машины",
+        "description": "Возвращает объявления о машинах всех пользователей независимо от статуса.",
+        "security": [
+          {
+            "Bearer": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Список машин",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/TruckResponse"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          }
+        }
+      }
+    },
+    "/api/moderator/trucks/{id}/approve": {
+      "post": {
+        "tags": [
+          "Trucks"
+        ],
+        "summary": "Одобрить машину",
+        "description": "Переводит машину из PendingModeration в Published.",
+        "security": [
+          {
+            "Bearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/ListingId"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Идентификатор одобренной машины",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Identifier"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          }
+        }
+      }
+    },
+    "/api/moderator/trucks/{id}/reject": {
+      "post": {
+        "tags": [
+          "Trucks"
+        ],
+        "summary": "Отклонить машину",
+        "description": "Переводит машину из PendingModeration в Rejected и сохраняет обязательную причину.",
+        "security": [
+          {
+            "Bearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/ListingId"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RejectListingRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Идентификатор отклонённой машины",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Identifier"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "Bearer": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT",
+        "description": "JWT модератора, полученный через POST /api/moderator/login"
+      }
+    },
+    "parameters": {
+      "UserId": {
+        "name": "id",
+        "in": "path",
+        "required": true,
+        "description": "Идентификатор пользователя",
+        "schema": {
+          "type": "string",
+          "format": "uuid"
+        }
+      },
+      "ListingId": {
+        "name": "id",
+        "in": "path",
+        "required": true,
+        "description": "Идентификатор объявления",
+        "schema": {
+          "type": "string",
+          "format": "uuid"
+        }
+      }
+    },
+    "responses": {
+      "BadRequest": {
+        "description": "Некорректный запрос или недопустимый переход состояния",
+        "content": {
+          "text/plain": {
+            "schema": {
+              "type": "string"
+            }
+          },
+          "application/problem+json": {
+            "schema": {
+              "$ref": "#/components/schemas/ProblemDetails"
+            }
+          }
+        }
+      },
+      "Unauthorized": {
+        "description": "JWT отсутствует, недействителен или учётная запись заблокирована"
+      },
+      "Forbidden": {
+        "description": "Пользователь авторизован, но не имеет роли Moderator"
+      },
+      "NotFound": {
+        "description": "Пользователь или объявление не найдено",
+        "content": {
+          "text/plain": {
+            "schema": {
+              "type": "string"
+            }
+          },
+          "application/problem+json": {
+            "schema": {
+              "$ref": "#/components/schemas/ProblemDetails"
+            }
+          }
+        }
+      }
+    },
+    "schemas": {
+      "LoginRequest": {
+        "type": "object",
+        "required": [
+          "password"
+        ],
+        "properties": {
+          "email": {
+            "type": "string",
+            "format": "email",
+            "nullable": true,
+            "example": "moderator@example.com"
+          },
+          "phone": {
+            "type": "string",
+            "nullable": true,
+            "example": "+79990000000"
+          },
+          "password": {
+            "type": "string",
+            "format": "password",
+            "example": "StrongPassword123!"
+          },
+          "deviceId": {
+            "type": "string",
+            "nullable": true,
+            "example": "admin-browser"
+          },
+          "userAgent": {
+            "type": "string",
+            "nullable": true,
+            "example": "Mozilla/5.0"
+          },
+          "ipAddress": {
+            "type": "string",
+            "nullable": true,
+            "example": "127.0.0.1"
+          }
+        },
+        "description": "Необходимо передать email или phone."
+      },
+      "LoginResponse": {
+        "type": "object",
+        "required": [
+          "jwtToken",
+          "refreshToken"
+        ],
+        "properties": {
+          "jwtToken": {
+            "type": "string",
+            "description": "Access JWT"
+          },
+          "refreshToken": {
+            "type": "string",
+            "description": "Refresh token"
+          }
+        }
+      },
+      "AdminUserResponse": {
+        "type": "object",
+        "required": [
+          "id",
+          "email",
+          "phone",
+          "displayName",
+          "userType",
+          "role",
+          "status",
+          "rating",
+          "createdAt"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "email": {
+            "type": "string",
+            "format": "email"
+          },
+          "phone": {
+            "type": "string"
+          },
+          "displayName": {
+            "type": "string"
+          },
+          "userType": {
+            "$ref": "#/components/schemas/UserType"
+          },
+          "role": {
+            "$ref": "#/components/schemas/AccountRole"
+          },
+          "status": {
+            "$ref": "#/components/schemas/AccountStatus"
+          },
+          "city": {
+            "type": "string",
+            "nullable": true
+          },
+          "company": {
+            "type": "string",
+            "nullable": true
+          },
+          "avatarLink": {
+            "type": "string",
+            "format": "uri",
+            "nullable": true
+          },
+          "rating": {
+            "type": "number",
+            "format": "float"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "CargoResponse": {
+        "type": "object",
+        "required": [
+          "id",
+          "userId",
+          "title",
+          "cargoName",
+          "routeFrom",
+          "routeTo",
+          "routePoints",
+          "loadDateTime",
+          "unloadDateTime",
+          "weightTons",
+          "volumeM3",
+          "bodyTypeRequired",
+          "loadingType",
+          "paymentType",
+          "status",
+          "visibility",
+          "createdAt"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "userId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "title": {
+            "type": "string"
+          },
+          "cargoName": {
+            "type": "string"
+          },
+          "routeFrom": {
+            "type": "string"
+          },
+          "routeTo": {
+            "type": "string"
+          },
+          "routePoints": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/RoutePointResponse"
+            }
+          },
+          "routeDistanceKm": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "routeDurationMinutes": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "routeFuelLiters": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "routeGeometryGeoJson": {
+            "type": "string",
+            "nullable": true
+          },
+          "routeCalculatedAt": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "loadDateTime": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "unloadDateTime": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "weightTons": {
+            "type": "number",
+            "format": "double"
+          },
+          "volumeM3": {
+            "type": "number",
+            "format": "double"
+          },
+          "useAutomaticCalculation": {
+            "type": "boolean"
+          },
+          "weightPerPackageKg": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "bodyTypeRequired": {
+            "type": "string"
+          },
+          "loadingType": {
+            "$ref": "#/components/schemas/LoadingType"
+          },
+          "lengthCm": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "widthCm": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "heightCm": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "palletsCount": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "packagingType": {
+            "type": "string",
+            "nullable": true
+          },
+          "requiresCMR": {
+            "type": "boolean"
+          },
+          "requiresTIR": {
+            "type": "boolean"
+          },
+          "isADR": {
+            "type": "boolean"
+          },
+          "requiresTwoDrivers": {
+            "type": "boolean"
+          },
+          "paymentType": {
+            "$ref": "#/components/schemas/PaymentType"
+          },
+          "allowBargaining": {
+            "type": "boolean"
+          },
+          "prepaymentPercent": {
+            "type": "number",
+            "format": "decimal",
+            "nullable": true
+          },
+          "startingPrice": {
+            "type": "number",
+            "format": "decimal",
+            "nullable": true
+          },
+          "biddingEnabled": {
+            "type": "boolean"
+          },
+          "minBidStep": {
+            "type": "number",
+            "format": "decimal",
+            "nullable": true
+          },
+          "acceptedBidId": {
+            "type": "string",
+            "format": "uuid",
+            "nullable": true
+          },
+          "biddingClosedAt": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "status": {
+            "$ref": "#/components/schemas/ListingStatus"
+          },
+          "visibility": {
+            "$ref": "#/components/schemas/ListingVisibility"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "publishedAt": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "moderatedAt": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "moderatedBy": {
+            "type": "string",
+            "format": "uuid",
+            "nullable": true
+          },
+          "rejectionReason": {
+            "type": "string",
+            "nullable": true
+          },
+          "boostToTop": {
+            "type": "boolean"
+          },
+          "boostedUntil": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "isTemplate": {
+            "type": "boolean"
+          },
+          "templateName": {
+            "type": "string",
+            "nullable": true
+          },
+          "sourceListingId": {
+            "type": "string",
+            "format": "uuid",
+            "nullable": true
+          },
+          "notes": {
+            "type": "string",
+            "nullable": true
+          }
+        }
+      },
+      "TruckResponse": {
+        "type": "object",
+        "required": [
+          "id",
+          "userId",
+          "title",
+          "routeFrom",
+          "routeTo",
+          "routePoints",
+          "capacityTons",
+          "volumeM3",
+          "bodyType",
+          "loadingType",
+          "crewDriversCount",
+          "availableFrom",
+          "price",
+          "paymentType",
+          "status",
+          "visibility",
+          "createdAt"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "userId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "title": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string",
+            "nullable": true
+          },
+          "routeFrom": {
+            "type": "string"
+          },
+          "routeTo": {
+            "type": "string"
+          },
+          "routePoints": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/RoutePointResponse"
+            }
+          },
+          "routeDistanceKm": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "routeDurationMinutes": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "routeFuelLiters": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "routeGeometryGeoJson": {
+            "type": "string",
+            "nullable": true
+          },
+          "routeCalculatedAt": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "capacityTons": {
+            "type": "number",
+            "format": "double"
+          },
+          "volumeM3": {
+            "type": "number",
+            "format": "double"
+          },
+          "bodyType": {
+            "type": "string"
+          },
+          "loadingType": {
+            "$ref": "#/components/schemas/LoadingType"
+          },
+          "crewDriversCount": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "additionalEquipment": {
+            "type": "string",
+            "nullable": true
+          },
+          "availableFrom": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "price": {
+            "type": "number",
+            "format": "decimal"
+          },
+          "paymentType": {
+            "$ref": "#/components/schemas/PaymentType"
+          },
+          "allowBargaining": {
+            "type": "boolean"
+          },
+          "prepaymentPercent": {
+            "type": "number",
+            "format": "decimal",
+            "nullable": true
+          },
+          "status": {
+            "$ref": "#/components/schemas/ListingStatus"
+          },
+          "visibility": {
+            "$ref": "#/components/schemas/ListingVisibility"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "publishedAt": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "moderatedAt": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "moderatedBy": {
+            "type": "string",
+            "format": "uuid",
+            "nullable": true
+          },
+          "rejectionReason": {
+            "type": "string",
+            "nullable": true
+          },
+          "sourceListingId": {
+            "type": "string",
+            "format": "uuid",
+            "nullable": true
+          }
+        }
+      },
+      "RoutePointResponse": {
+        "type": "object",
+        "required": [
+          "id",
+          "lat",
+          "lon",
+          "order"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "address": {
+            "type": "string",
+            "nullable": true
+          },
+          "lat": {
+            "type": "number",
+            "format": "double"
+          },
+          "lon": {
+            "type": "number",
+            "format": "double"
+          },
+          "scheduledTime": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "order": {
+            "type": "integer",
+            "format": "int32"
+          }
+        }
+      },
+      "RejectListingRequest": {
+        "type": "object",
+        "required": [
+          "reason"
+        ],
+        "properties": {
+          "reason": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 1000,
+            "example": "В объявлении указаны некорректные данные."
+          }
+        }
+      },
+      "Identifier": {
+        "type": "string",
+        "format": "uuid"
+      },
+      "UserType": {
+        "type": "string",
+        "enum": [
+          "Business",
+          "Private",
+          "Individual"
+        ]
+      },
+      "AccountRole": {
+        "type": "string",
+        "enum": [
+          "User",
+          "Moderator"
+        ]
+      },
+      "AccountStatus": {
+        "type": "string",
+        "enum": [
+          "Active",
+          "Blocked"
+        ]
+      },
+      "ListingStatus": {
+        "type": "string",
+        "enum": [
+          "Draft",
+          "PendingModeration",
+          "Published",
+          "Rejected",
+          "Archived",
+          "Completed"
+        ]
+      },
+      "ListingVisibility": {
+        "type": "string",
+        "enum": [
+          "Exchange",
+          "Private"
+        ]
+      },
+      "LoadingType": {
+        "type": "string",
+        "enum": [
+          "Rear",
+          "Side",
+          "Top",
+          "FullAccess"
+        ]
+      },
+      "PaymentType": {
+        "type": "string",
+        "enum": [
+          "Cash",
+          "WithVAT",
+          "WithoutVAT"
+        ]
+      },
+      "ProblemDetails": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "nullable": true
+          },
+          "title": {
+            "type": "string",
+            "nullable": true
+          },
+          "status": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "detail": {
+            "type": "string",
+            "nullable": true
+          },
+          "instance": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": true
+      }
+    }
+  }
+}

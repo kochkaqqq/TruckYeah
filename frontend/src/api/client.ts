@@ -239,6 +239,9 @@ export interface CargoResponse extends CreateCargoRequest {
   status: ListingStatus;
   createdAt: string;
   publishedAt?: string | null;
+  moderatedAt?: string | null;
+  moderatedBy?: string | null;
+  rejectionReason?: string | null;
   boostedUntil?: string | null;
 }
 
@@ -308,6 +311,9 @@ export interface TruckResponse extends CreateTruckRequest {
   status: ListingStatus;
   createdAt: string;
   publishedAt?: string | null;
+  moderatedAt?: string | null;
+  moderatedBy?: string | null;
+  rejectionReason?: string | null;
   sourceListingId?: string | null;
 }
 

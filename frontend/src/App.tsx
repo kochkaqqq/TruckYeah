@@ -20,6 +20,11 @@ import { OrdersPage } from './pages/Orders/OrdersPage';
 import { NotFoundPage } from './pages/NotFound/NotFoundPage';
 import { api } from './api/client';
 import { useAuthStore } from './store/authStore';
+import { AdminLoginPage } from './pages/Admin/AdminLoginPage';
+import { AdminLayout } from './pages/Admin/AdminLayout';
+import { AdminUsersPage } from './pages/Admin/AdminUsersPage';
+import { AdminListingsPage } from './pages/Admin/AdminListingsPage';
+import { AdminProtectedRoute } from './components/admin/AdminProtectedRoute';
 
 function App() {
   const { isInitialized, setCurrentUser, markInitialized, logout } = useAuthStore();
@@ -57,10 +62,29 @@ function App() {
 
   return (
     <BrowserRouter>
-      <div className="app-layout">
-        <Header />
-        <main className="app-main">
-          <Routes>
+      <Routes>
+        <Route path="/admin/login" element={<AdminLoginPage />} />
+        <Route
+          path="/admin"
+          element={
+            <AdminProtectedRoute>
+              <AdminLayout />
+            </AdminProtectedRoute>
+          }
+        >
+          <Route index element={<Navigate to="/admin/users" replace />} />
+          <Route path="users" element={<AdminUsersPage />} />
+          <Route path="cargos" element={<AdminListingsPage kind="cargo" />} />
+          <Route path="trucks" element={<AdminListingsPage kind="truck" />} />
+        </Route>
+
+        <Route
+          path="*"
+          element={
+            <div className="app-layout">
+              <Header />
+              <main className="app-main">
+                <Routes>
             {/* Публичные маршруты */}
             <Route path="/" element={<HomePage />} />
             <Route path="/auth" element={<AuthPage />} />
@@ -86,9 +110,12 @@ function App() {
             <Route path="/my-orders" element={<ProtectedRoute><OrdersPage /></ProtectedRoute>} />
             <Route path="/cargo/search" element={<Navigate to="/cargo" replace />} />
             <Route path="/vehicles/search" element={<Navigate to="/vehicles" replace />} />
-          </Routes>
-        </main>
-      </div>
+                </Routes>
+              </main>
+            </div>
+          }
+        />
+      </Routes>
     </BrowserRouter>
   );
 }

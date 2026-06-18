@@ -52,6 +52,9 @@ public class TrucksService : ITrucksService
         truck.CreatedAt = existing.CreatedAt;
         truck.Status = existing.Status;
         truck.PublishedAt = existing.PublishedAt;
+        truck.ModeratedAt = existing.ModeratedAt;
+        truck.ModeratedBy = existing.ModeratedBy;
+        truck.RejectionReason = existing.RejectionReason;
         truck.SourceListingId = existing.SourceListingId;
         AssignRoutePointIds(truck);
 
@@ -73,8 +76,11 @@ public class TrucksService : ITrucksService
         EnsureOwner(truck.UserId, userId);
         ValidateTruck(truck);
 
-        truck.Status = ListingStatus.Published;
-        truck.PublishedAt = DateTime.UtcNow;
+        truck.Status = ListingStatus.PendingModeration;
+        truck.PublishedAt = null;
+        truck.ModeratedAt = null;
+        truck.ModeratedBy = null;
+        truck.RejectionReason = null;
         await _repository.Update(truck);
         return id;
     }
@@ -134,6 +140,47 @@ public class TrucksService : ITrucksService
         };
 
         return await _repository.Create(copy);
+    }
+
+    public Task<List<Truck>> GetAllForModerationAsync() => _repository.GetAll();
+
+    public async Task<Guid> ApproveAsync(Guid id, Guid moderatorId)
+    {
+        var truck = await GetExistingTruck(id);
+        if (truck.Status != ListingStatus.PendingModeration)
+        {
+            throw new InvalidOperationException("Only listings pending moderation can be approved.");
+        }
+
+        truck.Status = ListingStatus.Published;
+        truck.PublishedAt = DateTime.UtcNow;
+        truck.ModeratedAt = truck.PublishedAt;
+        truck.ModeratedBy = moderatorId;
+        truck.RejectionReason = null;
+        await _repository.Update(truck);
+        return id;
+    }
+
+    public async Task<Guid> RejectAsync(Guid id, Guid moderatorId, string reason)
+    {
+        if (string.IsNullOrWhiteSpace(reason))
+        {
+            throw new ArgumentException("Rejection reason is required.");
+        }
+
+        var truck = await GetExistingTruck(id);
+        if (truck.Status != ListingStatus.PendingModeration)
+        {
+            throw new InvalidOperationException("Only listings pending moderation can be rejected.");
+        }
+
+        truck.Status = ListingStatus.Rejected;
+        truck.PublishedAt = null;
+        truck.ModeratedAt = DateTime.UtcNow;
+        truck.ModeratedBy = moderatorId;
+        truck.RejectionReason = reason.Trim();
+        await _repository.Update(truck);
+        return id;
     }
 
     private async Task<Truck> GetExistingTruck(Guid id)

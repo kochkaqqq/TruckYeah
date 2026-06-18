@@ -55,6 +55,7 @@ public sealed class UserService : IUserService
         {
             throw new UnauthorizedException("Invalid credentials.");
         }
+        EnsureActive(user);
 
         return await CreateTokenPairAsync(
             user,
@@ -86,6 +87,7 @@ public sealed class UserService : IUserService
         {
             throw new UnauthorizedException("Refresh token is invalid or expired.");
         }
+        EnsureActive(refreshToken.User);
 
         refreshToken.RevokedAt = DateTime.UtcNow;
         var response = await CreateTokenPairAsync(
@@ -130,7 +132,10 @@ public sealed class UserService : IUserService
             Country = country,
             Postcode = new Postcode(request.Postcode),
             UserType = request.UserType,
-            AvatarLink = NormalizeOptional(request.AvatarLink)
+            AvatarLink = NormalizeOptional(request.AvatarLink),
+            Role = AccountRole.User,
+            Status = AccountStatus.Active,
+            CreatedAt = DateTime.UtcNow
         };
 
         if (request.UserType == UserType.Business)
@@ -247,6 +252,80 @@ public sealed class UserService : IUserService
         };
     }
 
+    public async Task LogoutAsync(string rawRefreshToken)
+    {
+        if (string.IsNullOrWhiteSpace(rawRefreshToken))
+        {
+            return;
+        }
+
+        var hash = TokenHasher.Hash(rawRefreshToken);
+        var refreshToken = await _dbContext.RefreshTokens
+            .FirstOrDefaultAsync(t => t.TokenHash == hash);
+
+        if (refreshToken is null || refreshToken.RevokedAt is not null)
+        {
+            return;
+        }
+
+        refreshToken.RevokedAt = DateTime.UtcNow;
+        await _dbContext.SaveChangesAsync();
+    }
+
+    public async Task<IReadOnlyList<AdminUserResponse>> GetUsersAsync()
+    {
+        var users = await UsersWithProfile()
+            .AsNoTracking()
+            .OrderByDescending(u => u.CreatedAt)
+            .ToListAsync();
+
+        return users.Select(user => new AdminUserResponse
+        {
+            Id = user.Id,
+            Email = user.Email.Value,
+            Phone = user.Phone.FullNumberWithPlus,
+            DisplayName = GetDisplayName(user),
+            UserType = user.UserType,
+            Role = user.Role,
+            Status = user.Status,
+            City = user.City?.Value,
+            Company = user.Company?.Name.Value,
+            AvatarLink = user.AvatarLink,
+            Rating = user.Rating,
+            CreatedAt = user.CreatedAt
+        }).ToList();
+    }
+
+    public async Task BlockUserAsync(Guid id)
+    {
+        var user = await _dbContext.Users.FirstOrDefaultAsync(u => u.Id == id)
+            ?? throw new EntityNotFoundException(nameof(User), id.ToString());
+
+        if (user.Role == AccountRole.Moderator)
+        {
+            throw new ArgumentException("Moderator accounts cannot be blocked through this endpoint.");
+        }
+
+        user.Status = AccountStatus.Blocked;
+        var now = DateTime.UtcNow;
+        var activeTokens = await _dbContext.RefreshTokens
+            .Where(t => t.UserId == id && t.RevokedAt == null)
+            .ToListAsync();
+        foreach (var token in activeTokens)
+        {
+            token.RevokedAt = now;
+        }
+        await _dbContext.SaveChangesAsync();
+    }
+
+    public async Task UnblockUserAsync(Guid id)
+    {
+        var user = await _dbContext.Users.FirstOrDefaultAsync(u => u.Id == id)
+            ?? throw new EntityNotFoundException(nameof(User), id.ToString());
+        user.Status = AccountStatus.Active;
+        await _dbContext.SaveChangesAsync();
+    }
+
     private IQueryable<User> UsersWithProfile() =>
         _dbContext.Users
             .Include(u => u.Country)
@@ -328,7 +407,8 @@ public sealed class UserService : IUserService
         {
             new(ClaimTypes.Email, user.Email.Value),
             new(ClaimTypes.MobilePhone, user.Phone.FullNumberWithPlus),
-            new(ClaimTypes.NameIdentifier, user.Id.ToString())
+            new(ClaimTypes.NameIdentifier, user.Id.ToString()),
+            new(ClaimTypes.Role, user.Role.ToString())
         };
 
         if (user.FullName is not null)
@@ -372,7 +452,10 @@ public sealed class UserService : IUserService
             Rating = user.Rating,
             IsProfileCompleted = user.UserType == UserType.Business
                 ? user.Company is not null
-                : user.FullName is not null
+                : user.FullName is not null,
+            Role = user.Role,
+            Status = user.Status,
+            CreatedAt = user.CreatedAt
         };
 
     private static string GetDisplayName(User user) =>
@@ -391,4 +474,12 @@ public sealed class UserService : IUserService
 
     private static string? NormalizeOptional(string? value) =>
         string.IsNullOrWhiteSpace(value) ? null : value.Trim();
+
+    private static void EnsureActive(User user)
+    {
+        if (user.Status == AccountStatus.Blocked)
+        {
+            throw new UnauthorizedException("User account is blocked.");
+        }
+    }
 }

@@ -13,4 +13,7 @@ public interface ITrucksService
     Task<Guid> PublishTruckAsync(Guid id, Guid userId);
     Task<Guid> ArchiveTruckAsync(Guid id, Guid userId);
     Task<Guid> CopyTruckAsync(Guid id, Guid userId);
+    Task<List<Truck>> GetAllForModerationAsync();
+    Task<Guid> ApproveAsync(Guid id, Guid moderatorId);
+    Task<Guid> RejectAsync(Guid id, Guid moderatorId, string reason);
 }

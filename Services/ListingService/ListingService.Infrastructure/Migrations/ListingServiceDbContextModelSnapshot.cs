@@ -195,6 +195,16 @@ namespace ListingService.Infrastructure.Migrations
                     b.Property<DateTime?>("PublishedAt")
                         .HasColumnType("timestamp with time zone");
 
+                    b.Property<DateTime?>("ModeratedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid?>("ModeratedBy")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("RejectionReason")
+                        .HasMaxLength(1000)
+                        .HasColumnType("character varying(1000)");
+
                     b.Property<bool>("RequiresCMR")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("boolean")
@@ -361,6 +371,16 @@ namespace ListingService.Infrastructure.Migrations
 
                     b.Property<DateTime?>("PublishedAt")
                         .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime?>("ModeratedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid?>("ModeratedBy")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("RejectionReason")
+                        .HasMaxLength(1000)
+                        .HasColumnType("character varying(1000)");
 
                     b.Property<DateTime?>("RouteCalculatedAt")
                         .HasColumnType("timestamp with time zone");

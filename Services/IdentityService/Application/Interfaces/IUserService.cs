@@ -10,5 +10,9 @@ namespace Application.Interfaces
         Task<UserProfileResponse> GetCurrentUserAsync(Guid id);
         Task<UserProfileResponse> UpdateCurrentUserAsync(Guid id, UpdateUserProfileRequest request);
         Task<PublicUserResponse> GetPublicUserAsync(Guid id);
+        Task LogoutAsync(string refreshToken);
+        Task<IReadOnlyList<AdminUserResponse>> GetUsersAsync();
+        Task BlockUserAsync(Guid id);
+        Task UnblockUserAsync(Guid id);
     }
 }

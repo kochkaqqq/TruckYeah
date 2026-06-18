@@ -13,4 +13,5 @@ public interface ICargosRepository
     Task<List<CargoBid>> GetBidsByCarrier(Guid carrierUserId);
     Task<Guid> CreateBid(CargoBid bid);
     Task UpdateBids(IEnumerable<CargoBid> bids);
+    Task<List<Cargo>> GetAll();
 }

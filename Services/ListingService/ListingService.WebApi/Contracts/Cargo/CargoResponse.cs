@@ -45,6 +45,9 @@ public class CargoResponse
     public ListingVisibility Visibility { get; set; }
     public DateTime CreatedAt { get; set; }
     public DateTime? PublishedAt { get; set; }
+    public DateTime? ModeratedAt { get; set; }
+    public Guid? ModeratedBy { get; set; }
+    public string? RejectionReason { get; set; }
     public bool BoostToTop { get; set; }
     public DateTime? BoostedUntil { get; set; }
     public bool IsTemplate { get; set; }

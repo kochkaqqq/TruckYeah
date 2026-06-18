@@ -111,6 +111,18 @@ public class CargosRepository : ICargosRepository
         return entity?.MapToModel();
     }
 
+    public async Task<List<Cargo>> GetAll()
+    {
+        var entities = await _dbContext.Cargos
+            .Include(c => c.RoutePoints)
+            .AsNoTracking()
+            .Where(c => !c.IsTemplate)
+            .OrderByDescending(c => c.CreatedAt)
+            .ToListAsync();
+
+        return entities.Select(c => c.MapToModel()).ToList();
+    }
+
     public async Task<Guid> Create(Cargo cargo)
     {
         var entity = cargo.MapToEntity();
@@ -261,6 +273,9 @@ public class CargosRepository : ICargosRepository
         entity.Status = cargo.Status;
         entity.Visibility = cargo.Visibility;
         entity.PublishedAt = cargo.PublishedAt;
+        entity.ModeratedAt = cargo.ModeratedAt;
+        entity.ModeratedBy = cargo.ModeratedBy;
+        entity.RejectionReason = cargo.RejectionReason;
         entity.BoostToTop = cargo.BoostToTop;
         entity.BoostedUntil = cargo.BoostedUntil;
         entity.IsTemplate = cargo.IsTemplate;

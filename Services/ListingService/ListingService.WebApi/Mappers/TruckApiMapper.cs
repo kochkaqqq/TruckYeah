@@ -66,6 +66,9 @@ public static class TruckApiMapper
             Visibility = truck.Visibility,
             CreatedAt = truck.CreatedAt,
             PublishedAt = truck.PublishedAt,
+            ModeratedAt = truck.ModeratedAt,
+            ModeratedBy = truck.ModeratedBy,
+            RejectionReason = truck.RejectionReason,
             SourceListingId = truck.SourceListingId
         };
     }

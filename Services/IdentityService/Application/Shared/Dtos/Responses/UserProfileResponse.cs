@@ -22,4 +22,7 @@ public sealed class UserProfileResponse
     public string? AvatarLink { get; set; }
     public float Rating { get; set; }
     public bool IsProfileCompleted { get; set; }
+    public AccountRole Role { get; set; }
+    public AccountStatus Status { get; set; }
+    public DateTime CreatedAt { get; set; }
 }

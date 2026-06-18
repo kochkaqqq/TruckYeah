@@ -43,6 +43,7 @@ public class TruckConfiguration : IEntityTypeConfiguration<TruckEntity>
             .HasDefaultValue(ListingVisibility.Exchange);
 
         builder.Property(t => t.CreatedAt).IsRequired().HasDefaultValueSql("CURRENT_TIMESTAMP");
+        builder.Property(t => t.RejectionReason).HasMaxLength(1000);
 
         builder.HasIndex(t => t.Status);
         builder.HasIndex(t => t.Visibility);

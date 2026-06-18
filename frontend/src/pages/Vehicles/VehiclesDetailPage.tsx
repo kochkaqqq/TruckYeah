@@ -47,7 +47,9 @@ export const VehiclesDetailPage = () => {
   const getStatusLabel = (status: ListingStatus) => {
     const labels: Record<ListingStatus, string> = {
       [ListingStatus.Draft]: 'Черновик',
+      [ListingStatus.PendingModeration]: 'На модерации',
       [ListingStatus.Published]: 'Опубликован',
+      [ListingStatus.Rejected]: 'Отклонён',
       [ListingStatus.Archived]: 'В архиве',
       [ListingStatus.Completed]: 'Завершён',
     };
@@ -57,7 +59,9 @@ export const VehiclesDetailPage = () => {
   const getStatusClass = (status: ListingStatus) => {
     const classes: Record<ListingStatus, string> = {
       [ListingStatus.Draft]: 'vehicle-detail__status--draft',
+      [ListingStatus.PendingModeration]: 'vehicle-detail__status--draft',
       [ListingStatus.Published]: 'vehicle-detail__status--published',
+      [ListingStatus.Rejected]: 'vehicle-detail__status--archived',
       [ListingStatus.Archived]: 'vehicle-detail__status--archived',
       [ListingStatus.Completed]: 'vehicle-detail__status--completed',
     };

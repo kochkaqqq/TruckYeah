@@ -99,6 +99,17 @@ public class TrucksRepository : ITrucksRepository
         return entity?.MapToModel();
     }
 
+    public async Task<List<Truck>> GetAll()
+    {
+        var entities = await _dbContext.Trucks
+            .Include(t => t.RoutePoints)
+            .AsNoTracking()
+            .OrderByDescending(t => t.CreatedAt)
+            .ToListAsync();
+
+        return entities.Select(t => t.MapToModel()).ToList();
+    }
+
     public async Task<Guid> Create(Truck truck)
     {
         var entity = truck.MapToEntity();
@@ -172,6 +183,9 @@ public class TrucksRepository : ITrucksRepository
         entity.Status = truck.Status;
         entity.Visibility = truck.Visibility;
         entity.PublishedAt = truck.PublishedAt;
+        entity.ModeratedAt = truck.ModeratedAt;
+        entity.ModeratedBy = truck.ModeratedBy;
+        entity.RejectionReason = truck.RejectionReason;
         entity.SourceListingId = truck.SourceListingId;
     }
 

@@ -56,6 +56,7 @@ public class CargoConfiguration : IEntityTypeConfiguration<CargoEntity>
             .HasDefaultValue(ListingVisibility.Exchange);
 
         builder.Property(c => c.CreatedAt).IsRequired().HasDefaultValueSql("CURRENT_TIMESTAMP");
+        builder.Property(c => c.RejectionReason).HasMaxLength(1000);
         builder.Property(c => c.BoostToTop).HasDefaultValue(false);
         builder.Property(c => c.IsTemplate).HasDefaultValue(false);
         builder.Property(c => c.TemplateName).HasMaxLength(100);

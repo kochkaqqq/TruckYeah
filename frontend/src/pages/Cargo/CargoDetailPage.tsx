@@ -47,7 +47,9 @@ export const CargoDetailPage = () => {
   const getStatusLabel = (status: ListingStatus) => {
     const labels: Record<ListingStatus, string> = {
       [ListingStatus.Draft]: 'Черновик',
+      [ListingStatus.PendingModeration]: 'На модерации',
       [ListingStatus.Published]: 'Опубликован',
+      [ListingStatus.Rejected]: 'Отклонён',
       [ListingStatus.Archived]: 'В архиве',
       [ListingStatus.Completed]: 'Завершён',
     };
@@ -57,7 +59,9 @@ export const CargoDetailPage = () => {
   const getStatusClass = (status: ListingStatus) => {
     const classes: Record<ListingStatus, string> = {
       [ListingStatus.Draft]: 'cargo-detail__status--draft',
+      [ListingStatus.PendingModeration]: 'cargo-detail__status--draft',
       [ListingStatus.Published]: 'cargo-detail__status--published',
+      [ListingStatus.Rejected]: 'cargo-detail__status--archived',
       [ListingStatus.Archived]: 'cargo-detail__status--archived',
       [ListingStatus.Completed]: 'cargo-detail__status--completed',
     };

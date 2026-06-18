@@ -9,4 +9,5 @@ public interface ITrucksRepository
     Task<Guid> Create(Truck truck);
     Task Update(Truck truck);
     Task Delete(Guid id);
+    Task<List<Truck>> GetAll();
 }

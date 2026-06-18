@@ -15,6 +15,8 @@ services:
         condition: service_healthy
       route-service:
         condition: service_healthy
+      moderator-service:
+        condition: service_healthy
     networks:
       - truckyeah
     restart: unless-stopped
@@ -29,6 +31,10 @@ services:
       ConnectionStrings__DefaultConnection: Host=identity-db;Port=5432;Database=truckyeah_identity;Username=postgres;Password=${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in .env}
       Jwt__Issuer: identity-service
       Jwt__Key: ${JWT_KEY:?Set JWT_KEY in .env}
+      Moderator__Email: ${MODERATOR_EMAIL:-moderator@truckyeah.local}
+      Moderator__Password: ${MODERATOR_PASSWORD:-ChangeMe123!}
+      Moderator__Phone: ${MODERATOR_PHONE:-+79990000000}
+      Moderator__Postcode: ${MODERATOR_POSTCODE:-000000}
     ports:
       - "5001:8080"
     depends_on:
@@ -104,6 +110,33 @@ services:
       - "5004:8080"
     depends_on:
       route-db:
+        condition: service_healthy
+    networks:
+      - truckyeah
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "http://localhost:8080/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  moderator-service:
+    build:
+      context: ./Services/ModeratorService
+      dockerfile: Dockerfile
+    container_name: truckyeah-moderator-service
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      Jwt__Issuer: identity-service
+      Jwt__Key: ${JWT_KEY:?Set JWT_KEY in .env}
+      Services__Identity: http://identity-service:8080/
+      Services__Listing: http://listing-service:8080/
+    ports:
+      - "5005:8080"
+    depends_on:
+      identity-service:
+        condition: service_healthy
+      listing-service:
         condition: service_healthy
     networks:
       - truckyeah

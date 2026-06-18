@@ -36,6 +36,9 @@ public static class TruckMapper
             Visibility = truckEntity.Visibility,
             CreatedAt = truckEntity.CreatedAt,
             PublishedAt = truckEntity.PublishedAt,
+            ModeratedAt = truckEntity.ModeratedAt,
+            ModeratedBy = truckEntity.ModeratedBy,
+            RejectionReason = truckEntity.RejectionReason,
             SourceListingId = truckEntity.SourceListingId
         };
     }
@@ -71,6 +74,9 @@ public static class TruckMapper
             Visibility = truck.Visibility,
             CreatedAt = truck.CreatedAt,
             PublishedAt = truck.PublishedAt,
+            ModeratedAt = truck.ModeratedAt,
+            ModeratedBy = truck.ModeratedBy,
+            RejectionReason = truck.RejectionReason,
             SourceListingId = truck.SourceListingId
         };
     }

@@ -47,6 +47,50 @@ public class CargosServiceTests
         Assert.Contains("weight per package", exception.Message, StringComparison.OrdinalIgnoreCase);
     }
 
+    [Fact]
+    public async Task PublishCargo_MovesListingToModerationQueue()
+    {
+        var cargo = CreateValidCargo();
+        cargo.Id = Guid.NewGuid();
+        cargo.Status = ListingStatus.Draft;
+        var repository = new FakeCargosRepository { Existing = cargo };
+        var service = new CargosService(repository);
+
+        await service.PublishCargoAsync(cargo.Id, cargo.UserId);
+
+        Assert.Equal(ListingStatus.PendingModeration, repository.Updated?.Status);
+        Assert.Null(repository.Updated?.PublishedAt);
+    }
+
+    [Fact]
+    public async Task ApproveCargo_PublishesPendingListing()
+    {
+        var cargo = CreateValidCargo();
+        cargo.Id = Guid.NewGuid();
+        cargo.Status = ListingStatus.PendingModeration;
+        var moderatorId = Guid.NewGuid();
+        var repository = new FakeCargosRepository { Existing = cargo };
+        var service = new CargosService(repository);
+
+        await service.ApproveAsync(cargo.Id, moderatorId);
+
+        Assert.Equal(ListingStatus.Published, repository.Updated?.Status);
+        Assert.Equal(moderatorId, repository.Updated?.ModeratedBy);
+        Assert.NotNull(repository.Updated?.PublishedAt);
+    }
+
+    [Fact]
+    public async Task RejectCargo_RequiresReason()
+    {
+        var cargo = CreateValidCargo();
+        cargo.Id = Guid.NewGuid();
+        cargo.Status = ListingStatus.PendingModeration;
+        var service = new CargosService(new FakeCargosRepository { Existing = cargo });
+
+        await Assert.ThrowsAsync<ArgumentException>(
+            () => service.RejectAsync(cargo.Id, Guid.NewGuid(), " "));
+    }
+
     private static Cargo CreateValidCargo()
     {
         return new Cargo
@@ -79,11 +123,13 @@ public class CargosServiceTests
     private sealed class FakeCargosRepository : ICargosRepository
     {
         public Cargo? Created { get; private set; }
+        public Cargo? Existing { get; set; }
+        public Cargo? Updated { get; private set; }
 
         public Task<List<Cargo>> Search(CargoSearchCriteria criteria, bool publishedOnly, Guid? userId = null) =>
             Task.FromResult(new List<Cargo>());
 
-        public Task<Cargo?> GetById(Guid id) => Task.FromResult<Cargo?>(null);
+        public Task<Cargo?> GetById(Guid id) => Task.FromResult(Existing);
 
         public Task<Guid> Create(Cargo cargo)
         {
@@ -91,11 +137,16 @@ public class CargosServiceTests
             return Task.FromResult(cargo.Id);
         }
 
-        public Task Update(Cargo cargo) => Task.CompletedTask;
+        public Task Update(Cargo cargo)
+        {
+            Updated = cargo;
+            return Task.CompletedTask;
+        }
         public Task Delete(Guid id) => Task.CompletedTask;
         public Task<List<CargoBid>> GetBids(Guid cargoId) => Task.FromResult(new List<CargoBid>());
         public Task<List<CargoBid>> GetBidsByCarrier(Guid carrierUserId) => Task.FromResult(new List<CargoBid>());
         public Task<Guid> CreateBid(CargoBid bid) => Task.FromResult(bid.Id);
         public Task UpdateBids(IEnumerable<CargoBid> bids) => Task.CompletedTask;
+        public Task<List<Cargo>> GetAll() => Task.FromResult(new List<Cargo>());
     }
 }

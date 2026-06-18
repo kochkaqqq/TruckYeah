@@ -29,7 +29,9 @@ export enum PaymentType {
 
 export enum ListingStatus {
   Draft = 'Draft',
+  PendingModeration = 'PendingModeration',
   Published = 'Published',
+  Rejected = 'Rejected',
   Archived = 'Archived',
   Completed = 'Completed',
 }

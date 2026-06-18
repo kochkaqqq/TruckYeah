@@ -18,4 +18,7 @@ public interface ICargosService
     Task<List<CargoBid>> GetMyBidsAsync(Guid carrierUserId);
     Task<Guid> CreateCargoBidAsync(Guid cargoId, Guid carrierUserId, decimal price);
     Task<Guid> AcceptCargoBidAsync(Guid cargoId, Guid bidId, Guid ownerUserId);
+    Task<List<Cargo>> GetAllForModerationAsync();
+    Task<Guid> ApproveAsync(Guid id, Guid moderatorId);
+    Task<Guid> RejectAsync(Guid id, Guid moderatorId, string reason);
 }

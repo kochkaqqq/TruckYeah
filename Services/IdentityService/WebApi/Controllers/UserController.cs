@@ -22,6 +22,13 @@ public sealed class UserController(IUserService userService) : ControllerBase
     public async Task<IActionResult> Refresh([FromBody] string token) =>
         Ok(await userService.RefreshTokenAsync(token));
 
+    [HttpPost("logout")]
+    public async Task<IActionResult> Logout([FromBody] string refreshToken)
+    {
+        await userService.LogoutAsync(refreshToken);
+        return NoContent();
+    }
+
     [Authorize]
     [HttpGet("me")]
     public async Task<IActionResult> GetCurrentUser() =>

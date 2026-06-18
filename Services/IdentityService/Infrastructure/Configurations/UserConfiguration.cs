@@ -132,6 +132,29 @@ namespace Domain.Entities.Configurations
                 .IsRequired()
                 .HasDefaultValue(0.0f)
                 .HasColumnType("float");
+
+            builder.Property(u => u.Role)
+                .HasColumnName("role")
+                .HasConversion<string>()
+                .HasMaxLength(30)
+                .IsRequired()
+                .HasDefaultValue(Domain.Enums.AccountRole.User);
+
+            builder.Property(u => u.Status)
+                .HasColumnName("status")
+                .HasConversion<string>()
+                .HasMaxLength(30)
+                .IsRequired()
+                .HasDefaultValue(Domain.Enums.AccountStatus.Active);
+
+            builder.Property(u => u.CreatedAt)
+                .HasColumnName("created_at")
+                .HasColumnType("timestamp with time zone")
+                .IsRequired()
+                .HasDefaultValueSql("CURRENT_TIMESTAMP");
+
+            builder.HasIndex(u => u.Role);
+            builder.HasIndex(u => u.Status);
         }
     }
 }

@@ -114,6 +114,7 @@ using (var scope = app.Services.CreateScope())
     var dbContext = scope.ServiceProvider.GetRequiredService<IDbContext>();
     await dbContext.Database.MigrateAsync();
     await CountrySeed.EnsureSeededAsync(dbContext);
+    await ModeratorSeed.EnsureSeededAsync(dbContext, builder.Configuration);
 }
 
 app.UseExceptionHandler();

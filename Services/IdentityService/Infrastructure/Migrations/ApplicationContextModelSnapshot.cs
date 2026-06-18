@@ -166,6 +166,12 @@ namespace Infrastructure.Migrations
                         .HasColumnType("varchar(500)")
                         .HasColumnName("avatar_link");
 
+                    b.Property<DateTime>("CreatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp with time zone")
+                        .HasDefaultValueSql("CURRENT_TIMESTAMP")
+                        .HasColumnName("created_at");
+
                     b.Property<string>("PasswordHash")
                         .IsRequired()
                         .HasMaxLength(255)
@@ -177,6 +183,22 @@ namespace Infrastructure.Migrations
                         .HasColumnType("float")
                         .HasDefaultValue(0f)
                         .HasColumnName("rating");
+
+                    b.Property<string>("Role")
+                        .IsRequired()
+                        .ValueGeneratedOnAdd()
+                        .HasMaxLength(30)
+                        .HasColumnType("character varying(30)")
+                        .HasDefaultValue("User")
+                        .HasColumnName("role");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .ValueGeneratedOnAdd()
+                        .HasMaxLength(30)
+                        .HasColumnType("character varying(30)")
+                        .HasDefaultValue("Active")
+                        .HasColumnName("status");
 
                     b.Property<string>("UserType")
                         .IsRequired()
@@ -196,6 +218,10 @@ namespace Infrastructure.Migrations
                     b.HasIndex("companyId");
 
                     b.HasIndex("countryId");
+
+                    b.HasIndex("Role");
+
+                    b.HasIndex("Status");
 
                     b.ToTable("users", (string)null);
                 });

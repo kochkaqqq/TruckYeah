@@ -18,5 +18,8 @@ namespace Domain.Entities
         public Company? Company { get; set; }
         public string? AvatarLink { get; set; }
         public float Rating { get; set; }
+        public AccountRole Role { get; set; } = AccountRole.User;
+        public AccountStatus Status { get; set; } = AccountStatus.Active;
+        public DateTime CreatedAt { get; set; }
     }
 }

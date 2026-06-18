@@ -15,6 +15,7 @@ export default defineConfig({
       '/Orders': 'http://localhost:5002',
       '/Chats': 'http://localhost:5003',
       '/Routes': 'http://localhost:5004',
+      '/api/moderator': 'http://localhost:5005',
     },
   },
   resolve: {

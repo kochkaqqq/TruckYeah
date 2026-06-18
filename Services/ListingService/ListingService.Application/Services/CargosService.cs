@@ -55,6 +55,9 @@ public class CargosService : ICargosService
         cargo.CreatedAt = existing.CreatedAt;
         cargo.Status = existing.Status;
         cargo.PublishedAt = existing.PublishedAt;
+        cargo.ModeratedAt = existing.ModeratedAt;
+        cargo.ModeratedBy = existing.ModeratedBy;
+        cargo.RejectionReason = existing.RejectionReason;
         cargo.SourceListingId = existing.SourceListingId;
         cargo.BoostedUntil = existing.BoostedUntil;
         cargo.AcceptedBidId = existing.AcceptedBidId;
@@ -79,8 +82,11 @@ public class CargosService : ICargosService
         EnsureOwner(cargo.UserId, userId);
         ValidateCargo(cargo);
 
-        cargo.Status = ListingStatus.Published;
-        cargo.PublishedAt = DateTime.UtcNow;
+        cargo.Status = ListingStatus.PendingModeration;
+        cargo.PublishedAt = null;
+        cargo.ModeratedAt = null;
+        cargo.ModeratedBy = null;
+        cargo.RejectionReason = null;
         await _cargosRepository.Update(cargo);
         return id;
     }
@@ -346,6 +352,47 @@ public class CargosService : ICargosService
     public Task<List<CargoBid>> GetMyBidsAsync(Guid carrierUserId)
     {
         return _cargosRepository.GetBidsByCarrier(carrierUserId);
+    }
+
+    public Task<List<Cargo>> GetAllForModerationAsync() => _cargosRepository.GetAll();
+
+    public async Task<Guid> ApproveAsync(Guid id, Guid moderatorId)
+    {
+        var cargo = await GetExistingCargo(id);
+        if (cargo.Status != ListingStatus.PendingModeration)
+        {
+            throw new InvalidOperationException("Only listings pending moderation can be approved.");
+        }
+
+        cargo.Status = ListingStatus.Published;
+        cargo.PublishedAt = DateTime.UtcNow;
+        cargo.ModeratedAt = cargo.PublishedAt;
+        cargo.ModeratedBy = moderatorId;
+        cargo.RejectionReason = null;
+        await _cargosRepository.Update(cargo);
+        return id;
+    }
+
+    public async Task<Guid> RejectAsync(Guid id, Guid moderatorId, string reason)
+    {
+        if (string.IsNullOrWhiteSpace(reason))
+        {
+            throw new ArgumentException("Rejection reason is required.");
+        }
+
+        var cargo = await GetExistingCargo(id);
+        if (cargo.Status != ListingStatus.PendingModeration)
+        {
+            throw new InvalidOperationException("Only listings pending moderation can be rejected.");
+        }
+
+        cargo.Status = ListingStatus.Rejected;
+        cargo.PublishedAt = null;
+        cargo.ModeratedAt = DateTime.UtcNow;
+        cargo.ModeratedBy = moderatorId;
+        cargo.RejectionReason = reason.Trim();
+        await _cargosRepository.Update(cargo);
+        return id;
     }
 
     private static void EnsureBidMeetsMinimumStep(Cargo cargo, IEnumerable<CargoBid> bids, decimal price)

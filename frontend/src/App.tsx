@@ -1,4 +1,5 @@
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { BrowserRouter, Navigate, Routes, Route } from 'react-router-dom';
+import { useEffect } from 'react';
 import { Header } from './components/layout/Header';
 import { ProtectedRoute } from './components/ProtectedRoute';
 import { HomePage } from './pages/Home/HomePage';
@@ -15,25 +16,45 @@ import { VehiclesAddPage } from './pages/Vehicles/VehiclesAddPage';
 import { VehiclesDetailPage } from './pages/Vehicles/VehiclesDetailPage';
 import { MyListingPage } from './pages/MyListing/MyListingPage';
 import { TradesPage } from './pages/Trades/TradesPage'; 
+import { OrdersPage } from './pages/Orders/OrdersPage';
 import { NotFoundPage } from './pages/NotFound/NotFoundPage';
-
-const PlaceholderPage = ({ title }: { title: string }) => (
-  <div style={{
-    padding: '100px 40px',
-    color: 'white',
-    textAlign: 'center',
-    backgroundColor: '#1a1a1e',
-    minHeight: '100vh'
-  }}>
-    <h1>Страница: {title}</h1>
-    <p>Здесь будет контент для {title}</p>
-    <a href="/" style={{ color: '#666666', marginTop: '20px', display: 'inline-block' }}>
-      ← Вернуться на главную
-    </a>
-  </div>
-);
+import { api } from './api/client';
+import { useAuthStore } from './store/authStore';
 
 function App() {
+  const { isInitialized, setCurrentUser, markInitialized, logout } = useAuthStore();
+
+  useEffect(() => {
+    let active = true;
+
+    const initializeAuth = async () => {
+      if (!localStorage.getItem('authToken')) {
+        markInitialized();
+        return;
+      }
+
+      try {
+        const user = await api.users.getMe();
+        if (active) {
+          setCurrentUser(user);
+        }
+      } catch {
+        if (active) {
+          logout();
+        }
+      }
+    };
+
+    void initializeAuth();
+    return () => {
+      active = false;
+    };
+  }, [logout, markInitialized, setCurrentUser]);
+
+  if (!isInitialized) {
+    return <div className="app-loading">Загрузка...</div>;
+  }
+
   return (
     <BrowserRouter>
       <div className="app-layout">
@@ -50,7 +71,9 @@ function App() {
 
             {/* Защищённые маршруты */}
             <Route path="/cargo/add" element={<ProtectedRoute><CargoAddPage /></ProtectedRoute>} />
+            <Route path="/cargo/:id/edit" element={<ProtectedRoute><CargoAddPage /></ProtectedRoute>} />
             <Route path="/vehicles/add" element={<ProtectedRoute><VehiclesAddPage /></ProtectedRoute>} />
+            <Route path="/vehicles/:id/edit" element={<ProtectedRoute><VehiclesAddPage /></ProtectedRoute>} />
             <Route path="/my-listing" element={<ProtectedRoute><MyListingPage /></ProtectedRoute>} />
             <Route path="/trades" element={<ProtectedRoute><TradesPage /></ProtectedRoute>} /> {/* ✅ Добавь эту строку */}
             <Route path="/profile" element={<ProtectedRoute><ProfilePage /></ProtectedRoute>} />
@@ -60,9 +83,9 @@ function App() {
             <Route path="*" element={<NotFoundPage />} />
             
             {/* Заглушки */}
-            <Route path="/my-orders" element={<PlaceholderPage title="Ваши заказы" />} />
-            <Route path="/cargo/search" element={<PlaceholderPage title="Поиск грузов" />} />
-            <Route path="/vehicles/search" element={<PlaceholderPage title="Поиск машин" />} />
+            <Route path="/my-orders" element={<ProtectedRoute><OrdersPage /></ProtectedRoute>} />
+            <Route path="/cargo/search" element={<Navigate to="/cargo" replace />} />
+            <Route path="/vehicles/search" element={<Navigate to="/vehicles" replace />} />
           </Routes>
         </main>
       </div>

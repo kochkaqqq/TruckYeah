@@ -42,7 +42,7 @@ namespace Domain.Entities.Configurations
             builder.Property(rt => rt.RevokedAt)
                 .HasColumnName("revoked_at")
                 .HasColumnType("timestamp with time zone")
-                .IsRequired();
+                .IsRequired(false);
 
             builder.Property(rt => rt.DeviceId)
                 .HasColumnName("device_id")

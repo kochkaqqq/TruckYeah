@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import { UserType } from '../api/client';
+import type { UserType } from '../api/client';
 
 export interface User {
   id: string;
@@ -12,58 +12,69 @@ export interface User {
   isProfileCompleted: boolean;
   city?: string;
   company?: string;
+  postcode?: string;
+  countryId?: string;
+  country?: string;
+  avatarLink?: string;
+  rating?: number;
 }
 
 interface AuthState {
   currentUser: User | null;
   isAuthenticated: boolean;
+  isInitialized: boolean;
   user: User | null;
   setCurrentUser: (user: User | null) => void;
   updateUser: (data: Partial<User>) => void;
   login: (user: User) => void;
+  markInitialized: () => void;
   logout: () => void;
 }
 
 export const useAuthStore = create<AuthState>((set) => ({
-  // ✅ Инициализация из localStorage
   currentUser: null,
-  isAuthenticated: !!localStorage.getItem('authToken'), // ✅ Ключевое исправление
+  isAuthenticated: !!localStorage.getItem('authToken'),
+  isInitialized: false,
   user: null,
-  
-  setCurrentUser: (user) => set({ 
-    currentUser: user,
-    isAuthenticated: !!user,
-    user: user
-  }),
 
-  updateUser: (data) => set((state) => {
-    const updatedUser = state.user ? { ...state.user, ...data } : null;
-    return {
-      currentUser: updatedUser,
-      user: updatedUser,
-    };
-  }),
+  setCurrentUser: (user) =>
+    set({
+      currentUser: user,
+      isAuthenticated: !!user,
+      isInitialized: true,
+      user,
+    }),
 
-  // ✅ Добавляем метод login
-  login: (user) => {
+  updateUser: (data) =>
+    set((state) => {
+      const updatedUser = state.user ? { ...state.user, ...data } : null;
+      return {
+        currentUser: updatedUser,
+        user: updatedUser,
+      };
+    }),
+
+  login: (user) =>
     set({
       currentUser: user,
       isAuthenticated: true,
-      user: user,
-    });
-  },
-  
+      isInitialized: true,
+      user,
+    }),
+
+  markInitialized: () => set({ isInitialized: true }),
+
   logout: () => {
     localStorage.removeItem('authToken');
     localStorage.removeItem('refreshToken');
-    set({ 
+    set({
       currentUser: null,
       isAuthenticated: false,
-      user: null
+      isInitialized: true,
+      user: null,
     });
   },
 }));
 
-export const getCurrentUser = (): User | null => {
-  return useAuthStore.getState().currentUser;
-};
+export const getCurrentUser = (): User | null =>
+  useAuthStore.getState().currentUser;

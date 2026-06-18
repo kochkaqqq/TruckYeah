@@ -18,10 +18,17 @@ public static class CargoApiMapper
                 .Select(p => p.MapToModel())
                 .OrderBy(p => p.Order)
                 .ToList(),
+            RouteDistanceKm = request.RouteDistanceKm,
+            RouteDurationMinutes = request.RouteDurationMinutes,
+            RouteFuelLiters = request.RouteFuelLiters,
+            RouteGeometryGeoJson = request.RouteGeometryGeoJson,
+            RouteCalculatedAt = request.RouteCalculatedAt,
             LoadDateTime = request.LoadDateTime,
             UnloadDateTime = request.UnloadDateTime,
             WeightTons = request.WeightTons,
             VolumeM3 = request.VolumeM3,
+            UseAutomaticCalculation = request.UseAutomaticCalculation,
+            WeightPerPackageKg = request.WeightPerPackageKg,
             BodyTypeRequired = request.BodyTypeRequired,
             LoadingType = request.LoadingType,
             LengthCm = request.LengthCm,
@@ -62,10 +69,17 @@ public static class CargoApiMapper
                 .OrderBy(p => p.Order)
                 .Select(p => p.MapToResponse())
                 .ToList(),
+            RouteDistanceKm = cargo.RouteDistanceKm,
+            RouteDurationMinutes = cargo.RouteDurationMinutes,
+            RouteFuelLiters = cargo.RouteFuelLiters,
+            RouteGeometryGeoJson = cargo.RouteGeometryGeoJson,
+            RouteCalculatedAt = cargo.RouteCalculatedAt,
             LoadDateTime = cargo.LoadDateTime,
             UnloadDateTime = cargo.UnloadDateTime,
             WeightTons = cargo.WeightTons,
             VolumeM3 = cargo.VolumeM3,
+            UseAutomaticCalculation = cargo.UseAutomaticCalculation,
+            WeightPerPackageKg = cargo.WeightPerPackageKg,
             BodyTypeRequired = cargo.BodyTypeRequired,
             LoadingType = cargo.LoadingType,
             LengthCm = cargo.LengthCm,
@@ -104,6 +118,8 @@ public static class CargoApiMapper
         {
             Id = Guid.NewGuid(),
             Address = request.Address,
+            Lat = request.Lat,
+            Lon = request.Lon,
             ScheduledTime = request.ScheduledTime,
             Order = request.Order
         };
@@ -115,6 +131,8 @@ public static class CargoApiMapper
         {
             Id = point.Id,
             Address = point.Address,
+            Lat = point.Lat,
+            Lon = point.Lon,
             ScheduledTime = point.ScheduledTime,
             Order = point.Order
         };

@@ -79,7 +79,7 @@ public class RouteCalculationService : IRouteCalculationService
             ResolvedPoints = resolvedPoints
         };
 
-        await _repository.Create(calculation);
+        await _repository.Upsert(calculation);
 
         return new RouteCalculationResult
         {

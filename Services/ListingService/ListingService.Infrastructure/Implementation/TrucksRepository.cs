@@ -18,7 +18,7 @@ public class TrucksRepository : ITrucksRepository
 
     public async Task<List<Truck>> Search(TruckSearchCriteria criteria, bool publishedOnly, Guid? userId = null)
     {
-        var query = _dbContext.Trucks.AsNoTracking().AsQueryable();
+        var query = _dbContext.Trucks.Include(t => t.RoutePoints).AsNoTracking().AsQueryable();
 
         if (publishedOnly)
         {
@@ -92,6 +92,7 @@ public class TrucksRepository : ITrucksRepository
     public async Task<Truck?> GetById(Guid id)
     {
         var entity = await _dbContext.Trucks
+            .Include(t => t.RoutePoints)
             .AsNoTracking()
             .FirstOrDefaultAsync(t => t.Id == id);
 
@@ -116,6 +117,21 @@ public class TrucksRepository : ITrucksRepository
         }
 
         ApplyTruck(entity, truck);
+
+        await _dbContext.RoutePoints
+            .Where(point => point.TruckId == truck.Id)
+            .ExecuteDeleteAsync();
+
+        await _dbContext.RoutePoints.AddRangeAsync(truck.RoutePoints.Select(point => new RoutePoint
+        {
+            Id = point.Id == Guid.Empty ? Guid.NewGuid() : point.Id,
+            TruckId = truck.Id,
+            Address = point.Address,
+            Lat = point.Lat,
+            Lon = point.Lon,
+            ScheduledTime = point.ScheduledTime,
+            Order = point.Order
+        }));
         await _dbContext.SaveChangesAsync();
     }
 
@@ -137,6 +153,11 @@ public class TrucksRepository : ITrucksRepository
         entity.Description = truck.Description;
         entity.RouteFrom = truck.RouteFrom;
         entity.RouteTo = truck.RouteTo;
+        entity.RouteDistanceKm = truck.RouteDistanceKm;
+        entity.RouteDurationMinutes = truck.RouteDurationMinutes;
+        entity.RouteFuelLiters = truck.RouteFuelLiters;
+        entity.RouteGeometryGeoJson = truck.RouteGeometryGeoJson;
+        entity.RouteCalculatedAt = truck.RouteCalculatedAt;
         entity.CapacityTons = truck.CapacityTons;
         entity.VolumeM3 = truck.VolumeM3;
         entity.BodyType = truck.BodyType;

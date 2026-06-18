@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuthStore } from '../../store/authStore';
-import { UserType } from '../../api/client';
+import { api, UserType } from '../../api/client';
 import { Toast } from '../../components/ui/Toast';
 import './ProfilePage.css';
 
@@ -13,7 +13,7 @@ interface ToastData {
 }
 
 export const ProfileEditPage = () => {
-  const { user, isAuthenticated, updateUser } = useAuthStore();
+  const { user, isAuthenticated, setCurrentUser } = useAuthStore();
   const navigate = useNavigate();
 
   const [toast, setToast] = useState<ToastData | null>(null);
@@ -64,17 +64,17 @@ export const ProfileEditPage = () => {
     setIsSaving(true);
 
     try {
-      // Обновляем данные в store
-      updateUser({
+      const updatedUser = await api.users.updateMe({
         name: name.trim(),
         surname: surname.trim(),
-        fullName: `${surname.trim()} ${name.trim()}`.trim(),
         email: email.trim(),
         phone: phone.trim(),
+        postcode: user.postcode || '000000',
         city: city.trim() || undefined,
-        company: company.trim() || undefined,
-        isProfileCompleted: true,
+        companyName: company.trim() || undefined,
+        avatarLink: user.avatarLink,
       });
+      setCurrentUser(updatedUser);
 
       showToast('Профиль успешно обновлён!', 'success');
       

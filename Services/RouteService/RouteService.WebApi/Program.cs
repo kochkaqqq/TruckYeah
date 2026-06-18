@@ -42,6 +42,8 @@ builder.Services.AddHttpClient<IRouteProvider, OpenRouteServiceRouteProvider>((s
 
 builder.Services.AddScoped<IRouteCalculationsRepository, RouteCalculationsRepository>();
 builder.Services.AddScoped<IRouteCalculationService, RouteCalculationService>();
+builder.Services.AddHealthChecks()
+    .AddDbContextCheck<RouteServiceDbContext>();
 
 var app = builder.Build();
 
@@ -51,8 +53,8 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-app.UseHttpsRedirection();
 app.MapControllers();
+app.MapHealthChecks("/health");
 
 using (var scope = app.Services.CreateScope())
 {

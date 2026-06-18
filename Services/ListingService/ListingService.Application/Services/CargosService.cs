@@ -223,6 +223,11 @@ public class CargosService : ICargosService
             CargoName = source.CargoName,
             RouteFrom = source.RouteFrom,
             RouteTo = source.RouteTo,
+            RouteDistanceKm = source.RouteDistanceKm,
+            RouteDurationMinutes = source.RouteDurationMinutes,
+            RouteFuelLiters = source.RouteFuelLiters,
+            RouteGeometryGeoJson = source.RouteGeometryGeoJson,
+            RouteCalculatedAt = source.RouteCalculatedAt,
             RoutePoints = source.RoutePoints
                 .OrderBy(p => p.Order)
                 .Select(p => new RoutePoint
@@ -230,6 +235,8 @@ public class CargosService : ICargosService
                     Id = Guid.NewGuid(),
                     CargoId = copyId,
                     Address = p.Address,
+                    Lat = p.Lat,
+                    Lon = p.Lon,
                     ScheduledTime = p.ScheduledTime,
                     Order = p.Order
                 })
@@ -238,6 +245,8 @@ public class CargosService : ICargosService
             UnloadDateTime = source.UnloadDateTime,
             WeightTons = source.WeightTons,
             VolumeM3 = source.VolumeM3,
+            UseAutomaticCalculation = source.UseAutomaticCalculation,
+            WeightPerPackageKg = source.WeightPerPackageKg,
             BodyTypeRequired = source.BodyTypeRequired,
             LoadingType = source.LoadingType,
             LengthCm = source.LengthCm,
@@ -280,6 +289,7 @@ public class CargosService : ICargosService
             throw new ArgumentException("Route from is required.");
         if (string.IsNullOrWhiteSpace(cargo.RouteTo))
             throw new ArgumentException("Route to is required.");
+        ValidateRoute(cargo.RoutePoints, cargo.RouteGeometryGeoJson);
         if (cargo.LoadDateTime == default)
             throw new ArgumentException("Load date and time is required.");
         if (cargo.UnloadDateTime == default)
@@ -312,18 +322,30 @@ public class CargosService : ICargosService
 
     private static void ApplyCalculatedCargoFields(Cargo cargo)
     {
-        if (cargo.VolumeM3 > 0 ||
-            !cargo.LengthCm.HasValue ||
-            !cargo.WidthCm.HasValue ||
-            !cargo.HeightCm.HasValue ||
-            !cargo.PalletsCount.HasValue ||
-            cargo.PalletsCount <= 0)
+        if (!cargo.UseAutomaticCalculation)
         {
             return;
         }
 
+        if (cargo.LengthCm is null or <= 0 ||
+            cargo.WidthCm is null or <= 0 ||
+            cargo.HeightCm is null or <= 0 ||
+            cargo.PalletsCount is null or <= 0 ||
+            cargo.WeightPerPackageKg is null or <= 0)
+        {
+            throw new ArgumentException(
+                "Dimensions, package count and weight per package are required for automatic calculation.");
+        }
+
         var volumeM3 = cargo.LengthCm.Value * cargo.WidthCm.Value * cargo.HeightCm.Value * cargo.PalletsCount.Value / 1_000_000d;
+        var weightTons = cargo.WeightPerPackageKg.Value * cargo.PalletsCount.Value / 1_000d;
         cargo.VolumeM3 = Math.Round(volumeM3, 3, MidpointRounding.AwayFromZero);
+        cargo.WeightTons = Math.Round(weightTons, 3, MidpointRounding.AwayFromZero);
+    }
+
+    public Task<List<CargoBid>> GetMyBidsAsync(Guid carrierUserId)
+    {
+        return _cargosRepository.GetBidsByCarrier(carrierUserId);
     }
 
     private static void EnsureBidMeetsMinimumStep(Cargo cargo, IEnumerable<CargoBid> bids, decimal price)
@@ -354,7 +376,18 @@ public class CargosService : ICargosService
         {
             point.Id = point.Id == Guid.Empty ? Guid.NewGuid() : point.Id;
             point.CargoId = cargo.Id;
+            point.TruckId = null;
         }
+    }
+
+    private static void ValidateRoute(ICollection<RoutePoint> points, string? geometry)
+    {
+        if (points.Count is < 2 or > 10)
+            throw new ArgumentException("Route must contain start, finish and no more than eight intermediate points.");
+        if (points.Any(point => point.Lat is < -90 or > 90 || point.Lon is < -180 or > 180))
+            throw new ArgumentException("Route point coordinates are invalid.");
+        if (string.IsNullOrWhiteSpace(geometry))
+            throw new ArgumentException("Route must be calculated before saving.");
     }
 
     private static void EnsureOwner(Guid ownerUserId, Guid currentUserId)

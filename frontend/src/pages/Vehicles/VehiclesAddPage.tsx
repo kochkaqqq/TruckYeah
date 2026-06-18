@@ -1,8 +1,9 @@
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { api, LoadingType, PaymentType, ListingVisibility } from '../../api/client';
+import { useEffect, useState } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
+import { api, LoadingType, PaymentType, ListingVisibility, RouteCalculation } from '../../api/client';
 import { useAuthStore } from '../../store/authStore';
 import { Toast } from '../../components/ui/Toast';
+import { EditableRoutePoint, RoutePlanner } from '../../components/route/RoutePlanner';
 import './VehiclesAddPage.css';
 
 type ToastType = 'success' | 'error' | 'info';
@@ -52,15 +53,79 @@ const initialFormData: FormData = {
 
 export const VehiclesAddPage = () => {
   const navigate = useNavigate();
+  const { id } = useParams();
+  const isEditMode = Boolean(id);
   const { isAuthenticated } = useAuthStore();
   const [formData, setFormData] = useState<FormData>(initialFormData);
+  const [isLoading, setIsLoading] = useState(isEditMode);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [toast, setToast] = useState<ToastData | null>(null);
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [routePoints, setRoutePoints] = useState<EditableRoutePoint[]>([
+    { address: '' },
+    { address: '' },
+  ]);
+  const [routeCalculation, setRouteCalculation] = useState<RouteCalculation | null>(null);
+
+  useEffect(() => {
+    if (!id) return;
+
+    const loadTruck = async () => {
+      try {
+        const truck = await api.trucks.getById(id);
+        setFormData({
+          title: truck.title ?? '',
+          description: truck.description ?? '',
+          routeFrom: truck.routeFrom ?? '',
+          routeTo: truck.routeTo ?? '',
+          capacityTons: truck.capacityTons?.toString() ?? '',
+          volumeM3: truck.volumeM3?.toString() ?? '',
+          bodyType: truck.bodyType ?? '',
+          loadingType: truck.loadingType,
+          crewDriversCount: truck.crewDriversCount?.toString() ?? '1',
+          additionalEquipment: truck.additionalEquipment ?? '',
+          availableFrom: new Date(truck.availableFrom).toISOString().slice(0, 16),
+          price: truck.price?.toString() ?? '',
+          paymentType: truck.paymentType,
+          allowBargaining: truck.allowBargaining ?? false,
+          prepaymentPercent: truck.prepaymentPercent?.toString() ?? '',
+          visibility: truck.visibility ?? ListingVisibility.Exchange,
+        });
+        setRoutePoints(
+          truck.routePoints?.length
+            ? truck.routePoints.map((point) => ({ address: point.address ?? '', lat: point.lat, lon: point.lon }))
+            : [{ address: truck.routeFrom ?? '' }, { address: truck.routeTo ?? '' }]
+        );
+        if (truck.routeGeometryGeoJson) {
+          setRouteCalculation({
+            distanceKm: truck.routeDistanceKm ?? 0,
+            durationMinutes: truck.routeDurationMinutes ?? 0,
+            fuelConsumptionLiters: truck.routeFuelLiters ?? 0,
+            resolvedPoints: truck.routePoints ?? [],
+            geometry: { geoJson: JSON.parse(truck.routeGeometryGeoJson) },
+            warnings: [],
+          });
+        }
+      } catch (error) {
+        setToast({
+          message: error instanceof Error ? error.message : 'Не удалось загрузить машину',
+          type: 'error',
+        });
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    void loadTruck();
+  }, [id]);
 
   if (!isAuthenticated) {
     navigate('/auth');
     return null;
+  }
+
+  if (isLoading) {
+    return <div className="vehicle-add"><div className="vehicle-add__container">Загрузка объявления...</div></div>;
   }
 
   const showToast = (message: string, type: ToastType) => {
@@ -96,6 +161,9 @@ export const VehiclesAddPage = () => {
 
     if (!formData.routeTo.trim()) {
       newErrors.routeTo = 'Укажите точку назначения';
+    }
+    if (!routeCalculation?.geometry.geoJson) {
+      newErrors.route = 'Рассчитайте маршрут перед сохранением';
     }
 
     const capacity = parseFloat(formData.capacityTons);
@@ -147,6 +215,19 @@ export const VehiclesAddPage = () => {
     const payload: any = {
       routeFrom: formData.routeFrom.trim(),
       routeTo: formData.routeTo.trim(),
+      routePoints: routePoints.map((point, order) => ({
+        address: point.address,
+        lat: point.lat,
+        lon: point.lon,
+        order,
+      })),
+      routeDistanceKm: routeCalculation?.distanceKm,
+      routeDurationMinutes: routeCalculation?.durationMinutes,
+      routeFuelLiters: routeCalculation?.fuelConsumptionLiters,
+      routeGeometryGeoJson: routeCalculation?.geometry.geoJson
+        ? JSON.stringify(routeCalculation.geometry.geoJson)
+        : undefined,
+      routeCalculatedAt: routeCalculation ? new Date().toISOString() : undefined,
       capacityTons: parseFloat(formData.capacityTons),
       volumeM3: parseFloat(formData.volumeM3),
       bodyType: formData.bodyType.trim(),
@@ -189,7 +270,9 @@ export const VehiclesAddPage = () => {
 
       console.log('🚛 Отправляемый payload:', payload);
 
-      const truckId = await api.trucks.create(payload);
+      const truckId = id
+        ? await api.trucks.update(id, payload)
+        : await api.trucks.create(payload);
       console.log('✅ Машина создана, ID:', truckId);
 
       if (!asDraft) {
@@ -207,7 +290,11 @@ export const VehiclesAddPage = () => {
       }
 
       showToast(
-        asDraft ? 'Черновик сохранён!' : 'Машина успешно опубликована!',
+        isEditMode
+          ? 'Изменения сохранены'
+          : asDraft
+            ? 'Черновик сохранён'
+            : 'Машина опубликована',
         'success'
       );
 
@@ -223,7 +310,7 @@ export const VehiclesAddPage = () => {
   };
 
   const handleCancel = () => {
-    navigate('/vehicles');
+    navigate(isEditMode ? '/my-listing' : '/vehicles');
   };
 
   const getInputClass = (fieldName: string) => {
@@ -238,7 +325,9 @@ export const VehiclesAddPage = () => {
 
       <div className="vehicle-add__container">
         <div className="vehicle-add__header">
-          <h1 className="vehicle-add__title">Добавить новую машину</h1>
+          <h1 className="vehicle-add__title">
+            {isEditMode ? 'Редактировать машину' : 'Добавить новую машину'}
+          </h1>
           <button className="vehicle-add__back-btn" onClick={handleCancel}>
             ← Назад к списку
           </button>
@@ -276,37 +365,21 @@ export const VehiclesAddPage = () => {
 
           <section className="vehicle-add__section">
             <h2 className="vehicle-add__section-title">Маршрут</h2>
+            <RoutePlanner
+              points={routePoints}
+              calculation={routeCalculation}
+              onPointsChange={(points) => {
+                setRoutePoints(points);
+                setFormData((current) => ({
+                  ...current,
+                  routeFrom: points[0]?.address ?? '',
+                  routeTo: points[points.length - 1]?.address ?? '',
+                }));
+              }}
+              onCalculationChange={setRouteCalculation}
+            />
+            {errors.route && <span className="vehicle-add__error">{errors.route}</span>}
             <div className="vehicle-add__grid vehicle-add__grid--2">
-              <div className="vehicle-add__field">
-                <label className="vehicle-add__label">
-                  Точка отправления <span className="vehicle-add__required">*</span>
-                </label>
-                <input
-                  type="text"
-                  name="routeFrom"
-                  className={getInputClass('routeFrom')}
-                  placeholder="Город, адрес"
-                  value={formData.routeFrom}
-                  onChange={handleChange}
-                />
-                {errors.routeFrom && <span className="vehicle-add__error">{errors.routeFrom}</span>}
-              </div>
-
-              <div className="vehicle-add__field">
-                <label className="vehicle-add__label">
-                  Точка назначения <span className="vehicle-add__required">*</span>
-                </label>
-                <input
-                  type="text"
-                  name="routeTo"
-                  className={getInputClass('routeTo')}
-                  placeholder="Город, адрес"
-                  value={formData.routeTo}
-                  onChange={handleChange}
-                />
-                {errors.routeTo && <span className="vehicle-add__error">{errors.routeTo}</span>}
-              </div>
-
               <div className="vehicle-add__field">
                 <label className="vehicle-add__label">
                   Дата доступности <span className="vehicle-add__required">*</span>
@@ -517,7 +590,7 @@ export const VehiclesAddPage = () => {
               onClick={() => handleSubmit(true)}
               disabled={isSubmitting}
             >
-              {isSubmitting ? 'Сохранение...' : 'Сохранить черновик'}
+              {isSubmitting ? 'Сохранение...' : isEditMode ? 'Сохранить' : 'Сохранить черновик'}
             </button>
             <button
               type="button"
@@ -525,7 +598,7 @@ export const VehiclesAddPage = () => {
               onClick={() => handleSubmit(false)}
               disabled={isSubmitting}
             >
-              {isSubmitting ? 'Публикация...' : 'Опубликовать'}
+              {isSubmitting ? 'Публикация...' : isEditMode ? 'Сохранить и опубликовать' : 'Опубликовать'}
             </button>
           </div>
         </form>

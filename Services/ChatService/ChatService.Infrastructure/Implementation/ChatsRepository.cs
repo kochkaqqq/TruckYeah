@@ -57,13 +57,17 @@ public class ChatsRepository : IChatsRepository
 
     public async Task<List<ChatMessage>> GetMessages(Guid chatId, int page, int pageSize)
     {
-        return await _dbContext.ChatMessages
+        var messages = await _dbContext.ChatMessages
             .AsNoTracking()
             .Where(m => m.ChatId == chatId)
             .OrderByDescending(m => m.CreatedAt)
             .Skip((page - 1) * pageSize)
             .Take(pageSize)
             .ToListAsync();
+
+        return messages
+            .OrderBy(m => m.CreatedAt)
+            .ToList();
     }
 
     public async Task<Guid> AddMessage(Guid chatId, ChatMessage message, Guid recipientUserId)

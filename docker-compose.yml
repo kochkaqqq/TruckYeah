@@ -7,10 +7,14 @@ services:
     ports:
       - "3000:80"
     depends_on:
-      - identity-service
-      - listing-service
-      - chat-service
-      - route-service
+      identity-service:
+        condition: service_healthy
+      listing-service:
+        condition: service_healthy
+      chat-service:
+        condition: service_healthy
+      route-service:
+        condition: service_healthy
     networks:
       - truckyeah
     restart: unless-stopped
@@ -22,8 +26,9 @@ services:
     container_name: truckyeah-identity-service
     environment:
       ASPNETCORE_ENVIRONMENT: Development
-      ASPNETCORE_URLS: http://+:8080
-      ConnectionStrings__DefaultConnection: Host=identity-db;Port=5432;Database=truckyeah_identity;Username=postgres;Password=postgres;Include Error Detail=true
+      ConnectionStrings__DefaultConnection: Host=identity-db;Port=5432;Database=truckyeah_identity;Username=postgres;Password=${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in .env}
+      Jwt__Issuer: identity-service
+      Jwt__Key: ${JWT_KEY:?Set JWT_KEY in .env}
     ports:
       - "5001:8080"
     depends_on:
@@ -32,6 +37,11 @@ services:
     networks:
       - truckyeah
     restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "http://localhost:8080/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
 
   listing-service:
     build:
@@ -40,8 +50,9 @@ services:
     container_name: truckyeah-listing-service
     environment:
       ASPNETCORE_ENVIRONMENT: Development
-      ASPNETCORE_URLS: http://+:8080
-      ConnectionStrings__ListingServiceDbContext: Host=listing-db;Port=5432;Database=truckyeah_listing;Username=postgres;Password=postgres123
+      ConnectionStrings__ListingServiceDbContext: Host=listing-db;Port=5432;Database=truckyeah_listing;Username=postgres;Password=${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in .env}
+      Jwt__Issuer: identity-service
+      Jwt__Key: ${JWT_KEY:?Set JWT_KEY in .env}
     ports:
       - "5002:8080"
     depends_on:
@@ -50,6 +61,11 @@ services:
     networks:
       - truckyeah
     restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "http://localhost:8080/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
 
   chat-service:
     build:
@@ -58,8 +74,9 @@ services:
     container_name: truckyeah-chat-service
     environment:
       ASPNETCORE_ENVIRONMENT: Development
-      ASPNETCORE_URLS: http://+:8080
-      ConnectionStrings__ChatServiceDbContext: Host=chat-db;Port=5432;Database=truckyeah_chat;Username=postgres;Password=postgres123
+      ConnectionStrings__ChatServiceDbContext: Host=chat-db;Port=5432;Database=truckyeah_chat;Username=postgres;Password=${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in .env}
+      Jwt__Issuer: identity-service
+      Jwt__Key: ${JWT_KEY:?Set JWT_KEY in .env}
     ports:
       - "5003:8080"
     depends_on:
@@ -68,6 +85,11 @@ services:
     networks:
       - truckyeah
     restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "http://localhost:8080/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
 
   route-service:
     build:
@@ -76,9 +98,8 @@ services:
     container_name: truckyeah-route-service
     environment:
       ASPNETCORE_ENVIRONMENT: Development
-      ASPNETCORE_URLS: http://+:8080
-      ConnectionStrings__RouteServiceDbContext: Host=route-db;Port=5432;Database=truckyeah_route;Username=postgres;Password=postgres123
-      OpenRouteService__ApiKey: ${OPENROUTESERVICE_API_KEY:-}
+      ConnectionStrings__RouteServiceDbContext: Host=route-db;Port=5432;Database=truckyeah_route;Username=postgres;Password=${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in .env}
+      OpenRouteService__ApiKey: ${OPENROUTESERVICE_API_KEY:?Set OPENROUTESERVICE_API_KEY in .env}
     ports:
       - "5004:8080"
     depends_on:
@@ -87,6 +108,11 @@ services:
     networks:
       - truckyeah
     restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "http://localhost:8080/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
 
   identity-db:
     image: postgres:16-alpine
@@ -94,13 +120,13 @@ services:
     environment:
       POSTGRES_DB: truckyeah_identity
       POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in .env}
     ports:
       - "5433:5432"
     volumes:
       - identity-db-data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres -d truckyeah_identity"]
+      test: ["CMD-SHELL", "PGPASSWORD=\"$${POSTGRES_PASSWORD}\" psql -U postgres -d truckyeah_identity -tAc 'select 1' >/dev/null"]
       interval: 5s
       timeout: 5s
       retries: 10
@@ -114,13 +140,13 @@ services:
     environment:
       POSTGRES_DB: truckyeah_listing
       POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres123
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in .env}
     ports:
       - "5434:5432"
     volumes:
       - listing-db-data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres -d truckyeah_listing"]
+      test: ["CMD-SHELL", "PGPASSWORD=\"$${POSTGRES_PASSWORD}\" psql -U postgres -d truckyeah_listing -tAc 'select 1' >/dev/null"]
       interval: 5s
       timeout: 5s
       retries: 10
@@ -134,13 +160,13 @@ services:
     environment:
       POSTGRES_DB: truckyeah_chat
       POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres123
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in .env}
     ports:
       - "5435:5432"
     volumes:
       - chat-db-data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres -d truckyeah_chat"]
+      test: ["CMD-SHELL", "PGPASSWORD=\"$${POSTGRES_PASSWORD}\" psql -U postgres -d truckyeah_chat -tAc 'select 1' >/dev/null"]
       interval: 5s
       timeout: 5s
       retries: 10
@@ -154,13 +180,13 @@ services:
     environment:
       POSTGRES_DB: truckyeah_route
       POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres123
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in .env}
     ports:
       - "5436:5432"
     volumes:
       - route-db-data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres -d truckyeah_route"]
+      test: ["CMD-SHELL", "PGPASSWORD=\"$${POSTGRES_PASSWORD}\" psql -U postgres -d truckyeah_route -tAc 'select 1' >/dev/null"]
       interval: 5s
       timeout: 5s
       retries: 10

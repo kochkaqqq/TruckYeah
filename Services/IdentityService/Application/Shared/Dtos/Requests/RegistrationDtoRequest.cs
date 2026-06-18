@@ -13,11 +13,12 @@ namespace Application.Shared.Dtos.Requests
         public Guid CountryId { get; set; } = default!;
         public string Postcode { get; set; } = null!;
         public UserType UserType { get; set; }
-        public string VatId { get; set; } = null!;
+        public string? VatId { get; set; }
         public string? Name { get; set; } = null!;
         public string? Surname { get; set; } = null!;
         public string? MiddleName { get; set; }
         public Guid? CompanyId { get; set; }
+        public string? CompanyName { get; set; }
         public string? AvatarLink { get; set; }
     }
 }

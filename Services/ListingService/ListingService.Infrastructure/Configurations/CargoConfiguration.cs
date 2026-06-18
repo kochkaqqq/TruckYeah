@@ -18,11 +18,14 @@ public class CargoConfiguration : IEntityTypeConfiguration<CargoEntity>
         builder.Property(c => c.CargoName).IsRequired().HasMaxLength(200);
         builder.Property(c => c.RouteFrom).IsRequired().HasMaxLength(255);
         builder.Property(c => c.RouteTo).IsRequired().HasMaxLength(255);
+        builder.Property(c => c.RouteGeometryGeoJson).HasColumnType("jsonb");
         builder.Property(c => c.LoadDateTime).IsRequired();
         builder.Property(c => c.UnloadDateTime).IsRequired();
 
         builder.Property(c => c.WeightTons).IsRequired();
         builder.Property(c => c.VolumeM3).IsRequired();
+        builder.Property(c => c.UseAutomaticCalculation).HasDefaultValue(false);
+        builder.Property(c => c.WeightPerPackageKg);
         builder.Property(c => c.BodyTypeRequired).IsRequired().HasMaxLength(50);
         builder.Property(c => c.LoadingType).IsRequired().HasConversion<string>();
 
@@ -62,11 +65,6 @@ public class CargoConfiguration : IEntityTypeConfiguration<CargoEntity>
         builder.HasIndex(c => c.LoadDateTime);
         builder.HasIndex(c => c.BiddingEnabled);
         builder.HasIndex(c => c.AcceptedBidId);
-
-        builder.HasMany(c => c.RoutePoints)
-            .WithOne()
-            .HasForeignKey(rp => rp.CargoId)
-            .OnDelete(DeleteBehavior.Cascade);
 
         builder.HasMany(c => c.Bids)
             .WithOne(b => b.Cargo)

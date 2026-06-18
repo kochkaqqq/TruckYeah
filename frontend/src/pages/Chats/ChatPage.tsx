@@ -43,7 +43,12 @@ export const ChatPage = () => {
 
   useEffect(() => {
     if (id) {
-      loadMessages(id);
+      void loadMessages(id);
+      const intervalId = window.setInterval(() => {
+        void loadMessages(id, false);
+      }, 5_000);
+
+      return () => window.clearInterval(intervalId);
     }
   }, [id]);
 
@@ -55,10 +60,10 @@ export const ChatPage = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   };
 
-  const loadMessages = async (chatId: string) => {
+  const loadMessages = async (chatId: string, showLoader = true) => {
     try {
-      setIsLoading(true);
-      const messagesData: ApiMessage[] = await api.chats.getMessages(chatId);
+      if (showLoader) setIsLoading(true);
+      const messagesData: ApiMessage[] = await api.chats.getMessages(chatId, 1, 100);
       
       // ✅ Берём ID из authStore
       const currentUserId = currentUser?.id || '';
@@ -87,7 +92,7 @@ export const ChatPage = () => {
     } catch (error) {
       console.error('Ошибка загрузки сообщений:', error);
     } finally {
-      setIsLoading(false);
+      if (showLoader) setIsLoading(false);
     }
   };
 

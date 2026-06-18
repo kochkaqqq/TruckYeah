@@ -5,7 +5,7 @@ namespace WebApi.Controllers
 {
     [ApiController]
     [Route("api/companies")]
-    public class CompanyController : Controller
+    public class CompanyController : ControllerBase
     {
         private readonly ICompanyService _companyService;
 
@@ -18,11 +18,11 @@ namespace WebApi.Controllers
         public async Task<IActionResult> GetCompany([FromRoute] Guid id)
         {
             var result = await _companyService.GetCompany(id);
-            return Ok(result);
+            return Ok(new { result.Id, Name = result.Name.Value });
         }
 
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteCompany([FromQuery] Guid id)
+        public async Task<IActionResult> DeleteCompany([FromRoute] Guid id)
         {
             await _companyService.DeleteCompany(id);
             return Ok();
@@ -32,7 +32,7 @@ namespace WebApi.Controllers
         public async Task<IActionResult> AddCompany([FromBody] string companyName)
         {
             var result = await _companyService.AddCompany(companyName);
-            return Ok(result);
+            return Ok(new { result.Id, Name = result.Name.Value });
         }
     }
 }

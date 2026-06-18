@@ -5,5 +5,5 @@ namespace RouteService.Infrastructure.Interfaces;
 public interface IRouteCalculationsRepository
 {
     Task<RouteCalculation?> GetActiveByHash(string requestHash, DateTime now);
-    Task<Guid> Create(RouteCalculation calculation);
+    Task<Guid> Upsert(RouteCalculation calculation);
 }

@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { api, TruckResponse, ListingStatus, ContextType } from '../../api/client';
 import { useAuthStore } from '../../store/authStore';
 import { Toast } from '../../components/ui/Toast';
+import { RouteMapDisplay } from '../../components/route/RouteMapDisplay';
 import './VehiclesDetailPage.css';
 
 type ToastType = 'success' | 'error' | 'info';
@@ -200,6 +201,13 @@ export const VehiclesDetailPage = () => {
               <span className="vehicle-detail__date-value">{formatDate(truck.availableFrom)}</span>
             </div>
           </div>
+          <RouteMapDisplay
+            points={truck.routePoints}
+            geometry={truck.routeGeometryGeoJson}
+            distanceKm={truck.routeDistanceKm}
+            durationMinutes={truck.routeDurationMinutes}
+            fuelLiters={truck.routeFuelLiters}
+          />
         </section>
 
         <section className="vehicle-detail__section">

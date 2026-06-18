@@ -17,7 +17,7 @@ namespace ListingService.Infrastructure.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "9.0.15")
+                .HasAnnotation("ProductVersion", "8.0.26")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
@@ -33,8 +33,14 @@ namespace ListingService.Infrastructure.Migrations
                         .HasMaxLength(500)
                         .HasColumnType("character varying(500)");
 
-                    b.Property<Guid>("CargoId")
+                    b.Property<Guid?>("CargoId")
                         .HasColumnType("uuid");
+
+                    b.Property<double>("Lat")
+                        .HasColumnType("double precision");
+
+                    b.Property<double>("Lon")
+                        .HasColumnType("double precision");
 
                     b.Property<int>("Order")
                         .HasColumnType("integer");
@@ -42,9 +48,14 @@ namespace ListingService.Infrastructure.Migrations
                     b.Property<DateTime?>("ScheduledTime")
                         .HasColumnType("timestamp with time zone");
 
+                    b.Property<Guid?>("TruckId")
+                        .HasColumnType("uuid");
+
                     b.HasKey("Id");
 
-                    b.HasIndex("CargoId");
+                    b.HasIndex("CargoId", "Order");
+
+                    b.HasIndex("TruckId", "Order");
 
                     b.ToTable("RoutePoints");
                 });
@@ -199,10 +210,25 @@ namespace ListingService.Infrastructure.Migrations
                         .HasColumnType("boolean")
                         .HasDefaultValue(false);
 
+                    b.Property<DateTime?>("RouteCalculatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<double?>("RouteDistanceKm")
+                        .HasColumnType("double precision");
+
+                    b.Property<int?>("RouteDurationMinutes")
+                        .HasColumnType("integer");
+
                     b.Property<string>("RouteFrom")
                         .IsRequired()
                         .HasMaxLength(255)
                         .HasColumnType("character varying(255)");
+
+                    b.Property<double?>("RouteFuelLiters")
+                        .HasColumnType("double precision");
+
+                    b.Property<string>("RouteGeometryGeoJson")
+                        .HasColumnType("jsonb");
 
                     b.Property<string>("RouteTo")
                         .IsRequired()
@@ -234,6 +260,11 @@ namespace ListingService.Infrastructure.Migrations
                     b.Property<DateTime>("UnloadDateTime")
                         .HasColumnType("timestamp with time zone");
 
+                    b.Property<bool>("UseAutomaticCalculation")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(false);
+
                     b.Property<Guid>("UserId")
                         .HasColumnType("uuid");
 
@@ -244,6 +275,9 @@ namespace ListingService.Infrastructure.Migrations
                         .HasDefaultValue("Exchange");
 
                     b.Property<double>("VolumeM3")
+                        .HasColumnType("double precision");
+
+                    b.Property<double?>("WeightPerPackageKg")
                         .HasColumnType("double precision");
 
                     b.Property<double>("WeightTons")
@@ -328,10 +362,25 @@ namespace ListingService.Infrastructure.Migrations
                     b.Property<DateTime?>("PublishedAt")
                         .HasColumnType("timestamp with time zone");
 
+                    b.Property<DateTime?>("RouteCalculatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<double?>("RouteDistanceKm")
+                        .HasColumnType("double precision");
+
+                    b.Property<int?>("RouteDurationMinutes")
+                        .HasColumnType("integer");
+
                     b.Property<string>("RouteFrom")
                         .IsRequired()
                         .HasMaxLength(255)
                         .HasColumnType("character varying(255)");
+
+                    b.Property<double?>("RouteFuelLiters")
+                        .HasColumnType("double precision");
+
+                    b.Property<string>("RouteGeometryGeoJson")
+                        .HasColumnType("jsonb");
 
                     b.Property<string>("RouteTo")
                         .IsRequired()
@@ -382,8 +431,12 @@ namespace ListingService.Infrastructure.Migrations
                     b.HasOne("ListingService.Infrastructure.Entities.CargoEntity", null)
                         .WithMany("RoutePoints")
                         .HasForeignKey("CargoId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("ListingService.Infrastructure.Entities.TruckEntity", null)
+                        .WithMany("RoutePoints")
+                        .HasForeignKey("TruckId")
+                        .OnDelete(DeleteBehavior.Cascade);
                 });
 
             modelBuilder.Entity("ListingService.Infrastructure.Entities.CargoBidEntity", b =>
@@ -401,6 +454,11 @@ namespace ListingService.Infrastructure.Migrations
                 {
                     b.Navigation("Bids");
 
+                    b.Navigation("RoutePoints");
+                });
+
+            modelBuilder.Entity("ListingService.Infrastructure.Entities.TruckEntity", b =>
+                {
                     b.Navigation("RoutePoints");
                 });
 #pragma warning restore 612, 618

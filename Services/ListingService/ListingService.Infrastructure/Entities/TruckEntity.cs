@@ -1,4 +1,5 @@
 using ListingService.Domain.Enums;
+using ListingService.Domain.Models;
 
 namespace ListingService.Infrastructure.Entities;
 
@@ -12,6 +13,12 @@ public class TruckEntity
 
     public string RouteFrom { get; set; } = string.Empty;
     public string RouteTo { get; set; } = string.Empty;
+    public virtual ICollection<RoutePoint> RoutePoints { get; set; } = new List<RoutePoint>();
+    public double? RouteDistanceKm { get; set; }
+    public int? RouteDurationMinutes { get; set; }
+    public double? RouteFuelLiters { get; set; }
+    public string? RouteGeometryGeoJson { get; set; }
+    public DateTime? RouteCalculatedAt { get; set; }
 
     public double CapacityTons { get; set; }
     public double VolumeM3 { get; set; }

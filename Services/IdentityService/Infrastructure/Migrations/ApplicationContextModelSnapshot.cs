@@ -114,7 +114,7 @@ namespace Infrastructure.Migrations
                         .HasColumnType("varchar(45)")
                         .HasColumnName("ip_address");
 
-                    b.Property<DateTime>("RevokedAt")
+                    b.Property<DateTime?>("RevokedAt")
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("revoked_at");
 
@@ -309,6 +309,24 @@ namespace Infrastructure.Migrations
                         .IsRequired()
                         .HasConstraintName("FK_Users_Countries_CountryId");
 
+                    b.OwnsOne("Domain.ValueObjects.City", "City", b1 =>
+                        {
+                            b1.Property<Guid>("UserId")
+                                .HasColumnType("uuid");
+
+                            b1.Property<string>("Value")
+                                .HasMaxLength(100)
+                                .HasColumnType("varchar(100)")
+                                .HasColumnName("city");
+
+                            b1.HasKey("UserId");
+
+                            b1.ToTable("users");
+
+                            b1.WithOwner()
+                                .HasForeignKey("UserId");
+                        });
+
                     b.OwnsOne("Domain.ValueObjects.Email", "Email", b1 =>
                         {
                             b1.Property<Guid>("UserId")
@@ -409,7 +427,6 @@ namespace Infrastructure.Migrations
                                 .HasColumnType("uuid");
 
                             b1.Property<string>("Value")
-                                .IsRequired()
                                 .HasMaxLength(15)
                                 .HasColumnType("varchar(15)")
                                 .HasColumnName("vat_id");
@@ -421,6 +438,8 @@ namespace Infrastructure.Migrations
                             b1.WithOwner()
                                 .HasForeignKey("UserId");
                         });
+
+                    b.Navigation("City");
 
                     b.Navigation("Company");
 
@@ -437,8 +456,7 @@ namespace Infrastructure.Migrations
                     b.Navigation("Postcode")
                         .IsRequired();
 
-                    b.Navigation("VatId")
-                        .IsRequired();
+                    b.Navigation("VatId");
                 });
 #pragma warning restore 612, 618
         }

@@ -11,9 +11,10 @@ namespace Domain.Entities
         public Phone Phone { get; set; } = null!;
         public Country Country { get; set; } = null!;
         public Postcode Postcode { get; set; } = null!;
+        public City? City { get; set; }
         public UserType UserType { get; set; }
-        public VatId VatId { get; set; } = null!;
-        public FullName? FullName { get; set; } = null!;
+        public VatId? VatId { get; set; }
+        public FullName? FullName { get; set; }
         public Company? Company { get; set; }
         public string? AvatarLink { get; set; }
         public float Rating { get; set; }

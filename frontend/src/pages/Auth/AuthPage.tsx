@@ -25,6 +25,7 @@ export const AuthPage = () => {
   const [name, setName] = useState('');
   const [surname, setSurname] = useState('');
   const [vatId, setVatId] = useState('');
+  const [companyName, setCompanyName] = useState('');
   const [userType, setUserType] = useState<UserType>(1);
   const [selectedCountryId, setSelectedCountryId] = useState<string>('');
   const [countries, setCountries] = useState<Country[]>([]);
@@ -170,6 +171,7 @@ export const AuthPage = () => {
       if (response.refreshToken) {
         localStorage.setItem('refreshToken', response.refreshToken);
       }
+      login(await api.users.getMe());
 
       showToast('Вход выполнен успешно!', 'success');
       setTimeout(() => navigate('/'), 1000);
@@ -239,6 +241,11 @@ export const AuthPage = () => {
       return;
     }
 
+    if (userType === UserType.Business && !companyName.trim()) {
+      showToast('Введите название компании', 'error');
+      return;
+    }
+
     setIsLoading(true);
     try {
       const registerData = {
@@ -252,7 +259,7 @@ export const AuthPage = () => {
         countryId: selectedCountryId,
         postcode: '000000',
         vatId: vatId.trim(),
-        companyId: '00000000-0000-0000-0000-000000000000',
+        companyName: userType === UserType.Business ? companyName.trim() : undefined,
         avatarLink: '',
         deviceId: 'browser-' + Date.now().toString(),
         userAgent: typeof navigator !== 'undefined' ? navigator.userAgent : '',
@@ -294,6 +301,7 @@ export const AuthPage = () => {
       if (response.refreshToken) {
         localStorage.setItem('refreshToken', response.refreshToken);
       }
+      login(await api.users.getMe());
 
       showToast('Регистрация успешна!', 'success');
       setTimeout(() => navigate('/'), 1000);
@@ -458,6 +466,20 @@ export const AuthPage = () => {
                   onChange={(e) => setVatId(e.target.value)}
                 />
               </div>
+
+              {userType === UserType.Business && (
+                <div className="auth__field">
+                  <label className="auth__label">Название компании</label>
+                  <input
+                    type="text"
+                    className="auth__input"
+                    placeholder='ООО "Транспорт"'
+                    value={companyName}
+                    onChange={(e) => setCompanyName(e.target.value)}
+                    required
+                  />
+                </div>
+              )}
 
               <div className="auth__field">
                 <label className="auth__label">Пароль</label>

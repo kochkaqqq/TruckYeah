@@ -35,27 +35,45 @@ export const ChatsPage = () => {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    loadChats();
+    void loadChats();
+    const intervalId = window.setInterval(() => {
+      void loadChats(false);
+    }, 10_000);
+
+    return () => window.clearInterval(intervalId);
   }, []);
 
-  const loadChats = async () => {
+  const loadChats = async (showLoader = true) => {
     try {
-      setIsLoading(true);
+      if (showLoader) setIsLoading(true);
       const chatData: Chat[] = await api.chats.getAll();
       
-      const transformedChats: ChatWithUser[] = chatData.map((chat: Chat) => ({
-        id: chat.id,
-        userId: chat.otherParticipantUserId,
-        userName: 'Пользователь', // TODO: Заменить на реальное имя через API
-        lastMessage: chat.lastMessageText,
-        lastMessageTime: new Date(chat.lastMessageAt).toLocaleTimeString('ru-RU', { 
-          hour: '2-digit', 
-          minute: '2-digit' 
-        }),
-        unreadCount: chat.unreadCount,
-        isOnline: false, // TODO: Заменить на реальный статус
-        route: undefined, // TODO: Получить из contextId и contextType
-      }));
+      const transformedChats: ChatWithUser[] = await Promise.all(
+        chatData.map(async (chat: Chat) => {
+          const [user, context] = await Promise.all([
+            api.users.getPublic(chat.otherParticipantUserId).catch(() => null),
+            chat.contextType === 'Cargo'
+              ? api.cargos.getById(chat.contextId).catch(() => null)
+              : api.trucks.getById(chat.contextId).catch(() => null),
+          ]);
+
+          return {
+            id: chat.id,
+            userId: chat.otherParticipantUserId,
+            userName: user?.fullName || [user?.name, user?.surname].filter(Boolean).join(' ') || user?.email || 'Пользователь',
+            lastMessage: chat.lastMessageText || 'Сообщений пока нет',
+            lastMessageTime: chat.lastMessageAt
+              ? new Date(chat.lastMessageAt).toLocaleTimeString('ru-RU', {
+                  hour: '2-digit',
+                  minute: '2-digit',
+                })
+              : '',
+            unreadCount: chat.unreadCount,
+            isOnline: false,
+            route: context ? `${context.routeFrom || '—'} → ${context.routeTo || '—'}` : undefined,
+          };
+        })
+      );
 
       setChats(transformedChats);
     } catch (error) {

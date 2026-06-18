@@ -68,6 +68,15 @@ namespace Domain.Entities.Configurations
                     .HasColumnType("varchar(10)");
             });
 
+            builder.OwnsOne(u => u.City, cityBuilder =>
+            {
+                cityBuilder.Property(c => c.Value)
+                    .HasColumnName("city")
+                    .HasMaxLength(100)
+                    .IsRequired(false)
+                    .HasColumnType("varchar(100)");
+            });
+
             builder.Property(u => u.UserType)
                 .HasColumnName("user_type")
                 .IsRequired()
@@ -79,7 +88,7 @@ namespace Domain.Entities.Configurations
                 vatIdBuilder.Property(v => v.Value)
                     .HasColumnName("vat_id")
                     .HasMaxLength(15)
-                    .IsRequired()
+                    .IsRequired(false)
                     .HasColumnType("varchar(15)");
             });
 

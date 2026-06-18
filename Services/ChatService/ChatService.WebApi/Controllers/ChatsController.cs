@@ -126,7 +126,9 @@ public class ChatsController : ControllerBase
             InvalidOperationException => BadRequest(ex.Message),
             KeyNotFoundException => NotFound(ex.Message),
             UnauthorizedAccessException => Forbid(),
-            _ => StatusCode(StatusCodes.Status500InternalServerError, ex.Message)
+            _ => Problem(
+                statusCode: StatusCodes.Status500InternalServerError,
+                title: "Internal server error")
         };
     }
 }

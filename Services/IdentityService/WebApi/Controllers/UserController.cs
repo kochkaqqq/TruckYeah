@@ -1,111 +1,47 @@
-﻿using Application.Interfaces;
+using System.Security.Claims;
+using Application.Interfaces;
 using Application.Shared.Dtos.Requests;
-using Application.Shared.Exceptions;
-using Domain.Exceptions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
-namespace WebApi.Controllers
+namespace WebApi.Controllers;
+
+[ApiController]
+[Route("api/users")]
+public sealed class UserController(IUserService userService) : ControllerBase
 {
-    [ApiController]
-    [Route("api/users")]
-    public class UserController : Controller
+    [HttpPost("register")]
+    public async Task<IActionResult> Register([FromBody] RegistrationDtoRequest request) =>
+        Ok(await userService.RegistrationUserAsync(request));
+
+    [HttpPost("login")]
+    public async Task<IActionResult> Login([FromBody] LoginDtoRequest request) =>
+        Ok(await userService.LoginUserAsync(request));
+
+    [HttpPost("refresh")]
+    public async Task<IActionResult> Refresh([FromBody] string token) =>
+        Ok(await userService.RefreshTokenAsync(token));
+
+    [Authorize]
+    [HttpGet("me")]
+    public async Task<IActionResult> GetCurrentUser() =>
+        Ok(await userService.GetCurrentUserAsync(GetCurrentUserId()));
+
+    [Authorize]
+    [HttpPut("me")]
+    public async Task<IActionResult> UpdateCurrentUser([FromBody] UpdateUserProfileRequest request) =>
+        Ok(await userService.UpdateCurrentUserAsync(GetCurrentUserId(), request));
+
+    [Authorize]
+    [HttpGet("{id:guid}")]
+    public async Task<IActionResult> GetPublicUser([FromRoute] Guid id) =>
+        Ok(await userService.GetPublicUserAsync(id));
+
+    private Guid GetCurrentUserId()
     {
-        private readonly IUserService _userService;
-
-        public UserController(IUserService userService)
-        {
-            _userService = userService;
-        }
-
-        [HttpPost("register")]
-        public async Task<IActionResult> Register([FromBody] RegistrationDtoRequest regDto)
-        {
-            try
-            {
-                var result = await _userService.RegistrationUserAsync(regDto);
-                return Ok(result);
-            }
-            catch (ValidationException ex)
-            {
-                return BadRequest(new { message = ex.Message });
-            }
-            catch (ConflictException ex)
-            {
-                return Conflict(new { message = ex.Message });
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, new { message = "Internal server error", details = ex.Message });
-            }
-        }
-
-        [HttpPost("login")]
-        public async Task<IActionResult> Login([FromBody] LoginDtoRequest loginDto)
-        {
-            try
-            {
-                var result = await _userService.LoginUserAsync(loginDto);
-                return Ok(result);
-            }
-            catch (EntityNotFoundException ex)
-            {
-                return NotFound(new { message = ex.Message });
-            }
-            catch (UnauthorizedException ex)
-            {
-                return Unauthorized(new { message = ex.Message });
-            }
-            catch (ValidationException ex)
-            {
-                return BadRequest(new { message = ex.Message });
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, new { message = "Internal server error", details = ex.Message });
-            }
-        }
-
-        [HttpPost("refresh")]
-        public async Task<IActionResult> TokenRefresh([FromBody] string token)
-        {
-            try
-            {
-                var result = await _userService.RefreshTokenAsync(token);
-                return Ok(result);
-            }
-            catch (EntityNotFoundException ex)
-            {
-                return NotFound(new { message = ex.Message });
-            }
-            catch (UnauthorizedException ex)
-            {
-                return Unauthorized(new { message = ex.Message });
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, new { message = "Internal server error", details = ex.Message });
-            }
-        }
-
-        [Authorize]
-        [HttpGet]
-        [Route("{id}")]
-        public async Task<IActionResult> GetUser([FromRoute] Guid id)
-        {
-            try
-            {
-                var res = await _userService.GetUserAsync(id);
-                return Ok(res);
-            }
-            catch (EntityNotFoundException ex)
-            {
-                return NotFound(new { message = ex.Message });
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, new { message = "Internal server error", details = ex.Message });
-            }
-        }
+        var value = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        return Guid.TryParse(value, out var userId)
+            ? userId
+            : throw new UnauthorizedAccessException("User id claim is missing.");
     }
 }

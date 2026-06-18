@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { api, CargoResponse, ListingStatus, ContextType } from '../../api/client';
 import { useAuthStore } from '../../store/authStore';
 import { Toast } from '../../components/ui/Toast';
+import { RouteMapDisplay } from '../../components/route/RouteMapDisplay';
 import './CargoDetailPage.css';
 
 type ToastType = 'success' | 'error' | 'info';
@@ -205,6 +206,13 @@ export const CargoDetailPage = () => {
               <span className="cargo-detail__date-value">{formatDate(cargo.unloadDateTime)}</span>
             </div>
           </div>
+          <RouteMapDisplay
+            points={cargo.routePoints}
+            geometry={cargo.routeGeometryGeoJson}
+            distanceKm={cargo.routeDistanceKm}
+            durationMinutes={cargo.routeDurationMinutes}
+            fuelLiters={cargo.routeFuelLiters}
+          />
         </section>
 
         {/* Параметры */}

@@ -1,8 +1,9 @@
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { api, LoadingType, PaymentType, ListingVisibility } from '../../api/client';
+import { useEffect, useState } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
+import { api, LoadingType, PaymentType, ListingVisibility, RouteCalculation } from '../../api/client';
 import { useAuthStore } from '../../store/authStore';
 import { Toast } from '../../components/ui/Toast';
+import { EditableRoutePoint, RoutePlanner } from '../../components/route/RoutePlanner';
 import './CargoAddPage.css';
 
 type ToastType = 'success' | 'error' | 'info';
@@ -13,6 +14,7 @@ interface ToastData {
 }
 
 interface FormData {
+  calculationMode: 'manual' | 'automatic';
   cargoName: string;
   title: string;
   notes: string;
@@ -28,6 +30,7 @@ interface FormData {
   widthCm: string;
   heightCm: string;
   palletsCount: string;
+  weightPerPackageKg: string;
   packagingType: string;
   startingPrice: string;
   paymentType: PaymentType;
@@ -43,6 +46,7 @@ interface FormData {
 }
 
 const initialFormData: FormData = {
+  calculationMode: 'manual',
   cargoName: '',
   title: '',
   notes: '',
@@ -58,6 +62,7 @@ const initialFormData: FormData = {
   widthCm: '',
   heightCm: '',
   palletsCount: '',
+  weightPerPackageKg: '',
   packagingType: '',
   startingPrice: '',
   paymentType: PaymentType.Cash,
@@ -74,15 +79,95 @@ const initialFormData: FormData = {
 
 export const CargoAddPage = () => {
   const navigate = useNavigate();
+  const { id } = useParams();
+  const isEditMode = Boolean(id);
   const { isAuthenticated } = useAuthStore();
   const [formData, setFormData] = useState<FormData>(initialFormData);
+  const [isLoading, setIsLoading] = useState(isEditMode);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [toast, setToast] = useState<ToastData | null>(null);
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [routePoints, setRoutePoints] = useState<EditableRoutePoint[]>([
+    { address: '' },
+    { address: '' },
+  ]);
+  const [routeCalculation, setRouteCalculation] = useState<RouteCalculation | null>(null);
+
+  useEffect(() => {
+    if (!id) return;
+
+    const loadCargo = async () => {
+      try {
+        const cargo = await api.cargos.getById(id);
+        const toLocalDateTime = (value?: string | null) =>
+          value ? new Date(value).toISOString().slice(0, 16) : '';
+
+        setFormData({
+          calculationMode: cargo.useAutomaticCalculation ? 'automatic' : 'manual',
+          cargoName: cargo.cargoName ?? '',
+          title: cargo.title ?? '',
+          notes: cargo.notes ?? '',
+          routeFrom: cargo.routeFrom ?? '',
+          routeTo: cargo.routeTo ?? '',
+          loadDateTime: toLocalDateTime(cargo.loadDateTime),
+          unloadDateTime: toLocalDateTime(cargo.unloadDateTime),
+          weightTons: cargo.weightTons?.toString() ?? '',
+          volumeM3: cargo.volumeM3?.toString() ?? '',
+          bodyTypeRequired: cargo.bodyTypeRequired ?? '',
+          loadingType: cargo.loadingType,
+          lengthCm: cargo.lengthCm?.toString() ?? '',
+          widthCm: cargo.widthCm?.toString() ?? '',
+          heightCm: cargo.heightCm?.toString() ?? '',
+          palletsCount: cargo.palletsCount?.toString() ?? '',
+          weightPerPackageKg: cargo.weightPerPackageKg?.toString() ?? '',
+          packagingType: cargo.packagingType ?? '',
+          startingPrice: cargo.startingPrice?.toString() ?? '',
+          paymentType: cargo.paymentType,
+          allowBargaining: cargo.allowBargaining ?? false,
+          prepaymentPercent: cargo.prepaymentPercent?.toString() ?? '',
+          biddingEnabled: cargo.biddingEnabled ?? false,
+          minBidStep: cargo.minBidStep?.toString() ?? '',
+          visibility: cargo.visibility ?? ListingVisibility.Exchange,
+          requiresCMR: cargo.requiresCMR ?? false,
+          requiresTIR: cargo.requiresTIR ?? false,
+          isADR: cargo.isADR ?? false,
+          requiresTwoDrivers: cargo.requiresTwoDrivers ?? false,
+        });
+        setRoutePoints(
+          cargo.routePoints?.length
+            ? cargo.routePoints.map((point) => ({ address: point.address ?? '', lat: point.lat, lon: point.lon }))
+            : [{ address: cargo.routeFrom ?? '' }, { address: cargo.routeTo ?? '' }]
+        );
+        if (cargo.routeGeometryGeoJson) {
+          setRouteCalculation({
+            distanceKm: cargo.routeDistanceKm ?? 0,
+            durationMinutes: cargo.routeDurationMinutes ?? 0,
+            fuelConsumptionLiters: cargo.routeFuelLiters ?? 0,
+            resolvedPoints: cargo.routePoints ?? [],
+            geometry: { geoJson: JSON.parse(cargo.routeGeometryGeoJson) },
+            warnings: [],
+          });
+        }
+      } catch (error) {
+        setToast({
+          message: error instanceof Error ? error.message : 'Не удалось загрузить груз',
+          type: 'error',
+        });
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    void loadCargo();
+  }, [id]);
 
   if (!isAuthenticated) {
     navigate('/auth');
     return null;
+  }
+
+  if (isLoading) {
+    return <div className="cargo-add"><div className="cargo-add__container">Загрузка объявления...</div></div>;
   }
 
   const showToast = (message: string, type: ToastType) => {
@@ -108,6 +193,25 @@ export const CargoAddPage = () => {
       });
     }
   };
+
+  const calculateAutomaticValues = () => {
+    const length = Number(formData.lengthCm);
+    const width = Number(formData.widthCm);
+    const height = Number(formData.heightCm);
+    const packages = Number(formData.palletsCount);
+    const weightPerPackage = Number(formData.weightPerPackageKg);
+
+    if ([length, width, height, packages, weightPerPackage].some((value) => value <= 0)) {
+      return { weightTons: 0, volumeM3: 0 };
+    }
+
+    return {
+      weightTons: Math.round((weightPerPackage * packages / 1000) * 1000) / 1000,
+      volumeM3: Math.round((length * width * height * packages / 1_000_000) * 1000) / 1000,
+    };
+  };
+
+  const automaticValues = calculateAutomaticValues();
 
   const validate = (): boolean => {
     const newErrors: Record<string, string> = {};
@@ -144,14 +248,31 @@ export const CargoAddPage = () => {
       }
     }
 
-    const weight = parseFloat(formData.weightTons);
-    if (!formData.weightTons || isNaN(weight) || weight <= 0) {
+    const weight = formData.calculationMode === 'automatic'
+      ? automaticValues.weightTons
+      : parseFloat(formData.weightTons);
+    if ((formData.calculationMode === 'manual' && !formData.weightTons) || isNaN(weight) || weight <= 0) {
       newErrors.weightTons = 'Укажите вес больше 0';
     }
 
-    const volume = parseFloat(formData.volumeM3);
-    if (!formData.volumeM3 || isNaN(volume) || volume <= 0) {
+    const volume = formData.calculationMode === 'automatic'
+      ? automaticValues.volumeM3
+      : parseFloat(formData.volumeM3);
+    if ((formData.calculationMode === 'manual' && !formData.volumeM3) || isNaN(volume) || volume <= 0) {
       newErrors.volumeM3 = 'Укажите объём больше 0';
+    }
+    if (!routeCalculation?.geometry.geoJson) {
+      newErrors.route = 'Рассчитайте маршрут перед сохранением';
+    }
+
+    if (formData.calculationMode === 'automatic') {
+      if (Number(formData.lengthCm) <= 0) newErrors.lengthCm = 'Укажите длину';
+      if (Number(formData.widthCm) <= 0) newErrors.widthCm = 'Укажите ширину';
+      if (Number(formData.heightCm) <= 0) newErrors.heightCm = 'Укажите высоту';
+      if (Number(formData.palletsCount) <= 0) newErrors.palletsCount = 'Укажите количество мест';
+      if (Number(formData.weightPerPackageKg) <= 0) {
+        newErrors.weightPerPackageKg = 'Укажите вес одного места';
+      }
     }
 
     const price = parseFloat(formData.startingPrice);
@@ -194,10 +315,24 @@ export const CargoAddPage = () => {
       cargoName: formData.cargoName.trim(),
       routeFrom: formData.routeFrom.trim(),
       routeTo: formData.routeTo.trim(),
+      routePoints: routePoints.map((point, order) => ({
+        address: point.address,
+        lat: point.lat,
+        lon: point.lon,
+        order,
+      })),
+      routeDistanceKm: routeCalculation?.distanceKm,
+      routeDurationMinutes: routeCalculation?.durationMinutes,
+      routeFuelLiters: routeCalculation?.fuelConsumptionLiters,
+      routeGeometryGeoJson: routeCalculation?.geometry.geoJson
+        ? JSON.stringify(routeCalculation.geometry.geoJson)
+        : undefined,
+      routeCalculatedAt: routeCalculation ? new Date().toISOString() : undefined,
       loadDateTime: new Date(formData.loadDateTime).toISOString(),
       unloadDateTime: new Date(formData.unloadDateTime).toISOString(),
       weightTons: parseFloat(formData.weightTons),
       volumeM3: parseFloat(formData.volumeM3),
+      useAutomaticCalculation: formData.calculationMode === 'automatic',
       loadingType: loadingTypeMap[formData.loadingType] ?? 0,
       paymentType: paymentTypeMap[formData.paymentType] ?? 0,
       startingPrice: parseFloat(formData.startingPrice),
@@ -216,6 +351,13 @@ export const CargoAddPage = () => {
     if (formData.widthCm) payload.widthCm = parseFloat(formData.widthCm);
     if (formData.heightCm) payload.heightCm = parseFloat(formData.heightCm);
     if (formData.palletsCount) payload.palletsCount = parseInt(formData.palletsCount);
+    if (formData.weightPerPackageKg) {
+      payload.weightPerPackageKg = parseFloat(formData.weightPerPackageKg);
+    }
+    if (formData.calculationMode === 'automatic') {
+      payload.weightTons = automaticValues.weightTons;
+      payload.volumeM3 = automaticValues.volumeM3;
+    }
     if (formData.packagingType.trim()) payload.packagingType = formData.packagingType.trim();
     if (formData.prepaymentPercent) payload.prepaymentPercent = parseFloat(formData.prepaymentPercent);
     if (formData.biddingEnabled && formData.minBidStep) {
@@ -243,8 +385,9 @@ export const CargoAddPage = () => {
 
     console.log(' Отправляемый payload:', payload);
 
-    // 1. Создаём груз (всегда создаётся как Draft)
-    const cargoId = await api.cargos.create(payload);
+    const cargoId = id
+      ? await api.cargos.update(id, payload)
+      : await api.cargos.create(payload);
     console.log('✅ Груз создан, ID:', cargoId);
 
     // 2. Если это не черновик — публикуем
@@ -263,7 +406,11 @@ export const CargoAddPage = () => {
     }
 
     showToast(
-      asDraft ? 'Черновик сохранён!' : 'Груз успешно опубликован!',
+      isEditMode
+        ? 'Изменения сохранены'
+        : asDraft
+          ? 'Черновик сохранён'
+          : 'Груз опубликован',
       'success'
     );
 
@@ -279,7 +426,7 @@ export const CargoAddPage = () => {
 };
 
   const handleCancel = () => {
-    navigate('/cargo');
+    navigate(isEditMode ? '/my-listing' : '/cargo');
   };
 
   const getInputClass = (fieldName: string) => {
@@ -294,7 +441,9 @@ export const CargoAddPage = () => {
 
       <div className="cargo-add__container">
         <div className="cargo-add__header">
-          <h1 className="cargo-add__title">Добавить новый груз</h1>
+          <h1 className="cargo-add__title">
+            {isEditMode ? 'Редактировать груз' : 'Добавить новый груз'}
+          </h1>
           <button className="cargo-add__back-btn" onClick={handleCancel}>
             ← Назад к списку
           </button>
@@ -352,37 +501,21 @@ export const CargoAddPage = () => {
           {/* Секция 2: Маршрут */}
           <section className="cargo-add__section">
             <h2 className="cargo-add__section-title">Маршрут</h2>
+            <RoutePlanner
+              points={routePoints}
+              calculation={routeCalculation}
+              onPointsChange={(points) => {
+                setRoutePoints(points);
+                setFormData((current) => ({
+                  ...current,
+                  routeFrom: points[0]?.address ?? '',
+                  routeTo: points[points.length - 1]?.address ?? '',
+                }));
+              }}
+              onCalculationChange={setRouteCalculation}
+            />
+            {errors.route && <span className="cargo-add__error">{errors.route}</span>}
             <div className="cargo-add__grid cargo-add__grid--2">
-              <div className="cargo-add__field">
-                <label className="cargo-add__label">
-                  Точка отправления <span className="cargo-add__required">*</span>
-                </label>
-                <input
-                  type="text"
-                  name="routeFrom"
-                  className={getInputClass('routeFrom')}
-                  placeholder="Город, адрес"
-                  value={formData.routeFrom}
-                  onChange={handleChange}
-                />
-                {errors.routeFrom && <span className="cargo-add__error">{errors.routeFrom}</span>}
-              </div>
-
-              <div className="cargo-add__field">
-                <label className="cargo-add__label">
-                  Точка назначения <span className="cargo-add__required">*</span>
-                </label>
-                <input
-                  type="text"
-                  name="routeTo"
-                  className={getInputClass('routeTo')}
-                  placeholder="Город, адрес"
-                  value={formData.routeTo}
-                  onChange={handleChange}
-                />
-                {errors.routeTo && <span className="cargo-add__error">{errors.routeTo}</span>}
-              </div>
-
               <div className="cargo-add__field">
                 <label className="cargo-add__label">
                   Дата погрузки <span className="cargo-add__required">*</span>
@@ -416,6 +549,18 @@ export const CargoAddPage = () => {
           {/* Секция 3: Параметры груза */}
           <section className="cargo-add__section">
             <h2 className="cargo-add__section-title">Параметры груза</h2>
+            <div className="cargo-add__field">
+              <label className="cargo-add__label">Режим расчёта</label>
+              <select
+                name="calculationMode"
+                className="cargo-add__input cargo-add__select"
+                value={formData.calculationMode}
+                onChange={handleChange}
+              >
+                <option value="manual">Вручную</option>
+                <option value="automatic">Автоматически по грузовым местам</option>
+              </select>
+            </div>
             <div className="cargo-add__grid cargo-add__grid--4">
               <div className="cargo-add__field">
                 <label className="cargo-add__label">
@@ -428,8 +573,9 @@ export const CargoAddPage = () => {
                   placeholder="0.0"
                   step="0.1"
                   min="0"
-                  value={formData.weightTons}
+                  value={formData.calculationMode === 'automatic' ? automaticValues.weightTons || '' : formData.weightTons}
                   onChange={handleChange}
+                  readOnly={formData.calculationMode === 'automatic'}
                 />
                 {errors.weightTons && <span className="cargo-add__error">{errors.weightTons}</span>}
               </div>
@@ -445,8 +591,9 @@ export const CargoAddPage = () => {
                   placeholder="0.0"
                   step="0.1"
                   min="0"
-                  value={formData.volumeM3}
+                  value={formData.calculationMode === 'automatic' ? automaticValues.volumeM3 || '' : formData.volumeM3}
                   onChange={handleChange}
+                  readOnly={formData.calculationMode === 'automatic'}
                 />
                 {errors.volumeM3 && <span className="cargo-add__error">{errors.volumeM3}</span>}
               </div>
@@ -526,6 +673,25 @@ export const CargoAddPage = () => {
                   value={formData.palletsCount}
                   onChange={handleChange}
                 />
+                {errors.palletsCount && <span className="cargo-add__error">{errors.palletsCount}</span>}
+              </div>
+
+              <div className="cargo-add__field">
+                <label className="cargo-add__label">Вес одного места (кг)</label>
+                <input
+                  type="number"
+                  name="weightPerPackageKg"
+                  className={getInputClass('weightPerPackageKg')}
+                  placeholder="0"
+                  step="0.1"
+                  min="0"
+                  value={formData.weightPerPackageKg}
+                  onChange={handleChange}
+                  disabled={formData.calculationMode !== 'automatic'}
+                />
+                {errors.weightPerPackageKg && (
+                  <span className="cargo-add__error">{errors.weightPerPackageKg}</span>
+                )}
               </div>
 
               <div className="cargo-add__field">
@@ -709,7 +875,7 @@ export const CargoAddPage = () => {
               onClick={() => handleSubmit(true)}
               disabled={isSubmitting}
             >
-              {isSubmitting ? 'Сохранение...' : 'Сохранить черновик'}
+              {isSubmitting ? 'Сохранение...' : isEditMode ? 'Сохранить' : 'Сохранить черновик'}
             </button>
             <button
               type="button"
@@ -717,7 +883,7 @@ export const CargoAddPage = () => {
               onClick={() => handleSubmit(false)}
               disabled={isSubmitting}
             >
-              {isSubmitting ? 'Публикация...' : 'Опубликовать'}
+              {isSubmitting ? 'Публикация...' : isEditMode ? 'Сохранить и опубликовать' : 'Опубликовать'}
             </button>
           </div>
         </form>

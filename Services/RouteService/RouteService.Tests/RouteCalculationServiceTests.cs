@@ -317,7 +317,7 @@ public class RouteCalculationServiceTests
                     : null);
         }
 
-        public Task<Guid> Create(RouteCalculation routeCalculation)
+        public Task<Guid> Upsert(RouteCalculation routeCalculation)
         {
             _cache[routeCalculation.RequestHash] = routeCalculation;
             return Task.FromResult(routeCalculation.Id);

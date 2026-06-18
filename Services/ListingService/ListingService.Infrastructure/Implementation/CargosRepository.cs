@@ -142,6 +142,8 @@ public class CargosRepository : ICargosRepository
                 Id = p.Id == Guid.Empty ? Guid.NewGuid() : p.Id,
                 CargoId = cargo.Id,
                 Address = p.Address,
+                Lat = p.Lat,
+                Lon = p.Lon,
                 ScheduledTime = p.ScheduledTime,
                 Order = p.Order
             })
@@ -173,6 +175,25 @@ public class CargosRepository : ICargosRepository
             .ToListAsync();
 
         return bids.Select(b => b.MapToModel()).ToList();
+    }
+
+    public async Task<List<CargoBid>> GetBidsByCarrier(Guid carrierUserId)
+    {
+        return await _dbContext.CargoBids
+            .AsNoTracking()
+            .Where(b => b.CarrierUserId == carrierUserId)
+            .OrderByDescending(b => b.CreatedAt)
+            .Select(b => new CargoBid
+            {
+                Id = b.Id,
+                CargoId = b.CargoId,
+                CarrierUserId = b.CarrierUserId,
+                Price = b.Price,
+                Status = b.Status,
+                CreatedAt = b.CreatedAt,
+                AcceptedAt = b.AcceptedAt
+            })
+            .ToListAsync();
     }
 
     public async Task<Guid> CreateBid(CargoBid bid)
@@ -207,10 +228,17 @@ public class CargosRepository : ICargosRepository
         entity.CargoName = cargo.CargoName;
         entity.RouteFrom = cargo.RouteFrom;
         entity.RouteTo = cargo.RouteTo;
+        entity.RouteDistanceKm = cargo.RouteDistanceKm;
+        entity.RouteDurationMinutes = cargo.RouteDurationMinutes;
+        entity.RouteFuelLiters = cargo.RouteFuelLiters;
+        entity.RouteGeometryGeoJson = cargo.RouteGeometryGeoJson;
+        entity.RouteCalculatedAt = cargo.RouteCalculatedAt;
         entity.LoadDateTime = cargo.LoadDateTime;
         entity.UnloadDateTime = cargo.UnloadDateTime;
         entity.WeightTons = cargo.WeightTons;
         entity.VolumeM3 = cargo.VolumeM3;
+        entity.UseAutomaticCalculation = cargo.UseAutomaticCalculation;
+        entity.WeightPerPackageKg = cargo.WeightPerPackageKg;
         entity.BodyTypeRequired = cargo.BodyTypeRequired;
         entity.LoadingType = cargo.LoadingType;
         entity.LengthCm = cargo.LengthCm;

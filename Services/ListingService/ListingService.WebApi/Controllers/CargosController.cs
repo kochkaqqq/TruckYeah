@@ -156,6 +156,14 @@ public class CargosController : ControllerBase
     }
 
     [Authorize]
+    [HttpGet("bids/my")]
+    public async Task<ActionResult<List<CargoBidResponse>>> GetMyBids()
+    {
+        var bids = await _cargosService.GetMyBidsAsync(GetCurrentUserId());
+        return Ok(bids.Select(b => b.MapToResponse()));
+    }
+
+    [Authorize]
     [HttpGet("{id:guid}/bids")]
     public async Task<ActionResult<List<CargoBidResponse>>> GetCargoBids(Guid id)
     {
@@ -214,7 +222,9 @@ public class CargosController : ControllerBase
             InvalidOperationException => BadRequest(ex.Message),
             KeyNotFoundException => NotFound(ex.Message),
             UnauthorizedAccessException => Forbid(),
-            _ => StatusCode(StatusCodes.Status500InternalServerError, ex.Message)
+            _ => Problem(
+                statusCode: StatusCodes.Status500InternalServerError,
+                title: "Internal server error")
         };
     }
 }

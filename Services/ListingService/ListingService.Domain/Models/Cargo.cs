@@ -13,12 +13,19 @@ public class Cargo
     public string RouteFrom { get; set; } = string.Empty;
     public string RouteTo { get; set; } = string.Empty;
     public ICollection<RoutePoint> RoutePoints { get; set; } = new List<RoutePoint>();
+    public double? RouteDistanceKm { get; set; }
+    public int? RouteDurationMinutes { get; set; }
+    public double? RouteFuelLiters { get; set; }
+    public string? RouteGeometryGeoJson { get; set; }
+    public DateTime? RouteCalculatedAt { get; set; }
 
     public DateTime LoadDateTime { get; set; }
     public DateTime UnloadDateTime { get; set; }
 
     public double WeightTons { get; set; }
     public double VolumeM3 { get; set; }
+    public bool UseAutomaticCalculation { get; set; }
+    public double? WeightPerPackageKg { get; set; }
     public string BodyTypeRequired { get; set; } = string.Empty;
     public LoadingType LoadingType { get; set; }
 

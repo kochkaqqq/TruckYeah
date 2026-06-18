@@ -18,6 +18,7 @@ public class TruckConfiguration : IEntityTypeConfiguration<TruckEntity>
         builder.Property(t => t.Description).HasMaxLength(1000);
         builder.Property(t => t.RouteFrom).IsRequired().HasMaxLength(255);
         builder.Property(t => t.RouteTo).IsRequired().HasMaxLength(255);
+        builder.Property(t => t.RouteGeometryGeoJson).HasColumnType("jsonb");
         builder.Property(t => t.CapacityTons).IsRequired();
         builder.Property(t => t.VolumeM3).IsRequired();
         builder.Property(t => t.BodyType).IsRequired().HasMaxLength(50);

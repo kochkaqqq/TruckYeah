@@ -7,7 +7,7 @@ namespace WebApi.Controllers
 {
     [ApiController]
     [Route("api/comments")]
-    public class CommentController : Controller
+    public class CommentController : ControllerBase
     {
         private readonly ICommentService _commentService;
 
@@ -34,15 +34,15 @@ namespace WebApi.Controllers
 
         [Authorize]
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteComment([FromBody] Guid id)
+        public async Task<IActionResult> DeleteComment([FromRoute] Guid id)
         {
             await _commentService.DeleteComment(id);
             return Ok();
         }
 
         [Authorize]
-        [HttpGet]
-        public async Task<IActionResult> GetUserComments([FromBody] Guid userId)
+        [HttpGet("user/{userId:guid}")]
+        public async Task<IActionResult> GetUserComments([FromRoute] Guid userId)
         {
             var result = await _commentService.GetUserComments(userId);
             return Ok(result);

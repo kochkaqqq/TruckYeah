@@ -36,6 +36,7 @@ public class TrucksService : ITrucksService
         truck.CreatedAt = DateTime.UtcNow;
         truck.Status = ListingStatus.Draft;
         truck.PublishedAt = null;
+        AssignRoutePointIds(truck);
         return await _repository.Create(truck);
     }
 
@@ -52,6 +53,7 @@ public class TrucksService : ITrucksService
         truck.Status = existing.Status;
         truck.PublishedAt = existing.PublishedAt;
         truck.SourceListingId = existing.SourceListingId;
+        AssignRoutePointIds(truck);
 
         await _repository.Update(truck);
         return id;
@@ -100,6 +102,20 @@ public class TrucksService : ITrucksService
             Description = source.Description,
             RouteFrom = source.RouteFrom,
             RouteTo = source.RouteTo,
+            RoutePoints = source.RoutePoints.Select(point => new RoutePoint
+            {
+                Id = Guid.NewGuid(),
+                Address = point.Address,
+                Lat = point.Lat,
+                Lon = point.Lon,
+                ScheduledTime = point.ScheduledTime,
+                Order = point.Order
+            }).ToList(),
+            RouteDistanceKm = source.RouteDistanceKm,
+            RouteDurationMinutes = source.RouteDurationMinutes,
+            RouteFuelLiters = source.RouteFuelLiters,
+            RouteGeometryGeoJson = source.RouteGeometryGeoJson,
+            RouteCalculatedAt = source.RouteCalculatedAt,
             CapacityTons = source.CapacityTons,
             VolumeM3 = source.VolumeM3,
             BodyType = source.BodyType,
@@ -134,6 +150,12 @@ public class TrucksService : ITrucksService
             throw new ArgumentException("Route from is required.");
         if (string.IsNullOrWhiteSpace(truck.RouteTo))
             throw new ArgumentException("Route to is required.");
+        if (truck.RoutePoints.Count is < 2 or > 10)
+            throw new ArgumentException("Route must contain start, finish and no more than eight intermediate points.");
+        if (truck.RoutePoints.Any(point => point.Lat is < -90 or > 90 || point.Lon is < -180 or > 180))
+            throw new ArgumentException("Route point coordinates are invalid.");
+        if (string.IsNullOrWhiteSpace(truck.RouteGeometryGeoJson))
+            throw new ArgumentException("Route must be calculated before saving.");
         if (truck.CapacityTons <= 0)
             throw new ArgumentException("Capacity must be greater than zero.");
         if (truck.VolumeM3 <= 0)
@@ -157,6 +179,16 @@ public class TrucksService : ITrucksService
         if (ownerUserId != currentUserId)
         {
             throw new UnauthorizedAccessException("Only listing owner can perform this action.");
+        }
+    }
+
+    private static void AssignRoutePointIds(Truck truck)
+    {
+        foreach (var point in truck.RoutePoints)
+        {
+            point.Id = point.Id == Guid.Empty ? Guid.NewGuid() : point.Id;
+            point.CargoId = null;
+            point.TruckId = truck.Id;
         }
     }
 }

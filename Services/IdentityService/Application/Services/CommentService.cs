@@ -57,6 +57,7 @@ namespace Application.Services
             entity.Rating = request.Rating;
             entity.UpdatedAt = DateTime.UtcNow;
 
+            await _dbContext.SaveChangesAsync();
             return entity;
         }
     }

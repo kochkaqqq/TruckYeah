@@ -1,8 +1,7 @@
 import { parseJwt } from '../utils/jwt';
+import type { GeoJsonObject } from 'geojson';
 
-const IDENTITY_BASE_URL = 'http://localhost:5001';
-const LISTING_BASE_URL = 'http://localhost:5002';
-const CHAT_BASE_URL = 'http://localhost:5003';
+const API_BASE_URL = '';
 
 export enum UserType {
   Business = 0,
@@ -63,6 +62,7 @@ export interface RegistrationDto {
   postcode: string;
   vatId: string;
   companyId?: string;
+  companyName?: string;
   avatarLink?: string;
   deviceId: string;
   userAgent: string;
@@ -89,6 +89,23 @@ export interface User {
   isProfileCompleted: boolean;
   city?: string;
   company?: string;
+  postcode?: string;
+  countryId?: string;
+  country?: string;
+  avatarLink?: string;
+  rating?: number;
+}
+
+export interface UpdateUserProfileDto {
+  email: string;
+  phone: string;
+  postcode: string;
+  name?: string;
+  surname?: string;
+  middleName?: string;
+  city?: string;
+  companyName?: string;
+  avatarLink?: string;
 }
 
 export interface AuthResponseData {
@@ -135,15 +152,38 @@ export interface UnreadCountDto {
 // ====== Типы для грузов ======
 export interface RoutePointRequest {
   address?: string;
+  lat?: number;
+  lon?: number;
   scheduledTime?: string;
   order: number;
 }
 
 export interface RoutePointResponse {
-  id: string;
+  id?: string;
   address?: string;
+  lat: number;
+  lon: number;
   scheduledTime?: string;
   order: number;
+}
+
+export interface RouteCalculation {
+  distanceKm: number;
+  durationMinutes: number;
+  fuelConsumptionLiters: number;
+  resolvedPoints: RoutePointResponse[];
+  geometry: {
+    polyline?: string | null;
+    geoJson?: GeoJsonObject | null;
+  };
+  warnings: string[];
+}
+
+export interface CalculateRouteRequest {
+  points: RoutePointRequest[];
+  fuelConsumptionLitersPer100Km?: number;
+  avoidTollRoads?: boolean;
+  avoidFerries?: boolean;
 }
 
 export interface CreateCargoRequest {
@@ -152,10 +192,17 @@ export interface CreateCargoRequest {
   routeFrom?: string;
   routeTo?: string;
   routePoints?: RoutePointRequest[] | null;
+  routeDistanceKm?: number;
+  routeDurationMinutes?: number;
+  routeFuelLiters?: number;
+  routeGeometryGeoJson?: string;
+  routeCalculatedAt?: string;
   loadDateTime: string;
   unloadDateTime: string;
   weightTons: number;
   volumeM3: number;
+  useAutomaticCalculation?: boolean;
+  weightPerPackageKg?: number;
   bodyTypeRequired?: string;
   loadingType: LoadingType;
   lengthCm?: number;
@@ -232,6 +279,12 @@ export interface CreateTruckRequest {
   description?: string;
   routeFrom?: string;
   routeTo?: string;
+  routePoints?: RoutePointRequest[] | null;
+  routeDistanceKm?: number;
+  routeDurationMinutes?: number;
+  routeFuelLiters?: number;
+  routeGeometryGeoJson?: string;
+  routeCalculatedAt?: string;
   capacityTons: number;
   volumeM3: number;
   bodyType?: string;
@@ -249,6 +302,7 @@ export interface CreateTruckRequest {
 export interface TruckResponse extends CreateTruckRequest {
   id: string;
   userId: string;
+  routePoints?: RoutePointResponse[] | null;
   status: ListingStatus;
   createdAt: string;
   publishedAt?: string | null;
@@ -301,7 +355,7 @@ async function refreshTokenRequest(): Promise<string | null> {
 
   try {
     console.log('🔄 Попытка обновления токена...');
-    const response = await fetch(`${IDENTITY_BASE_URL}/api/users/refresh`, {
+    const response = await fetch('/api/users/refresh', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(refreshToken),
@@ -338,7 +392,7 @@ function forceLogout() {
 async function request<T>(
   url: string,
   options: RequestInit = {},
-  baseUrl: string = IDENTITY_BASE_URL
+  baseUrl: string = API_BASE_URL
 ): Promise<T> {
   let token = localStorage.getItem('authToken');
 
@@ -441,6 +495,14 @@ const contextTypeToNumber: Record<ContextType, number> = {
 };
 
 export const api = {
+  routes: {
+    calculate: (data: CalculateRouteRequest) =>
+      request<RouteCalculation>('/Routes/calculate', {
+        method: 'POST',
+        body: JSON.stringify(data),
+      }),
+  },
+
   users: {
     register: (data: RegistrationDto) =>
       request<AuthResponseData>('/api/users/register', {
@@ -454,9 +516,25 @@ export const api = {
         body: JSON.stringify(data),
       }),
 
+    getPublic: (id: string) =>
+      request<User>(`/api/users/${id}`, {
+        method: 'GET',
+      }),
+
     getCurrent: (id: string) =>
       request<User>(`/api/users/${id}`, {
         method: 'GET',
+      }),
+
+    getMe: () =>
+      request<User>('/api/users/me', {
+        method: 'GET',
+      }),
+
+    updateMe: (data: UpdateUserProfileDto) =>
+      request<User>('/api/users/me', {
+        method: 'PUT',
+        body: JSON.stringify(data),
       }),
   },
 
@@ -478,7 +556,7 @@ export const api = {
     getAll: () =>
       request<Chat[]>('/Chats', {
         method: 'GET',
-      }, CHAT_BASE_URL),
+      }, API_BASE_URL),
 
     create: (data: CreateChatDto) => {
       const payload = {
@@ -492,29 +570,29 @@ export const api = {
       return request<Chat>('/Chats', {
         method: 'POST',
         body: JSON.stringify(payload),
-      }, CHAT_BASE_URL);
+      }, API_BASE_URL);
     },
 
-    getMessages: (chatId: string) =>
-      request<Message[]>(`/Chats/${chatId}/messages`, {
+    getMessages: (chatId: string, page = 1, pageSize = 50) =>
+      request<Message[]>(`/Chats/${chatId}/messages?page=${page}&pageSize=${pageSize}`, {
         method: 'GET',
-      }, CHAT_BASE_URL),
+      }, API_BASE_URL),
 
     sendMessage: (chatId: string, data: SendMessageDto) =>
       request<Message>(`/Chats/${chatId}/messages`, {
         method: 'POST',
         body: JSON.stringify(data),
-      }, CHAT_BASE_URL),
+      }, API_BASE_URL),
 
     markAsRead: (chatId: string) =>
       request<void>(`/Chats/${chatId}/read`, {
         method: 'POST',
-      }, CHAT_BASE_URL),
+      }, API_BASE_URL),
 
     getUnreadCount: () =>
       request<UnreadCountDto>('/Chats/unread-count', {
         method: 'GET',
-      }, CHAT_BASE_URL),
+      }, API_BASE_URL),
   },
 
   // 📦 ListingService API (порт 5002) — Грузы
@@ -530,53 +608,56 @@ export const api = {
       return request<CargoResponse[]>(
         `/Cargos${queryString ? '?' + queryString : ''}`,
         { method: 'GET' },
-        LISTING_BASE_URL
+        API_BASE_URL
       );
     },
 
     getById: (id: string) =>
-      request<CargoResponse>(`/Cargos/${id}`, { method: 'GET' }, LISTING_BASE_URL),
+      request<CargoResponse>(`/Cargos/${id}`, { method: 'GET' }, API_BASE_URL),
 
     create: (data: CreateCargoRequest) => {
       console.log('📦 cargos.create - Отправка на сервер:', data);
       return request<string>('/Cargos', {
         method: 'POST',
         body: JSON.stringify(data),
-      }, LISTING_BASE_URL);
+      }, API_BASE_URL);
     },
 
     update: (id: string, data: CreateCargoRequest) =>
       request<string>(`/Cargos/${id}`, {
         method: 'PUT',
         body: JSON.stringify(data),
-      }, LISTING_BASE_URL),
+      }, API_BASE_URL),
 
     delete: (id: string) =>
-      request<string>(`/Cargos/${id}`, { method: 'DELETE' }, LISTING_BASE_URL),
+      request<string>(`/Cargos/${id}`, { method: 'DELETE' }, API_BASE_URL),
 
     getMyCargos: () =>
-      request<CargoResponse[]>('/Cargos/my', { method: 'GET' }, LISTING_BASE_URL),
+      request<CargoResponse[]>('/Cargos/my', { method: 'GET' }, API_BASE_URL),
 
     publish: (id: string) =>
-      request<string>(`/Cargos/${id}/publish`, { method: 'POST' }, LISTING_BASE_URL),
+      request<string>(`/Cargos/${id}/publish`, { method: 'POST' }, API_BASE_URL),
 
     archive: (id: string) =>
-      request<string>(`/Cargos/${id}/archive`, { method: 'POST' }, LISTING_BASE_URL),
+      request<string>(`/Cargos/${id}/archive`, { method: 'POST' }, API_BASE_URL),
 
     copy: (id: string) =>
-      request<string>(`/Cargos/${id}/copy`, { method: 'POST' }, LISTING_BASE_URL),
+      request<string>(`/Cargos/${id}/copy`, { method: 'POST' }, API_BASE_URL),
 
     getBids: (cargoId: string) =>
-      request<CargoBidResponse[]>(`/Cargos/${cargoId}/bids`, { method: 'GET' }, LISTING_BASE_URL),
+      request<CargoBidResponse[]>(`/Cargos/${cargoId}/bids`, { method: 'GET' }, API_BASE_URL),
+
+    getMyBids: () =>
+      request<CargoBidResponse[]>('/Cargos/bids/my', { method: 'GET' }, API_BASE_URL),
 
     createBid: (cargoId: string, data: CreateCargoBidRequest) =>
       request<string>(`/Cargos/${cargoId}/bids`, {
         method: 'POST',
         body: JSON.stringify(data),
-      }, LISTING_BASE_URL),
+      }, API_BASE_URL),
 
     acceptBid: (cargoId: string, bidId: string) =>
-      request<string>(`/Cargos/${cargoId}/bids/${bidId}/accept`, { method: 'POST' }, LISTING_BASE_URL),
+      request<string>(`/Cargos/${cargoId}/bids/${bidId}/accept`, { method: 'POST' }, API_BASE_URL),
   },
 
   // 🚛 ListingService API (порт 5002) — Машины
@@ -592,40 +673,40 @@ export const api = {
       return request<TruckResponse[]>(
         `/Trucks${queryString ? '?' + queryString : ''}`,
         { method: 'GET' },
-        LISTING_BASE_URL
+        API_BASE_URL
       );
     },
 
     getById: (id: string) =>
-      request<TruckResponse>(`/Trucks/${id}`, { method: 'GET' }, LISTING_BASE_URL),
+      request<TruckResponse>(`/Trucks/${id}`, { method: 'GET' }, API_BASE_URL),
 
     create: (data: CreateTruckRequest) => {
       console.log('🚛 trucks.create - Отправка на сервер:', data);
       return request<string>('/Trucks', {
         method: 'POST',
         body: JSON.stringify(data),
-      }, LISTING_BASE_URL);
+      }, API_BASE_URL);
     },
 
     update: (id: string, data: CreateTruckRequest) =>
       request<string>(`/Trucks/${id}`, {
         method: 'PUT',
         body: JSON.stringify(data),
-      }, LISTING_BASE_URL),
+      }, API_BASE_URL),
 
     delete: (id: string) =>
-      request<string>(`/Trucks/${id}`, { method: 'DELETE' }, LISTING_BASE_URL),
+      request<string>(`/Trucks/${id}`, { method: 'DELETE' }, API_BASE_URL),
 
     getMyTrucks: () =>
-      request<TruckResponse[]>('/Trucks/my', { method: 'GET' }, LISTING_BASE_URL),
+      request<TruckResponse[]>('/Trucks/my', { method: 'GET' }, API_BASE_URL),
 
     publish: (id: string) =>
-      request<string>(`/Trucks/${id}/publish`, { method: 'POST' }, LISTING_BASE_URL),
+      request<string>(`/Trucks/${id}/publish`, { method: 'POST' }, API_BASE_URL),
 
     archive: (id: string) =>
-      request<string>(`/Trucks/${id}/archive`, { method: 'POST' }, LISTING_BASE_URL),
+      request<string>(`/Trucks/${id}/archive`, { method: 'POST' }, API_BASE_URL),
 
     copy: (id: string) =>
-      request<string>(`/Trucks/${id}/copy`, { method: 'POST' }, LISTING_BASE_URL),
+      request<string>(`/Trucks/${id}/copy`, { method: 'POST' }, API_BASE_URL),
   },
 };

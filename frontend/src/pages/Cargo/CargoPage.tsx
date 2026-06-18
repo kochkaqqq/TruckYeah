@@ -12,6 +12,10 @@ export const CargoPage = () => {
   
   const [cargos, setCargos] = useState<CargoResponse[]>([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [page, setPage] = useState(1);
+  const [sortBy, setSortBy] = useState('createdAt');
+  const [sortDirection, setSortDirection] = useState('desc');
+  const pageSize = 12;
   
   const [filters, setFilters] = useState({
     RouteFrom: '',
@@ -34,12 +38,14 @@ export const CargoPage = () => {
     loadCargos();
   }, []);
 
-  const loadCargos = async () => {
+  const loadCargos = async (requestedPage = page) => {
     try {
       setIsLoading(true);
       const params: any = {
-        Page: 1,
-        PageSize: 50,
+        Page: requestedPage,
+        PageSize: pageSize,
+        SortBy: sortBy,
+        SortDirection: sortDirection,
       };
 
       Object.entries(filters).forEach(([key, value]) => {
@@ -66,7 +72,8 @@ export const CargoPage = () => {
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
-    loadCargos();
+    setPage(1);
+    void loadCargos(1);
   };
 
   const handleClearFilters = () => {
@@ -335,7 +342,22 @@ export const CargoPage = () => {
         </form>
 
         <div className="cargo-page__results">
-          <h2 className="cargo-page__results-title">Результаты поиска</h2>
+          <div className="cargo-page__filter-row">
+            <h2 className="cargo-page__results-title">Результаты поиска</h2>
+            <select className="cargo-page__input" value={sortBy} onChange={(event) => setSortBy(event.target.value)}>
+              <option value="createdAt">По дате</option>
+              <option value="price">По цене</option>
+              <option value="weight">По массе</option>
+              <option value="volume">По объёму</option>
+            </select>
+            <select className="cargo-page__input" value={sortDirection} onChange={(event) => setSortDirection(event.target.value)}>
+              <option value="desc">По убыванию</option>
+              <option value="asc">По возрастанию</option>
+            </select>
+            <button className="cargo-page__btn cargo-page__btn--secondary" onClick={() => void loadCargos(1)}>
+              Применить
+            </button>
+          </div>
 
           {isLoading ? (
             <div className="cargo-page__loading">Загрузка...</div>
@@ -407,6 +429,31 @@ export const CargoPage = () => {
               ))}
             </div>
           )}
+          <div className="cargo-page__filter-actions">
+            <button
+              className="cargo-page__btn cargo-page__btn--secondary"
+              disabled={page === 1 || isLoading}
+              onClick={() => {
+                const nextPage = page - 1;
+                setPage(nextPage);
+                void loadCargos(nextPage);
+              }}
+            >
+              Назад
+            </button>
+            <span>Страница {page}</span>
+            <button
+              className="cargo-page__btn cargo-page__btn--secondary"
+              disabled={cargos.length < pageSize || isLoading}
+              onClick={() => {
+                const nextPage = page + 1;
+                setPage(nextPage);
+                void loadCargos(nextPage);
+              }}
+            >
+              Далее
+            </button>
+          </div>
         </div>
       </div>
 

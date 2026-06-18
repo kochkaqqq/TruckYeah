@@ -1,4 +1,5 @@
 using ListingService.Domain.Enums;
+using ListingService.WebApi.Contracts.Cargo;
 
 namespace ListingService.WebApi.Contracts.Truck;
 
@@ -8,6 +9,12 @@ public class CreateTruckRequest
     public string? Description { get; set; }
     public string RouteFrom { get; set; } = string.Empty;
     public string RouteTo { get; set; } = string.Empty;
+    public List<RoutePointRequest> RoutePoints { get; set; } = new();
+    public double? RouteDistanceKm { get; set; }
+    public int? RouteDurationMinutes { get; set; }
+    public double? RouteFuelLiters { get; set; }
+    public string? RouteGeometryGeoJson { get; set; }
+    public DateTime? RouteCalculatedAt { get; set; }
     public double CapacityTons { get; set; }
     public double VolumeM3 { get; set; }
     public string BodyType { get; set; } = string.Empty;

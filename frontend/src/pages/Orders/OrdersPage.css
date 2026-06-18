@@ -1,0 +1,32 @@
+.orders-page {
+  min-height: 100%;
+  padding: 32px;
+  color: #f5f5f5;
+  background: #1a1a1e;
+}
+
+.orders-page__container {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.orders-page section {
+  margin-top: 32px;
+}
+
+.orders-page__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 16px;
+}
+
+.orders-page__card {
+  padding: 20px;
+  border: 1px solid #3a3a45;
+  border-radius: 12px;
+  background: #24242a;
+}
+
+.orders-page__card p {
+  color: #c7c7ce;
+}

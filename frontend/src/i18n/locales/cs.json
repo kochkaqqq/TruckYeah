@@ -1,0 +1,155 @@
+{
+  "header": {
+    "logo": "TruckYeah",
+    "cargos": "Náklady",
+    "vehicles": "Vozidla",
+    "chats": "Chaty",
+    "trades": "Aukce",
+    "myListings": "Moje inzeráty",
+    "profile": "Profil",
+    "login": "Přihlásit se",
+    "logout": "Odhlásit se"
+  },
+  "home": {
+    "title": "Burza nákladů a největší ekosystém služeb pro dopravní logistiku",
+    "subtitle": "Pomáháme najít náklady, ověřené dopravce a šetřit prostřednictvím automatizace",
+    "findCargo": "Najít náklad",
+    "findVehicle": "Najít vozidlo",
+    "addCargo": "Zveřejnit náklad",
+    "addVehicle": "Zveřejnit vozidlo"
+  },
+  "auth": {
+    "login": "Přihlášení",
+    "register": "Registrace",
+    "email": "E-mail",
+    "password": "Heslo",
+    "phone": "Telefon",
+    "name": "Jméno",
+    "company": "Společnost",
+    "city": "Město",
+    "submit": "Odeslat",
+    "cancel": "Zrušit",
+    "forgotPassword": "Zapomenuté heslo?",
+    "noAccount": "Nemáte účet?",
+    "haveAccount": "Už máte účet?",
+    "registerNow": "Zaregistrujte se nyní",
+    "loginNow": "Přihlaste se nyní"
+  },
+  "cargo": {
+    "title": "Náklady",
+    "add": "Přidat náklad",
+    "edit": "Upravit náklad",
+    "delete": "Smazat",
+    "publish": "Zveřejnit",
+    "unpublish": "Zrušit zveřejnění",
+    "saveDraft": "Uložit koncept",
+    "routeFrom": "Odkud",
+    "routeTo": "Kam",
+    "weight": "Hmotnost (t)",
+    "volume": "Objem (m³)",
+    "price": "Cena",
+    "loadDate": "Datum nakládky",
+    "unloadDate": "Datum vykládky"
+  },
+  "vehicle": {
+    "title": "Vozidla",
+    "add": "Přidat vozidlo",
+    "edit": "Upravit vozidlo",
+    "delete": "Smazat",
+    "publish": "Zveřejnit",
+    "unpublish": "Zrušit zveřejnění",
+    "capacity": "Nosnost (t)",
+    "volume": "Objem (m³)",
+    "bodyType": "Typ karoserie",
+    "search": "Hledat vozidla",
+    "filter": "Filtr",
+    "noVehicles": "Nebyla nalezena žádná vozidla"
+  },
+  "common": {
+    "loading": "Načítání...",
+    "error": "Chyba",
+    "success": "Úspěch",
+    "save": "Uložit",
+    "cancel": "Zrušit",
+    "delete": "Smazat",
+    "edit": "Upravit",
+    "back": "Zpět",
+    "next": "Další",
+    "search": "Hledat",
+    "filter": "Filtr",
+    "noData": "Žádná data",
+    "confirm": "Potvrdit",
+    "close": "Zavřít",
+    "yes": "Ano",
+    "no": "Ne"
+  },
+  "myListings": {
+    "title": "Moje náklady a vozidla",
+    "cargos": "Moje náklady",
+    "vehicles": "Moje vozidla",
+    "addCargo": "Přidat náklad",
+    "addVehicle": "Přidat vozidlo",
+    "noCargos": "Nemáte žádné náklady",
+    "noVehicles": "Nemáte žádná vozidla",
+    "status": "Stav",
+    "published": "Zveřejněno",
+    "draft": "Koncept",
+    "archived": "Archivováno"
+  },
+  "profile": {
+    "title": "Profil",
+    "edit": "Upravit profil",
+    "save": "Uložit změny",
+    "avatar": "Avatar",
+    "changePassword": "Změnit heslo",
+    "oldPassword": "Staré heslo",
+    "newPassword": "Nové heslo",
+    "confirmPassword": "Potvrdit heslo",
+    "settings": "Nastavení",
+    "notifications": "Oznámení",
+    "language": "Jazyk"
+  },
+  "chat": {
+    "title": "Chaty",
+    "noChats": "Žádné chaty",
+    "sendMessage": "Odeslat zprávu",
+    "typeMessage": "Napište zprávu...",
+    "online": "Online",
+    "offline": "Offline"
+  },
+  "trade": {
+    "title": "Aukce",
+    "noTrades": "Žádné aukce",
+    "myBids": "Moje nabídky",
+    "placeBid": "Podejte nabídku",
+    "bidAmount": "Částka nabídky"
+  },
+  "errors": {
+    "404": {
+      "title": "Stránka nenalezena",
+      "message": "Stránka, kterou hledáte, neexistuje",
+      "backToHome": "Zpět na hlavní stránku"
+    },
+    "network": "Chyba sítě. Zkontrolujte připojení",
+    "unauthorized": "Vyžadováno ověření",
+    "forbidden": "Přístup zakázán",
+    "serverError": "Chyba serveru"
+  },
+  "validation": {
+    "required": "Pole je povinné",
+    "email": "Zadejte platný e-mail",
+    "phone": "Zadejte platné telefonní číslo",
+    "minLength": "Minimálně {{min}} znaků",
+    "maxLength": "Maximálně {{max}} znaků",
+    "passwordMatch": "Hesla se neshodují"
+  },
+  "footer": {
+    "about": "O nás",
+    "services": "Služby",
+    "contacts": "Kontakty",
+    "privacy": "Ochrana soukromí",
+    "terms": "Podmínky použití",
+    "help": "Nápověda",
+    "copyright": "© 2026 TruckYeah. Všechna práva vyhrazena"
+  }
+}

@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { api, TruckResponse, ListingStatus, ContextType } from '../../api/client';
 import { useAuthStore } from '../../store/authStore';
 import { Toast } from '../../components/ui/Toast';
@@ -17,6 +18,7 @@ export const VehiclesDetailPage = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { isAuthenticated, currentUser } = useAuthStore();
+  const { t } = useTranslation();
   const [truck, setTruck] = useState<TruckResponse | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [toast, setToast] = useState<ToastData | null>(null);
@@ -34,7 +36,7 @@ export const VehiclesDetailPage = () => {
       setTruck(data);
     } catch (error) {
       console.error('Ошибка загрузки машины:', error);
-      showToast('Не удалось загрузить данные машины', 'error');
+      showToast(t('vehicle.failedToLoad'), 'error');
     } finally {
       setIsLoading(false);
     }
@@ -46,12 +48,12 @@ export const VehiclesDetailPage = () => {
 
   const getStatusLabel = (status: ListingStatus) => {
     const labels: Record<ListingStatus, string> = {
-      [ListingStatus.Draft]: 'Черновик',
-      [ListingStatus.PendingModeration]: 'На модерации',
-      [ListingStatus.Published]: 'Опубликован',
-      [ListingStatus.Rejected]: 'Отклонён',
-      [ListingStatus.Archived]: 'В архиве',
-      [ListingStatus.Completed]: 'Завершён',
+      [ListingStatus.Draft]: t('status.draft'),
+      [ListingStatus.PendingModeration]: t('status.pendingModeration'),
+      [ListingStatus.Published]: t('status.published'),
+      [ListingStatus.Rejected]: t('status.rejected'),
+      [ListingStatus.Archived]: t('status.archived'),
+      [ListingStatus.Completed]: t('status.completed'),
     };
     return labels[status] || status;
   };
@@ -83,21 +85,21 @@ export const VehiclesDetailPage = () => {
       navigate(`/chats/${chat.id}`);
     } catch (error) {
       console.error('Ошибка создания чата:', error);
-      showToast('Не удалось создать чат', 'error');
+      showToast(t('vehicle.failedToCreateChat'), 'error');
     }
   };
 
   const handleArchive = async () => {
     if (!truck) return;
-    if (!confirm('Вы уверены, что хотите архивировать эту машину?')) return;
+    if (!confirm(t('vehicle.confirmArchive'))) return;
 
     try {
       await api.trucks.archive(truck.id);
-      showToast('Машина архивирована', 'success');
+      showToast(t('vehicle.archived'), 'success');
       await loadTruck(truck.id);
     } catch (error) {
       console.error('Ошибка архивации:', error);
-      showToast('Ошибка при архивации', 'error');
+      showToast(t('vehicle.archiveError'), 'error');
     }
   };
 
@@ -106,25 +108,25 @@ export const VehiclesDetailPage = () => {
 
     try {
       await api.trucks.publish(truck.id);
-      showToast('Машина опубликована', 'success');
+      showToast(t('vehicle.published'), 'success');
       await loadTruck(truck.id);
     } catch (error) {
       console.error('Ошибка публикации:', error);
-      showToast('Ошибка при публикации', 'error');
+      showToast(t('vehicle.publishError'), 'error');
     }
   };
 
   const handleDelete = async () => {
     if (!truck) return;
-    if (!confirm('Вы уверены, что хотите удалить эту машину? Это действие нельзя отменить.')) return;
+    if (!confirm(t('vehicle.confirmDelete'))) return;
 
     try {
       await api.trucks.delete(truck.id);
-      showToast('Машина удалена', 'success');
+      showToast(t('vehicle.deleted'), 'success');
       setTimeout(() => navigate('/vehicles'), 1000);
     } catch (error) {
       console.error('Ошибка удаления:', error);
-      showToast('Ошибка при удалении', 'error');
+      showToast(t('vehicle.deleteError'), 'error');
     }
   };
 
@@ -145,7 +147,7 @@ export const VehiclesDetailPage = () => {
     return (
       <div className="vehicle-detail">
         <div className="vehicle-detail__container">
-          <div className="vehicle-detail__loading">Загрузка...</div>
+          <div className="vehicle-detail__loading">{t('common.loading')}</div>
         </div>
       </div>
     );
@@ -156,9 +158,9 @@ export const VehiclesDetailPage = () => {
       <div className="vehicle-detail">
         <div className="vehicle-detail__container">
           <div className="vehicle-detail__empty">
-            <h2>Машина не найдена</h2>
+            <h2>{t('vehicle.notFound')}</h2>
             <button className="vehicle-detail__btn vehicle-detail__btn--primary" onClick={() => navigate('/vehicles')}>
-              ← Вернуться к списку
+              ← {t('common.backToList')}
             </button>
           </div>
         </div>
@@ -175,10 +177,10 @@ export const VehiclesDetailPage = () => {
       <div className="vehicle-detail__container">
         <div className="vehicle-detail__header">
           <button className="vehicle-detail__back-btn" onClick={() => navigate('/vehicles')}>
-            ← Назад к списку
+            ← {t('common.backToList')}
           </button>
           <div className="vehicle-detail__title-row">
-            <h1 className="vehicle-detail__title">{truck.title || truck.bodyType || 'Без названия'}</h1>
+            <h1 className="vehicle-detail__title">{truck.title || truck.bodyType || t('common.noTitle')}</h1>
             <span className={`vehicle-detail__status ${getStatusClass(truck.status)}`}>
               {getStatusLabel(truck.status)}
             </span>
@@ -187,21 +189,21 @@ export const VehiclesDetailPage = () => {
         </div>
 
         <section className="vehicle-detail__section">
-          <h2 className="vehicle-detail__section-title">Маршрут</h2>
+          <h2 className="vehicle-detail__section-title">{t('vehicle.route')}</h2>
           <div className="vehicle-detail__route">
             <div className="vehicle-detail__route-point">
-              <span className="vehicle-detail__route-label">Откуда</span>
+              <span className="vehicle-detail__route-label">{t('vehicle.routeFrom')}</span>
               <span className="vehicle-detail__route-value">{truck.routeFrom || '—'}</span>
             </div>
             <div className="vehicle-detail__route-arrow">→</div>
             <div className="vehicle-detail__route-point">
-              <span className="vehicle-detail__route-label">Куда</span>
+              <span className="vehicle-detail__route-label">{t('vehicle.routeTo')}</span>
               <span className="vehicle-detail__route-value">{truck.routeTo || '—'}</span>
             </div>
           </div>
           <div className="vehicle-detail__dates">
             <div className="vehicle-detail__date-item">
-              <span className="vehicle-detail__date-label">Доступна с</span>
+              <span className="vehicle-detail__date-label">{t('vehicle.availableFrom')}</span>
               <span className="vehicle-detail__date-value">{formatDate(truck.availableFrom)}</span>
             </div>
           </div>
@@ -215,33 +217,33 @@ export const VehiclesDetailPage = () => {
         </section>
 
         <section className="vehicle-detail__section">
-          <h2 className="vehicle-detail__section-title">Параметры машины</h2>
+          <h2 className="vehicle-detail__section-title">{t('vehicle.parameters')}</h2>
           <div className="vehicle-detail__params">
             <div className="vehicle-detail__param">
-              <span className="vehicle-detail__param-label">Грузоподъёмность</span>
+              <span className="vehicle-detail__param-label">{t('vehicle.capacity')}</span>
               <span className="vehicle-detail__param-value">{truck.capacityTons} т</span>
             </div>
             <div className="vehicle-detail__param">
-              <span className="vehicle-detail__param-label">Объём кузова</span>
+              <span className="vehicle-detail__param-label">{t('vehicle.bodyVolume')}</span>
               <span className="vehicle-detail__param-value">{truck.volumeM3} м³</span>
             </div>
             <div className="vehicle-detail__param">
-              <span className="vehicle-detail__param-label">Тип кузова</span>
-              <span className="vehicle-detail__param-value">{truck.bodyType || 'Любой'}</span>
+              <span className="vehicle-detail__param-label">{t('vehicle.bodyType')}</span>
+              <span className="vehicle-detail__param-value">{truck.bodyType || t('vehicle.any')}</span>
             </div>
             <div className="vehicle-detail__param">
-              <span className="vehicle-detail__param-label">Тип загрузки</span>
+              <span className="vehicle-detail__param-label">{t('vehicle.loadingType')}</span>
               <span className="vehicle-detail__param-value">{truck.loadingType}</span>
             </div>
             {truck.crewDriversCount && (
               <div className="vehicle-detail__param">
-                <span className="vehicle-detail__param-label">Водителей</span>
+                <span className="vehicle-detail__param-label">{t('vehicle.drivers')}</span>
                 <span className="vehicle-detail__param-value">{truck.crewDriversCount}</span>
               </div>
             )}
             {truck.additionalEquipment && (
               <div className="vehicle-detail__param">
-                <span className="vehicle-detail__param-label">Оборудование</span>
+                <span className="vehicle-detail__param-label">{t('vehicle.equipment')}</span>
                 <span className="vehicle-detail__param-value">{truck.additionalEquipment}</span>
               </div>
             )}
@@ -249,51 +251,51 @@ export const VehiclesDetailPage = () => {
         </section>
 
         <section className="vehicle-detail__section">
-          <h2 className="vehicle-detail__section-title">Финансы</h2>
+          <h2 className="vehicle-detail__section-title">{t('vehicle.finance')}</h2>
           <div className="vehicle-detail__finance">
             <div className="vehicle-detail__price">
-              <span className="vehicle-detail__price-label">Цена</span>
+              <span className="vehicle-detail__price-label">{t('vehicle.price')}</span>
               <span className="vehicle-detail__price-value">
-                {truck.price ? `${truck.price.toLocaleString('ru-RU')} €` : 'Договорная'}
+                {truck.price ? `${truck.price.toLocaleString('ru-RU')} €` : t('vehicle.negotiable')}
               </span>
             </div>
             <div className="vehicle-detail__param">
-              <span className="vehicle-detail__param-label">Тип оплаты</span>
+              <span className="vehicle-detail__param-label">{t('vehicle.paymentType')}</span>
               <span className="vehicle-detail__param-value">
-                {truck.paymentType === 'Cash' && 'Наличные'}
-                {truck.paymentType === 'WithVAT' && 'С НДС'}
-                {truck.paymentType === 'WithoutVAT' && 'Без НДС'}
+                {truck.paymentType === 'Cash' && t('vehicle.paymentCash')}
+                {truck.paymentType === 'WithVAT' && t('vehicle.paymentWithVAT')}
+                {truck.paymentType === 'WithoutVAT' && t('vehicle.paymentWithoutVAT')}
               </span>
             </div>
             {truck.prepaymentPercent !== undefined && truck.prepaymentPercent !== null && (
               <div className="vehicle-detail__param">
-                <span className="vehicle-detail__param-label">Предоплата</span>
+                <span className="vehicle-detail__param-label">{t('vehicle.prepayment')}</span>
                 <span className="vehicle-detail__param-value">{truck.prepaymentPercent}%</span>
               </div>
             )}
             {truck.allowBargaining && (
               <div className="vehicle-detail__param">
-                <span className="vehicle-detail__param-label">Торг</span>
-                <span className="vehicle-detail__param-value vehicle-detail__param-value--yes">Разрешён</span>
+                <span className="vehicle-detail__param-label">{t('vehicle.bargaining')}</span>
+                <span className="vehicle-detail__param-value vehicle-detail__param-value--yes">{t('vehicle.allowed')}</span>
               </div>
             )}
           </div>
         </section>
 
         <section className="vehicle-detail__section">
-          <h2 className="vehicle-detail__section-title">Информация</h2>
+          <h2 className="vehicle-detail__section-title">{t('vehicle.information')}</h2>
           <div className="vehicle-detail__meta">
             <div className="vehicle-detail__meta-item">
               <span className="vehicle-detail__meta-label">ID</span>
               <span className="vehicle-detail__meta-value">{truck.id}</span>
             </div>
             <div className="vehicle-detail__meta-item">
-              <span className="vehicle-detail__meta-label">Создана</span>
+              <span className="vehicle-detail__meta-label">{t('vehicle.createdAt')}</span>
               <span className="vehicle-detail__meta-value">{formatDate(truck.createdAt)}</span>
             </div>
             {truck.publishedAt && (
               <div className="vehicle-detail__meta-item">
-                <span className="vehicle-detail__meta-label">Опубликована</span>
+                <span className="vehicle-detail__meta-label">{t('vehicle.publishedAt')}</span>
                 <span className="vehicle-detail__meta-value">{formatDate(truck.publishedAt)}</span>
               </div>
             )}
@@ -306,7 +308,7 @@ export const VehiclesDetailPage = () => {
               className="vehicle-detail__btn vehicle-detail__btn--chat"
               onClick={handleChatClick}
             >
-              Написать в чат
+              {t('vehicle.writeToChat')}
             </button>
           )}
 
@@ -315,7 +317,7 @@ export const VehiclesDetailPage = () => {
               className="vehicle-detail__btn vehicle-detail__btn--primary"
               onClick={handlePublish}
             >
-              Опубликовать
+              {t('vehicle.publish')}
             </button>
           )}
 
@@ -324,7 +326,7 @@ export const VehiclesDetailPage = () => {
               className="vehicle-detail__btn vehicle-detail__btn--secondary"
               onClick={handleArchive}
             >
-              Архивировать
+              {t('vehicle.archive')}
             </button>
           )}
 
@@ -333,7 +335,7 @@ export const VehiclesDetailPage = () => {
               className="vehicle-detail__btn vehicle-detail__btn--danger"
               onClick={handleDelete}
             >
-              Удалить
+              {t('common.delete')}
             </button>
           )}
         </div>

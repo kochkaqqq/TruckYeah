@@ -1,0 +1,155 @@
+{
+  "header": {
+    "logo": "TruckYeah",
+    "cargos": "Cargas",
+    "vehicles": "Veículos",
+    "chats": "Chats",
+    "trades": "Leilões",
+    "myListings": "Meus anúncios",
+    "profile": "Perfil",
+    "login": "Entrar",
+    "logout": "Sair"
+  },
+  "home": {
+    "title": "Bolsa de cargas e o maior ecossistema de serviços para logística de transporte",
+    "subtitle": "Ajudamos a encontrar cargas, transportadores verificados e economizar através da automação",
+    "findCargo": "Encontrar carga",
+    "findVehicle": "Encontrar veículo",
+    "addCargo": "Publicar carga",
+    "addVehicle": "Publicar veículo"
+  },
+  "auth": {
+    "login": "Entrar",
+    "register": "Cadastrar",
+    "email": "E-mail",
+    "password": "Senha",
+    "phone": "Telefone",
+    "name": "Nome",
+    "company": "Empresa",
+    "city": "Cidade",
+    "submit": "Enviar",
+    "cancel": "Cancelar",
+    "forgotPassword": "Esqueceu a senha?",
+    "noAccount": "Não tem conta?",
+    "haveAccount": "Já tem uma conta?",
+    "registerNow": "Cadastrar agora",
+    "loginNow": "Entrar agora"
+  },
+  "cargo": {
+    "title": "Cargas",
+    "add": "Adicionar carga",
+    "edit": "Editar carga",
+    "delete": "Excluir",
+    "publish": "Publicar",
+    "unpublish": "Despublicar",
+    "saveDraft": "Salvar rascunho",
+    "routeFrom": "De",
+    "routeTo": "Para",
+    "weight": "Peso (t)",
+    "volume": "Volume (m³)",
+    "price": "Preço",
+    "loadDate": "Data de carga",
+    "unloadDate": "Data de descarga"
+  },
+  "vehicle": {
+    "title": "Veículos",
+    "add": "Adicionar veículo",
+    "edit": "Editar veículo",
+    "delete": "Excluir",
+    "publish": "Publicar",
+    "unpublish": "Despublicar",
+    "capacity": "Capacidade (t)",
+    "volume": "Volume (m³)",
+    "bodyType": "Tipo de carroceria",
+    "search": "Buscar veículos",
+    "filter": "Filtrar",
+    "noVehicles": "Nenhum veículo encontrado"
+  },
+  "common": {
+    "loading": "Carregando...",
+    "error": "Erro",
+    "success": "Sucesso",
+    "save": "Salvar",
+    "cancel": "Cancelar",
+    "delete": "Excluir",
+    "edit": "Editar",
+    "back": "Voltar",
+    "next": "Avançar",
+    "search": "Buscar",
+    "filter": "Filtrar",
+    "noData": "Sem dados",
+    "confirm": "Confirmar",
+    "close": "Fechar",
+    "yes": "Sim",
+    "no": "Não"
+  },
+  "myListings": {
+    "title": "Minhas cargas e veículos",
+    "cargos": "Minhas cargas",
+    "vehicles": "Meus veículos",
+    "addCargo": "Adicionar carga",
+    "addVehicle": "Adicionar veículo",
+    "noCargos": "Você não tem cargas",
+    "noVehicles": "Você não tem veículos",
+    "status": "Status",
+    "published": "Publicado",
+    "draft": "Rascunho",
+    "archived": "Arquivado"
+  },
+  "profile": {
+    "title": "Perfil",
+    "edit": "Editar perfil",
+    "save": "Salvar alterações",
+    "avatar": "Avatar",
+    "changePassword": "Alterar senha",
+    "oldPassword": "Senha antiga",
+    "newPassword": "Nova senha",
+    "confirmPassword": "Confirmar senha",
+    "settings": "Configurações",
+    "notifications": "Notificações",
+    "language": "Idioma"
+  },
+  "chat": {
+    "title": "Chats",
+    "noChats": "Sem chats",
+    "sendMessage": "Enviar mensagem",
+    "typeMessage": "Digite uma mensagem...",
+    "online": "Online",
+    "offline": "Offline"
+  },
+  "trade": {
+    "title": "Leilões",
+    "noTrades": "Sem leilões",
+    "myBids": "Minhas ofertas",
+    "placeBid": "Fazer oferta",
+    "bidAmount": "Valor da oferta"
+  },
+  "errors": {
+    "404": {
+      "title": "Página não encontrada",
+      "message": "A página que você procura não existe",
+      "backToHome": "Voltar ao início"
+    },
+    "network": "Erro de rede. Verifique sua conexão",
+    "unauthorized": "Autorização necessária",
+    "forbidden": "Acesso negado",
+    "serverError": "Erro do servidor"
+  },
+  "validation": {
+    "required": "Campo obrigatório",
+    "email": "Digite um e-mail válido",
+    "phone": "Digite um telefone válido",
+    "minLength": "Mínimo {{min}} caracteres",
+    "maxLength": "Máximo {{max}} caracteres",
+    "passwordMatch": "As senhas não coincidem"
+  },
+  "footer": {
+    "about": "Sobre",
+    "services": "Serviços",
+    "contacts": "Contatos",
+    "privacy": "Política de privacidade",
+    "terms": "Termos de uso",
+    "help": "Ajuda",
+    "copyright": "© 2026 TruckYeah. Todos os direitos reservados"
+  }
+}

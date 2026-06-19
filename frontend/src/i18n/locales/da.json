@@ -1,0 +1,155 @@
+{
+  "header": {
+    "logo": "TruckYeah",
+    "cargos": "Ladninger",
+    "vehicles": "Køretøjer",
+    "chats": "Chats",
+    "trades": "Auktioner",
+    "myListings": "Mine annoncer",
+    "profile": "Profil",
+    "login": "Log ind",
+    "logout": "Log ud"
+  },
+  "home": {
+    "title": "Fragtbørs og største økosystem af tjenester til transportlogistik",
+    "subtitle": "Vi hjælper med at finde ladninger, verificerede transportører og spare gennem automatisering",
+    "findCargo": "Find ladning",
+    "findVehicle": "Find køretøj",
+    "addCargo": "Offentliggør ladning",
+    "addVehicle": "Offentliggør køretøj"
+  },
+  "auth": {
+    "login": "Log ind",
+    "register": "Registrer",
+    "email": "E-mail",
+    "password": "Adgangskode",
+    "phone": "Telefon",
+    "name": "Navn",
+    "company": "Virksomhed",
+    "city": "By",
+    "submit": "Send",
+    "cancel": "Annuller",
+    "forgotPassword": "Glemt adgangskode?",
+    "noAccount": "Ingen konto?",
+    "haveAccount": "Har du allerede en konto?",
+    "registerNow": "Registrer nu",
+    "loginNow": "Log ind nu"
+  },
+  "cargo": {
+    "title": "Ladninger",
+    "add": "Tilføj ladning",
+    "edit": "Rediger ladning",
+    "delete": "Slet",
+    "publish": "Offentliggør",
+    "unpublish": "Afpublicer",
+    "saveDraft": "Gem kladde",
+    "routeFrom": "Fra",
+    "routeTo": "Til",
+    "weight": "Vægt (t)",
+    "volume": "Volumen (m³)",
+    "price": "Pris",
+    "loadDate": "Lastningsdato",
+    "unloadDate": "Aflæsningsdato"
+  },
+  "vehicle": {
+    "title": "Køretøjer",
+    "add": "Tilføj køretøj",
+    "edit": "Rediger køretøj",
+    "delete": "Slet",
+    "publish": "Offentliggør",
+    "unpublish": "Afpublicer",
+    "capacity": "Kapacitet (t)",
+    "volume": "Volumen (m³)",
+    "bodyType": "Karosseritype",
+    "search": "Søg køretøjer",
+    "filter": "Filter",
+    "noVehicles": "Ingen køretøjer fundet"
+  },
+  "common": {
+    "loading": "Indlæser...",
+    "error": "Fejl",
+    "success": "Succes",
+    "save": "Gem",
+    "cancel": "Annuller",
+    "delete": "Slet",
+    "edit": "Rediger",
+    "back": "Tilbage",
+    "next": "Næste",
+    "search": "Søg",
+    "filter": "Filter",
+    "noData": "Ingen data",
+    "confirm": "Bekræft",
+    "close": "Luk",
+    "yes": "Ja",
+    "no": "Nej"
+  },
+  "myListings": {
+    "title": "Mine ladninger og køretøjer",
+    "cargos": "Mine ladninger",
+    "vehicles": "Mine køretøjer",
+    "addCargo": "Tilføj ladning",
+    "addVehicle": "Tilføj køretøj",
+    "noCargos": "Du har ingen ladninger",
+    "noVehicles": "Du har ingen køretøjer",
+    "status": "Status",
+    "published": "Offentliggjort",
+    "draft": "Kladde",
+    "archived": "Arkiveret"
+  },
+  "profile": {
+    "title": "Profil",
+    "edit": "Rediger profil",
+    "save": "Gem ændringer",
+    "avatar": "Avatar",
+    "changePassword": "Skift adgangskode",
+    "oldPassword": "Gammel adgangskode",
+    "newPassword": "Ny adgangskode",
+    "confirmPassword": "Bekræft adgangskode",
+    "settings": "Indstillinger",
+    "notifications": "Notifikationer",
+    "language": "Sprog"
+  },
+  "chat": {
+    "title": "Chats",
+    "noChats": "Ingen chats",
+    "sendMessage": "Send besked",
+    "typeMessage": "Skriv en besked...",
+    "online": "Online",
+    "offline": "Offline"
+  },
+  "trade": {
+    "title": "Auktioner",
+    "noTrades": "Ingen auktioner",
+    "myBids": "Mine bud",
+    "placeBid": "Giv bud",
+    "bidAmount": "Budbeløb"
+  },
+  "errors": {
+    "404": {
+      "title": "Siden blev ikke fundet",
+      "message": "Siden du leder efter findes ikke",
+      "backToHome": "Tilbage til forsiden"
+    },
+    "network": "Netværksfejl. Tjek din forbindelse",
+    "unauthorized": "Autorisation påkrævet",
+    "forbidden": "Adgang nægtet",
+    "serverError": "Serverfejl"
+  },
+  "validation": {
+    "required": "Feltet er påkrævet",
+    "email": "Indtast en gyldig e-mail",
+    "phone": "Indtast et gyldigt telefonnummer",
+    "minLength": "Minimum {{min}} tegn",
+    "maxLength": "Maksimum {{max}} tegn",
+    "passwordMatch": "Adgangskoderne stemmer ikke overens"
+  },
+  "footer": {
+    "about": "Om os",
+    "services": "Tjenester",
+    "contacts": "Kontakter",
+    "privacy": "Privatlivspolitik",
+    "terms": "Brugsbetingelser",
+    "help": "Hjælp",
+    "copyright": "© 2026 TruckYeah. Alle rettigheder forbeholdes"
+  }
+}

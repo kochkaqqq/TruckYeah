@@ -1,0 +1,155 @@
+{
+  "header": {
+    "logo": "TruckYeah",
+    "cargos": "Chargements",
+    "vehicles": "Véhicules",
+    "chats": "Discussions",
+    "trades": "Enchères",
+    "myListings": "Mes annonces",
+    "profile": "Profil",
+    "login": "Connexion",
+    "logout": "Déconnexion"
+  },
+  "home": {
+    "title": "Bourse de fret et plus grand écosystème de services pour la logistique de transport",
+    "subtitle": "Nous aidons à trouver des chargements, des transporteurs vérifiés et à économiser grâce à l'automatisation",
+    "findCargo": "Trouver un chargement",
+    "findVehicle": "Trouver un véhicule",
+    "addCargo": "Publier un chargement",
+    "addVehicle": "Publier un véhicule"
+  },
+  "auth": {
+    "login": "Connexion",
+    "register": "Inscription",
+    "email": "E-mail",
+    "password": "Mot de passe",
+    "phone": "Téléphone",
+    "name": "Nom",
+    "company": "Entreprise",
+    "city": "Ville",
+    "submit": "Envoyer",
+    "cancel": "Annuler",
+    "forgotPassword": "Mot de passe oublié?",
+    "noAccount": "Pas de compte?",
+    "haveAccount": "Déjà un compte?",
+    "registerNow": "S'inscrire maintenant",
+    "loginNow": "Se connecter maintenant"
+  },
+  "cargo": {
+    "title": "Chargements",
+    "add": "Ajouter un chargement",
+    "edit": "Modifier le chargement",
+    "delete": "Supprimer",
+    "publish": "Publier",
+    "unpublish": "Retirer",
+    "saveDraft": "Enregistrer le brouillon",
+    "routeFrom": "De",
+    "routeTo": "À",
+    "weight": "Poids (t)",
+    "volume": "Volume (m³)",
+    "price": "Prix",
+    "loadDate": "Date de chargement",
+    "unloadDate": "Date de déchargement"
+  },
+  "vehicle": {
+    "title": "Véhicules",
+    "add": "Ajouter un véhicule",
+    "edit": "Modifier le véhicule",
+    "delete": "Supprimer",
+    "publish": "Publier",
+    "unpublish": "Retirer",
+    "capacity": "Capacité (t)",
+    "volume": "Volume (m³)",
+    "bodyType": "Type de carrosserie",
+    "search": "Rechercher des véhicules",
+    "filter": "Filtre",
+    "noVehicles": "Aucun véhicule trouvé"
+  },
+  "common": {
+    "loading": "Chargement...",
+    "error": "Erreur",
+    "success": "Succès",
+    "save": "Enregistrer",
+    "cancel": "Annuler",
+    "delete": "Supprimer",
+    "edit": "Modifier",
+    "back": "Retour",
+    "next": "Suivant",
+    "search": "Rechercher",
+    "filter": "Filtre",
+    "noData": "Aucune donnée",
+    "confirm": "Confirmer",
+    "close": "Fermer",
+    "yes": "Oui",
+    "no": "Non"
+  },
+  "myListings": {
+    "title": "Mes chargements et véhicules",
+    "cargos": "Mes chargements",
+    "vehicles": "Mes véhicules",
+    "addCargo": "Ajouter un chargement",
+    "addVehicle": "Ajouter un véhicule",
+    "noCargos": "Vous n'avez pas de chargements",
+    "noVehicles": "Vous n'avez pas de véhicules",
+    "status": "Statut",
+    "published": "Publié",
+    "draft": "Brouillon",
+    "archived": "Archivé"
+  },
+  "profile": {
+    "title": "Profil",
+    "edit": "Modifier le profil",
+    "save": "Enregistrer les modifications",
+    "avatar": "Avatar",
+    "changePassword": "Changer le mot de passe",
+    "oldPassword": "Ancien mot de passe",
+    "newPassword": "Nouveau mot de passe",
+    "confirmPassword": "Confirmer le mot de passe",
+    "settings": "Paramètres",
+    "notifications": "Notifications",
+    "language": "Langue"
+  },
+  "chat": {
+    "title": "Discussions",
+    "noChats": "Aucune discussion",
+    "sendMessage": "Envoyer un message",
+    "typeMessage": "Tapez un message...",
+    "online": "En ligne",
+    "offline": "Hors ligne"
+  },
+  "trade": {
+    "title": "Enchères",
+    "noTrades": "Aucune enchère",
+    "myBids": "Mes offres",
+    "placeBid": "Placer une offre",
+    "bidAmount": "Montant de l'offre"
+  },
+  "errors": {
+    "404": {
+      "title": "Page non trouvée",
+      "message": "La page que vous recherchez n'existe pas",
+      "backToHome": "Retour à l'accueil"
+    },
+    "network": "Erreur réseau. Vérifiez votre connexion",
+    "unauthorized": "Autorisation requise",
+    "forbidden": "Accès interdit",
+    "serverError": "Erreur serveur"
+  },
+  "validation": {
+    "required": "Champ obligatoire",
+    "email": "Entrez un e-mail valide",
+    "phone": "Entrez un numéro de téléphone valide",
+    "minLength": "Minimum {{min}} caractères",
+    "maxLength": "Maximum {{max}} caractères",
+    "passwordMatch": "Les mots de passe ne correspondent pas"
+  },
+  "footer": {
+    "about": "À propos",
+    "services": "Services",
+    "contacts": "Contacts",
+    "privacy": "Politique de confidentialité",
+    "terms": "Conditions d'utilisation",
+    "help": "Aide",
+    "copyright": "© 2026 TruckYeah. Tous droits réservés"
+  }
+}

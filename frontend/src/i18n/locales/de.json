@@ -1,0 +1,155 @@
+{
+  "header": {
+    "logo": "TruckYeah",
+    "cargos": "Frachten",
+    "vehicles": "Fahrzeuge",
+    "chats": "Chats",
+    "trades": "Auktionen",
+    "myListings": "Meine Angebote",
+    "profile": "Profil",
+    "login": "Anmelden",
+    "logout": "Abmelden"
+  },
+  "home": {
+    "title": "Frachtenbörse und größtes Ökosystem für Transportlogistik",
+    "subtitle": "Wir helfen beim Finden von Frachten, verifizierten Spediteuren und sparen durch Prozessautomatisierung",
+    "findCargo": "Fracht finden",
+    "findVehicle": "Fahrzeug finden",
+    "addCargo": "Fracht einstellen",
+    "addVehicle": "Fahrzeug einstellen"
+  },
+  "auth": {
+    "login": "Anmelden",
+    "register": "Registrieren",
+    "email": "E-Mail",
+    "password": "Passwort",
+    "phone": "Telefon",
+    "name": "Name",
+    "company": "Unternehmen",
+    "city": "Stadt",
+    "submit": "Absenden",
+    "cancel": "Abbrechen",
+    "forgotPassword": "Passwort vergessen?",
+    "noAccount": "Kein Konto?",
+    "haveAccount": "Bereits ein Konto?",
+    "registerNow": "Jetzt registrieren",
+    "loginNow": "Jetzt anmelden"
+  },
+  "cargo": {
+    "title": "Frachten",
+    "add": "Fracht hinzufügen",
+    "edit": "Fracht bearbeiten",
+    "delete": "Löschen",
+    "publish": "Veröffentlichen",
+    "unpublish": "Veröffentlichung aufheben",
+    "saveDraft": "Entwurf speichern",
+    "routeFrom": "Von",
+    "routeTo": "Nach",
+    "weight": "Gewicht (t)",
+    "volume": "Volumen (m³)",
+    "price": "Preis",
+    "loadDate": "Ladedatum",
+    "unloadDate": "Entladedatum"
+  },
+  "vehicle": {
+    "title": "Fahrzeuge",
+    "add": "Fahrzeug hinzufügen",
+    "edit": "Fahrzeug bearbeiten",
+    "delete": "Löschen",
+    "publish": "Veröffentlichen",
+    "unpublish": "Veröffentlichung aufheben",
+    "capacity": "Nutzlast (t)",
+    "volume": "Volumen (m³)",
+    "bodyType": "Aufbautyp",
+    "search": "Fahrzeuge suchen",
+    "filter": "Filter",
+    "noVehicles": "Keine Fahrzeuge gefunden"
+  },
+  "common": {
+    "loading": "Laden...",
+    "error": "Fehler",
+    "success": "Erfolg",
+    "save": "Speichern",
+    "cancel": "Abbrechen",
+    "delete": "Löschen",
+    "edit": "Bearbeiten",
+    "back": "Zurück",
+    "next": "Weiter",
+    "search": "Suchen",
+    "filter": "Filter",
+    "noData": "Keine Daten",
+    "confirm": "Bestätigen",
+    "close": "Schließen",
+    "yes": "Ja",
+    "no": "Nein"
+  },
+  "myListings": {
+    "title": "Meine Frachten und Fahrzeuge",
+    "cargos": "Meine Frachten",
+    "vehicles": "Meine Fahrzeuge",
+    "addCargo": "Fracht hinzufügen",
+    "addVehicle": "Fahrzeug hinzufügen",
+    "noCargos": "Sie haben keine Frachten",
+    "noVehicles": "Sie haben keine Fahrzeuge",
+    "status": "Status",
+    "published": "Veröffentlicht",
+    "draft": "Entwurf",
+    "archived": "Archiviert"
+  },
+  "profile": {
+    "title": "Profil",
+    "edit": "Profil bearbeiten",
+    "save": "Änderungen speichern",
+    "avatar": "Avatar",
+    "changePassword": "Passwort ändern",
+    "oldPassword": "Altes Passwort",
+    "newPassword": "Neues Passwort",
+    "confirmPassword": "Passwort bestätigen",
+    "settings": "Einstellungen",
+    "notifications": "Benachrichtigungen",
+    "language": "Sprache"
+  },
+  "chat": {
+    "title": "Chats",
+    "noChats": "Keine Chats",
+    "sendMessage": "Nachricht senden",
+    "typeMessage": "Nachricht eingeben...",
+    "online": "Online",
+    "offline": "Offline"
+  },
+  "trade": {
+    "title": "Auktionen",
+    "noTrades": "Keine Auktionen",
+    "myBids": "Meine Gebote",
+    "placeBid": "Gebot abgeben",
+    "bidAmount": "Gebotssumme"
+  },
+  "errors": {
+    "404": {
+      "title": "Seite nicht gefunden",
+      "message": "Die gesuchte Seite existiert nicht",
+      "backToHome": "Zurück zur Startseite"
+    },
+    "network": "Netzwerkfehler. Überprüfen Sie Ihre Verbindung",
+    "unauthorized": "Autorisierung erforderlich",
+    "forbidden": "Zugriff verweigert",
+    "serverError": "Serverfehler"
+  },
+  "validation": {
+    "required": "Pflichtfeld",
+    "email": "Gültige E-Mail eingeben",
+    "phone": "Gültige Telefonnummer eingeben",
+    "minLength": "Mindestens {{min}} Zeichen",
+    "maxLength": "Maximal {{max}} Zeichen",
+    "passwordMatch": "Passwörter stimmen nicht überein"
+  },
+  "footer": {
+    "about": "Über uns",
+    "services": "Dienstleistungen",
+    "contacts": "Kontakte",
+    "privacy": "Datenschutz",
+    "terms": "Nutzungsbedingungen",
+    "help": "Hilfe",
+    "copyright": "© 2026 TruckYeah. Alle Rechte vorbehalten"
+  }
+}

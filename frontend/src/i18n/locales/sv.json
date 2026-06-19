@@ -1,0 +1,155 @@
+{
+  "header": {
+    "logo": "TruckYeah",
+    "cargos": "Lastbilslaster",
+    "vehicles": "Fordon",
+    "chats": "Chattar",
+    "trades": "Auktioner",
+    "myListings": "Mina annonser",
+    "profile": "Profil",
+    "login": "Logga in",
+    "logout": "Logga ut"
+  },
+  "home": {
+    "title": "Fraktbörs och största ekosystemet av tjänster för transportlogistik",
+    "subtitle": "Vi hjälper till att hitta laster, verifierade transportörer och spara genom automatisering",
+    "findCargo": "Hitta last",
+    "findVehicle": "Hitta fordon",
+    "addCargo": "Publicera last",
+    "addVehicle": "Publicera fordon"
+  },
+  "auth": {
+    "login": "Logga in",
+    "register": "Registrera",
+    "email": "E-post",
+    "password": "Lösenord",
+    "phone": "Telefon",
+    "name": "Namn",
+    "company": "Företag",
+    "city": "Stad",
+    "submit": "Skicka",
+    "cancel": "Avbryt",
+    "forgotPassword": "Glömt lösenord?",
+    "noAccount": "Inget konto?",
+    "haveAccount": "Har du redan ett konto?",
+    "registerNow": "Registrera nu",
+    "loginNow": "Logga in nu"
+  },
+  "cargo": {
+    "title": "Laster",
+    "add": "Lägg till last",
+    "edit": "Redigera last",
+    "delete": "Ta bort",
+    "publish": "Publicera",
+    "unpublish": "Avpublicera",
+    "saveDraft": "Spara utkast",
+    "routeFrom": "Från",
+    "routeTo": "Till",
+    "weight": "Vikt (t)",
+    "volume": "Volym (m³)",
+    "price": "Pris",
+    "loadDate": "Lastningsdatum",
+    "unloadDate": "Lossningsdatum"
+  },
+  "vehicle": {
+    "title": "Fordon",
+    "add": "Lägg till fordon",
+    "edit": "Redigera fordon",
+    "delete": "Ta bort",
+    "publish": "Publicera",
+    "unpublish": "Avpublicera",
+    "capacity": "Kapacitet (t)",
+    "volume": "Volym (m³)",
+    "bodyType": "Karosstyp",
+    "search": "Sök fordon",
+    "filter": "Filter",
+    "noVehicles": "Inga fordon hittades"
+  },
+  "common": {
+    "loading": "Laddar...",
+    "error": "Fel",
+    "success": "Lyckades",
+    "save": "Spara",
+    "cancel": "Avbryt",
+    "delete": "Ta bort",
+    "edit": "Redigera",
+    "back": "Tillbaka",
+    "next": "Nästa",
+    "search": "Sök",
+    "filter": "Filter",
+    "noData": "Inga data",
+    "confirm": "Bekräfta",
+    "close": "Stäng",
+    "yes": "Ja",
+    "no": "Nej"
+  },
+  "myListings": {
+    "title": "Mina laster och fordon",
+    "cargos": "Mina laster",
+    "vehicles": "Mina fordon",
+    "addCargo": "Lägg till last",
+    "addVehicle": "Lägg till fordon",
+    "noCargos": "Du har inga laster",
+    "noVehicles": "Du har inga fordon",
+    "status": "Status",
+    "published": "Publicerad",
+    "draft": "Utkast",
+    "archived": "Arkiverad"
+  },
+  "profile": {
+    "title": "Profil",
+    "edit": "Redigera profil",
+    "save": "Spara ändringar",
+    "avatar": "Avatar",
+    "changePassword": "Ändra lösenord",
+    "oldPassword": "Gammalt lösenord",
+    "newPassword": "Nytt lösenord",
+    "confirmPassword": "Bekräfta lösenord",
+    "settings": "Inställningar",
+    "notifications": "Aviseringar",
+    "language": "Språk"
+  },
+  "chat": {
+    "title": "Chattar",
+    "noChats": "Inga chattar",
+    "sendMessage": "Skicka meddelande",
+    "typeMessage": "Skriv ett meddelande...",
+    "online": "Online",
+    "offline": "Offline"
+  },
+  "trade": {
+    "title": "Auktioner",
+    "noTrades": "Inga auktioner",
+    "myBids": "Mina bud",
+    "placeBid": "Lägg bud",
+    "bidAmount": "Budbelopp"
+  },
+  "errors": {
+    "404": {
+      "title": "Sidan hittades inte",
+      "message": "Sidan du letar efter finns inte",
+      "backToHome": "Tillbaka till startsidan"
+    },
+    "network": "Nätverksfel. Kontrollera din anslutning",
+    "unauthorized": "Auktorisering krävs",
+    "forbidden": "Åtkomst nekad",
+    "serverError": "Serverfel"
+  },
+  "validation": {
+    "required": "Fältet är obligatoriskt",
+    "email": "Ange en giltig e-postadress",
+    "phone": "Ange ett giltigt telefonnummer",
+    "minLength": "Minst {{min}} tecken",
+    "maxLength": "Max {{max}} tecken",
+    "passwordMatch": "Lösenorden matchar inte"
+  },
+  "footer": {
+    "about": "Om oss",
+    "services": "Tjänster",
+    "contacts": "Kontakter",
+    "privacy": "Integritetspolicy",
+    "terms": "Användarvillkor",
+    "help": "Hjälp",
+    "copyright": "© 2026 TruckYeah. Alla rättigheter förbehållna"
+  }
+}

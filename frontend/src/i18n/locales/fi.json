@@ -1,0 +1,155 @@
+{
+  "header": {
+    "logo": "TruckYeah",
+    "cargos": "Lastit",
+    "vehicles": "Ajoneuvot",
+    "chats": "Chatit",
+    "trades": "Huutokaupat",
+    "myListings": "Omat ilmoitukset",
+    "profile": "Profiili",
+    "login": "Kirjaudu sisään",
+    "logout": "Kirjaudu ulos"
+  },
+  "home": {
+    "title": "Rahtipörssi ja suurin kuljetuslogistiikan palveluekosysteemi",
+    "subtitle": "Autamme löytämään lasteja, varmennettuja kuljettajia ja säästämään automaation avulla",
+    "findCargo": "Etsi lasti",
+    "findVehicle": "Etsi ajoneuvo",
+    "addCargo": "Julkaise lasti",
+    "addVehicle": "Julkaise ajoneuvo"
+  },
+  "auth": {
+    "login": "Kirjaudu sisään",
+    "register": "Rekisteröidy",
+    "email": "Sähköposti",
+    "password": "Salasana",
+    "phone": "Puhelin",
+    "name": "Nimi",
+    "company": "Yritys",
+    "city": "Kaupunki",
+    "submit": "Lähetä",
+    "cancel": "Peruuta",
+    "forgotPassword": "Unohtuiko salasana?",
+    "noAccount": "Ei tiliä?",
+    "haveAccount": "Onko sinulla jo tili?",
+    "registerNow": "Rekisteröidy nyt",
+    "loginNow": "Kirjaudu sisään nyt"
+  },
+  "cargo": {
+    "title": "Lastit",
+    "add": "Lisää lasti",
+    "edit": "Muokkaa lastia",
+    "delete": "Poista",
+    "publish": "Julkaise",
+    "unpublish": "Peruuta julkaisu",
+    "saveDraft": "Tallenna luonnos",
+    "routeFrom": "Mistä",
+    "routeTo": "Mihin",
+    "weight": "Paino (t)",
+    "volume": "Tilavuus (m³)",
+    "price": "Hinta",
+    "loadDate": "Lastauspäivä",
+    "unloadDate": "Purkupäivä"
+  },
+  "vehicle": {
+    "title": "Ajoneuvot",
+    "add": "Lisää ajoneuvo",
+    "edit": "Muokkaa ajoneuvoa",
+    "delete": "Poista",
+    "publish": "Julkaise",
+    "unpublish": "Peruuta julkaisu",
+    "capacity": "Kantavuus (t)",
+    "volume": "Tilavuus (m³)",
+    "bodyType": "Korityyppi",
+    "search": "Etsi ajoneuvoja",
+    "filter": "Suodata",
+    "noVehicles": "Ajoneuvoja ei löytynyt"
+  },
+  "common": {
+    "loading": "Ladataan...",
+    "error": "Virhe",
+    "success": "Onnistui",
+    "save": "Tallenna",
+    "cancel": "Peruuta",
+    "delete": "Poista",
+    "edit": "Muokkaa",
+    "back": "Takaisin",
+    "next": "Seuraava",
+    "search": "Etsi",
+    "filter": "Suodata",
+    "noData": "Ei dataa",
+    "confirm": "Vahvista",
+    "close": "Sulje",
+    "yes": "Kyllä",
+    "no": "Ei"
+  },
+  "myListings": {
+    "title": "Omat lastit ja ajoneuvot",
+    "cargos": "Omat lastit",
+    "vehicles": "Omat ajoneuvot",
+    "addCargo": "Lisää lasti",
+    "addVehicle": "Lisää ajoneuvo",
+    "noCargos": "Sinulla ei ole lasteja",
+    "noVehicles": "Sinulla ei ole ajoneuvoja",
+    "status": "Tila",
+    "published": "Julkaistu",
+    "draft": "Luonnos",
+    "archived": "Arkistoitu"
+  },
+  "profile": {
+    "title": "Profiili",
+    "edit": "Muokkaa profiilia",
+    "save": "Tallenna muutokset",
+    "avatar": "Avatar",
+    "changePassword": "Vaihda salasana",
+    "oldPassword": "Vanha salasana",
+    "newPassword": "Uusi salasana",
+    "confirmPassword": "Vahvista salasana",
+    "settings": "Asetukset",
+    "notifications": "Ilmoitukset",
+    "language": "Kieli"
+  },
+  "chat": {
+    "title": "Chatit",
+    "noChats": "Ei chatteja",
+    "sendMessage": "Lähetä viesti",
+    "typeMessage": "Kirjoita viesti...",
+    "online": "Paikalla",
+    "offline": "Poissa"
+  },
+  "trade": {
+    "title": "Huutokaupat",
+    "noTrades": "Ei huutokauppoja",
+    "myBids": "Omat tarjoukset",
+    "placeBid": "Tee tarjous",
+    "bidAmount": "Tarjouksen summa"
+  },
+  "errors": {
+    "404": {
+      "title": "Sivua ei löytynyt",
+      "message": "Etsimääsi sivua ei ole olemassa",
+      "backToHome": "Takaisin etusivulle"
+    },
+    "network": "Verkkovirhe. Tarkista yhteys",
+    "unauthorized": "Valtuutus vaaditaan",
+    "forbidden": "Pääsy kielletty",
+    "serverError": "Palvelinvirhe"
+  },
+  "validation": {
+    "required": "Kenttä on pakollinen",
+    "email": "Syötä kelvollinen sähköpostiosoite",
+    "phone": "Syötä kelvollinen puhelinnumero",
+    "minLength": "Vähintään {{min}} merkkiä",
+    "maxLength": "Enintään {{max}} merkkiä",
+    "passwordMatch": "Salasanat eivät täsmää"
+  },
+  "footer": {
+    "about": "Tietoa meistä",
+    "services": "Palvelut",
+    "contacts": "Yhteystiedot",
+    "privacy": "Tietosuojakäytäntö",
+    "terms": "Käyttöehdot",
+    "help": "Ohje",
+    "copyright": "© 2026 TruckYeah. Kaikki oikeudet pidätetään"
+  }
+}

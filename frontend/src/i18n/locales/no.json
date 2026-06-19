@@ -1,0 +1,155 @@
+{
+  "header": {
+    "logo": "TruckYeah",
+    "cargos": "Laster",
+    "vehicles": "Kjøretøy",
+    "chats": "Chatter",
+    "trades": "Auksjoner",
+    "myListings": "Mine annonser",
+    "profile": "Profil",
+    "login": "Logg inn",
+    "logout": "Logg ut"
+  },
+  "home": {
+    "title": "Fraktbørs og største økosystem av tjenester for transportlogistikk",
+    "subtitle": "Vi hjelper til med å finne laster, verifiserte transportører og spare gjennom automatisering",
+    "findCargo": "Finn last",
+    "findVehicle": "Finn kjøretøy",
+    "addCargo": "Publiser last",
+    "addVehicle": "Publiser kjøretøy"
+  },
+  "auth": {
+    "login": "Logg inn",
+    "register": "Registrer",
+    "email": "E-post",
+    "password": "Passord",
+    "phone": "Telefon",
+    "name": "Navn",
+    "company": "Selskap",
+    "city": "By",
+    "submit": "Send",
+    "cancel": "Avbryt",
+    "forgotPassword": "Glemt passord?",
+    "noAccount": "Ingen konto?",
+    "haveAccount": "Har du allerede en konto?",
+    "registerNow": "Registrer nå",
+    "loginNow": "Logg inn nå"
+  },
+  "cargo": {
+    "title": "Laster",
+    "add": "Legg til last",
+    "edit": "Rediger last",
+    "delete": "Slett",
+    "publish": "Publiser",
+    "unpublish": "Avpubliser",
+    "saveDraft": "Lagre kladd",
+    "routeFrom": "Fra",
+    "routeTo": "Til",
+    "weight": "Vekt (t)",
+    "volume": "Volum (m³)",
+    "price": "Pris",
+    "loadDate": "Lastedato",
+    "unloadDate": "Lossingsdato"
+  },
+  "vehicle": {
+    "title": "Kjøretøy",
+    "add": "Legg til kjøretøy",
+    "edit": "Rediger kjøretøy",
+    "delete": "Slett",
+    "publish": "Publiser",
+    "unpublish": "Avpubliser",
+    "capacity": "Kapasitet (t)",
+    "volume": "Volum (m³)",
+    "bodyType": "Karosseritype",
+    "search": "Søk kjøretøy",
+    "filter": "Filter",
+    "noVehicles": "Ingen kjøretøy funnet"
+  },
+  "common": {
+    "loading": "Laster...",
+    "error": "Feil",
+    "success": "Suksess",
+    "save": "Lagre",
+    "cancel": "Avbryt",
+    "delete": "Slett",
+    "edit": "Rediger",
+    "back": "Tilbake",
+    "next": "Neste",
+    "search": "Søk",
+    "filter": "Filter",
+    "noData": "Ingen data",
+    "confirm": "Bekreft",
+    "close": "Lukk",
+    "yes": "Ja",
+    "no": "Nei"
+  },
+  "myListings": {
+    "title": "Mine laster og kjøretøy",
+    "cargos": "Mine laster",
+    "vehicles": "Mine kjøretøy",
+    "addCargo": "Legg til last",
+    "addVehicle": "Legg til kjøretøy",
+    "noCargos": "Du har ingen laster",
+    "noVehicles": "Du har ingen kjøretøy",
+    "status": "Status",
+    "published": "Publisert",
+    "draft": "Kladd",
+    "archived": "Arkivert"
+  },
+  "profile": {
+    "title": "Profil",
+    "edit": "Rediger profil",
+    "save": "Lagre endringer",
+    "avatar": "Avatar",
+    "changePassword": "Endre passord",
+    "oldPassword": "Gammelt passord",
+    "newPassword": "Nytt passord",
+    "confirmPassword": "Bekreft passord",
+    "settings": "Innstillinger",
+    "notifications": "Varsler",
+    "language": "Språk"
+  },
+  "chat": {
+    "title": "Chatter",
+    "noChats": "Ingen chatter",
+    "sendMessage": "Send melding",
+    "typeMessage": "Skriv en melding...",
+    "online": "Online",
+    "offline": "Offline"
+  },
+  "trade": {
+    "title": "Auksjoner",
+    "noTrades": "Ingen auksjoner",
+    "myBids": "Mine bud",
+    "placeBid": "Gi bud",
+    "bidAmount": "Budbeløp"
+  },
+  "errors": {
+    "404": {
+      "title": "Siden ble ikke funnet",
+      "message": "Siden du leter etter finnes ikke",
+      "backToHome": "Tilbake til startsiden"
+    },
+    "network": "Nettverksfeil. Sjekk tilkoblingen",
+    "unauthorized": "Autorisasjon kreves",
+    "forbidden": "Tilgang nektet",
+    "serverError": "Serverfeil"
+  },
+  "validation": {
+    "required": "Feltet er obligatorisk",
+    "email": "Skriv inn en gyldig e-post",
+    "phone": "Skriv inn et gyldig telefonnummer",
+    "minLength": "Minimum {{min}} tegn",
+    "maxLength": "Maksimum {{max}} tegn",
+    "passwordMatch": "Passordene samsvarer ikke"
+  },
+  "footer": {
+    "about": "Om oss",
+    "services": "Tjenester",
+    "contacts": "Kontakter",
+    "privacy": "Personvern",
+    "terms": "Bruksvilkår",
+    "help": "Hjelp",
+    "copyright": "© 2026 TruckYeah. Alle rettigheter forbeholdt"
+  }
+}

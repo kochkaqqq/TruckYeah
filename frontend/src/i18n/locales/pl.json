@@ -1,0 +1,155 @@
+    {
+  "header": {
+    "logo": "TruckYeah",
+    "cargos": "Ładunki",
+    "vehicles": "Pojazdy",
+    "chats": "Czaty",
+    "trades": "Aukcje",
+    "myListings": "Moje ogłoszenia",
+    "profile": "Profil",
+    "login": "Zaloguj się",
+    "logout": "Wyloguj"
+  },
+  "home": {
+    "title": "Giełda ładunków i największy ekosystem usług dla logistyki transportu",
+    "subtitle": "Pomagamy znaleźć ładunki, zweryfikowanych przewoźników i oszczędzać dzięki automatyzacji",
+    "findCargo": "Znajdź ładunek",
+    "findVehicle": "Znajdź pojazd",
+    "addCargo": "Dodaj ładunek",
+    "addVehicle": "Dodaj pojazd"
+  },
+  "auth": {
+    "login": "Logowanie",
+    "register": "Rejestracja",
+    "email": "E-mail",
+    "password": "Hasło",
+    "phone": "Telefon",
+    "name": "Imię",
+    "company": "Firma",
+    "city": "Miasto",
+    "submit": "Wyślij",
+    "cancel": "Anuluj",
+    "forgotPassword": "Zapomniałeś hasła?",
+    "noAccount": "Nie masz konta?",
+    "haveAccount": "Masz już konto?",
+    "registerNow": "Zarejestruj się teraz",
+    "loginNow": "Zaloguj się teraz"
+  },
+  "cargo": {
+    "title": "Ładunki",
+    "add": "Dodaj ładunek",
+    "edit": "Edytuj ładunek",
+    "delete": "Usuń",
+    "publish": "Opublikuj",
+    "unpublish": "Cofnij publikację",
+    "saveDraft": "Zapisz szkic",
+    "routeFrom": "Skąd",
+    "routeTo": "Dokąd",
+    "weight": "Waga (t)",
+    "volume": "Objętość (m³)",
+    "price": "Cena",
+    "loadDate": "Data załadunku",
+    "unloadDate": "Data rozładunku"
+  },
+  "vehicle": {
+    "title": "Pojazdy",
+    "add": "Dodaj pojazd",
+    "edit": "Edytuj pojazd",
+    "delete": "Usuń",
+    "publish": "Opublikuj",
+    "unpublish": "Cofnij publikację",
+    "capacity": "Ładowność (t)",
+    "volume": "Objętość (m³)",
+    "bodyType": "Typ nadwozia",
+    "search": "Szukaj pojazdów",
+    "filter": "Filtr",
+    "noVehicles": "Nie znaleziono pojazdów"
+  },
+  "common": {
+    "loading": "Ładowanie...",
+    "error": "Błąd",
+    "success": "Sukces",
+    "save": "Zapisz",
+    "cancel": "Anuluj",
+    "delete": "Usuń",
+    "edit": "Edytuj",
+    "back": "Wstecz",
+    "next": "Dalej",
+    "search": "Szukaj",
+    "filter": "Filtr",
+    "noData": "Brak danych",
+    "confirm": "Potwierdź",
+    "close": "Zamknij",
+    "yes": "Tak",
+    "no": "Nie"
+  },
+  "myListings": {
+    "title": "Moje ładunki i pojazdy",
+    "cargos": "Moje ładunki",
+    "vehicles": "Moje pojazdy",
+    "addCargo": "Dodaj ładunek",
+    "addVehicle": "Dodaj pojazd",
+    "noCargos": "Nie masz ładunków",
+    "noVehicles": "Nie masz pojazdów",
+    "status": "Status",
+    "published": "Opublikowane",
+    "draft": "Szkic",
+    "archived": "Zarchiwizowane"
+  },
+  "profile": {
+    "title": "Profil",
+    "edit": "Edytuj profil",
+    "save": "Zapisz zmiany",
+    "avatar": "Awatar",
+    "changePassword": "Zmień hasło",
+    "oldPassword": "Stare hasło",
+    "newPassword": "Nowe hasło",
+    "confirmPassword": "Potwierdź hasło",
+    "settings": "Ustawienia",
+    "notifications": "Powiadomienia",
+    "language": "Język"
+  },
+  "chat": {
+    "title": "Czaty",
+    "noChats": "Brak czatów",
+    "sendMessage": "Wyślij wiadomość",
+    "typeMessage": "Wpisz wiadomość...",
+    "online": "Online",
+    "offline": "Offline"
+  },
+  "trade": {
+    "title": "Aukcje",
+    "noTrades": "Brak aukcji",
+    "myBids": "Moje oferty",
+    "placeBid": "Złóż ofertę",
+    "bidAmount": "Kwota oferty"
+  },
+  "errors": {
+    "404": {
+      "title": "Strona nie znaleziona",
+      "message": "Strona, której szukasz, nie istnieje",
+      "backToHome": "Powrót do strony głównej"
+    },
+    "network": "Błąd sieci. Sprawdź połączenie",
+    "unauthorized": "Wymagane uwierzytelnienie",
+    "forbidden": "Dostęp zabroniony",
+    "serverError": "Błąd serwera"
+  },
+  "validation": {
+    "required": "Pole jest wymagane",
+    "email": "Wprowadź prawidłowy e-mail",
+    "phone": "Wprowadź prawidłowy numer telefonu",
+    "minLength": "Minimum {{min}} znaków",
+    "maxLength": "Maksimum {{max}} znaków",
+    "passwordMatch": "Hasła nie są zgodne"
+  },
+  "footer": {
+    "about": "O nas",
+    "services": "Usługi",
+    "contacts": "Kontakty",
+    "privacy": "Polityka prywatności",
+    "terms": "Warunki korzystania",
+    "help": "Pomoc",
+    "copyright": "© 2026 TruckYeah. Wszelkie prawa zastrzeżone"
+  }
+}

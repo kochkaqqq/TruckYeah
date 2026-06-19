@@ -1,0 +1,155 @@
+{
+  "header": {
+    "logo": "TruckYeah",
+    "cargos": "Ladingen",
+    "vehicles": "Voertuigen",
+    "chats": "Chats",
+    "trades": "Veilingen",
+    "myListings": "Mijn advertenties",
+    "profile": "Profiel",
+    "login": "Inloggen",
+    "logout": "Uitloggen"
+  },
+  "home": {
+    "title": "Vrachtbeurs en grootste ecosysteem van diensten voor transportlogistiek",
+    "subtitle": "Wij helpen vrachten, geverifieerde vervoerders te vinden en te besparen door automatisering",
+    "findCargo": "Vracht vinden",
+    "findVehicle": "Voertuig vinden",
+    "addCargo": "Vracht plaatsen",
+    "addVehicle": "Voertuig plaatsen"
+  },
+  "auth": {
+    "login": "Inloggen",
+    "register": "Registreren",
+    "email": "E-mail",
+    "password": "Wachtwoord",
+    "phone": "Telefoon",
+    "name": "Naam",
+    "company": "Bedrijf",
+    "city": "Stad",
+    "submit": "Verzenden",
+    "cancel": "Annuleren",
+    "forgotPassword": "Wachtwoord vergeten?",
+    "noAccount": "Geen account?",
+    "haveAccount": "Al een account?",
+    "registerNow": "Nu registreren",
+    "loginNow": "Nu inloggen"
+  },
+  "cargo": {
+    "title": "Ladingen",
+    "add": "Lading toevoegen",
+    "edit": "Lading bewerken",
+    "delete": "Verwijderen",
+    "publish": "Publiceren",
+    "unpublish": "Publicatie ongedaan maken",
+    "saveDraft": "Concept opslaan",
+    "routeFrom": "Van",
+    "routeTo": "Naar",
+    "weight": "Gewicht (t)",
+    "volume": "Volume (m³)",
+    "price": "Prijs",
+    "loadDate": "Laaddatum",
+    "unloadDate": "Losdatum"
+  },
+  "vehicle": {
+    "title": "Voertuigen",
+    "add": "Voertuig toevoegen",
+    "edit": "Voertuig bewerken",
+    "delete": "Verwijderen",
+    "publish": "Publiceren",
+    "unpublish": "Publicatie ongedaan maken",
+    "capacity": "Laadvermogen (t)",
+    "volume": "Volume (m³)",
+    "bodyType": "Type opbouw",
+    "search": "Voertuigen zoeken",
+    "filter": "Filter",
+    "noVehicles": "Geen voertuigen gevonden"
+  },
+  "common": {
+    "loading": "Laden...",
+    "error": "Fout",
+    "success": "Succes",
+    "save": "Opslaan",
+    "cancel": "Annuleren",
+    "delete": "Verwijderen",
+    "edit": "Bewerken",
+    "back": "Terug",
+    "next": "Volgende",
+    "search": "Zoeken",
+    "filter": "Filter",
+    "noData": "Geen gegevens",
+    "confirm": "Bevestigen",
+    "close": "Sluiten",
+    "yes": "Ja",
+    "no": "Nee"
+  },
+  "myListings": {
+    "title": "Mijn ladingen en voertuigen",
+    "cargos": "Mijn ladingen",
+    "vehicles": "Mijn voertuigen",
+    "addCargo": "Lading toevoegen",
+    "addVehicle": "Voertuig toevoegen",
+    "noCargos": "U heeft geen ladingen",
+    "noVehicles": "U heeft geen voertuigen",
+    "status": "Status",
+    "published": "Gepubliceerd",
+    "draft": "Concept",
+    "archived": "Gearchiveerd"
+  },
+  "profile": {
+    "title": "Profiel",
+    "edit": "Profiel bewerken",
+    "save": "Wijzigingen opslaan",
+    "avatar": "Avatar",
+    "changePassword": "Wachtwoord wijzigen",
+    "oldPassword": "Oud wachtwoord",
+    "newPassword": "Nieuw wachtwoord",
+    "confirmPassword": "Bevestig wachtwoord",
+    "settings": "Instellingen",
+    "notifications": "Meldingen",
+    "language": "Taal"
+  },
+  "chat": {
+    "title": "Chats",
+    "noChats": "Geen chats",
+    "sendMessage": "Bericht versturen",
+    "typeMessage": "Typ een bericht...",
+    "online": "Online",
+    "offline": "Offline"
+  },
+  "trade": {
+    "title": "Veilingen",
+    "noTrades": "Geen veilingen",
+    "myBids": "Mijn biedingen",
+    "placeBid": "Bieding plaatsen",
+    "bidAmount": "Biedingsbedrag"
+  },
+  "errors": {
+    "404": {
+      "title": "Pagina niet gevonden",
+      "message": "De pagina die u zoekt, bestaat niet",
+      "backToHome": "Terug naar homepage"
+    },
+    "network": "Netwerkfout. Controleer uw verbinding",
+    "unauthorized": "Autorisatie vereist",
+    "forbidden": "Toegang geweigerd",
+    "serverError": "Serverfout"
+  },
+  "validation": {
+    "required": "Verplicht veld",
+    "email": "Voer een geldig e-mailadres in",
+    "phone": "Voer een geldig telefoonnummer in",
+    "minLength": "Minimaal {{min}} tekens",
+    "maxLength": "Maximaal {{max}} tekens",
+    "passwordMatch": "Wachtwoorden komen niet overeen"
+  },
+  "footer": {
+    "about": "Over ons",
+    "services": "Diensten",
+    "contacts": "Contacten",
+    "privacy": "Privacybeleid",
+    "terms": "Gebruiksvoorwaarden",
+    "help": "Help",
+    "copyright": "© 2026 TruckYeah. Alle rechten voorbehouden"
+  }
+}

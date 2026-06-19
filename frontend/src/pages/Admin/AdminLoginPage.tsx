@@ -1,6 +1,7 @@
 import { useState, type FormEvent } from 'react';
 import { Navigate, useLocation, useNavigate } from 'react-router-dom';
 import { useModeratorStore } from '../../store/moderatorStore';
+import { LanguageSelect } from '../../components/layout/LanguageSelect';
 import './Admin.css';
 
 export const AdminLoginPage = () => {
@@ -33,6 +34,7 @@ export const AdminLoginPage = () => {
         <span className="admin-logo">truckyeah</span>
         <span className="admin-logo__badge">moderator</span>
       </div>
+      <LanguageSelect className="admin-login__language" />
 
       <form className="admin-login__card" onSubmit={handleSubmit}>
         <div>

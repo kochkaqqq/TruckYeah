@@ -33,6 +33,22 @@
   left: 36px;
 }
 
+.admin-login__language,
+.admin-language-select {
+  min-height: 38px;
+  padding: 0 10px;
+  border: 1px solid var(--admin-border);
+  border-radius: 8px;
+  background: #151719;
+  color: var(--admin-text);
+}
+
+.admin-login__language {
+  position: absolute;
+  top: 24px;
+  right: 36px;
+}
+
 .admin-login__card {
   width: min(100%, 460px);
   padding: 42px;
@@ -262,6 +278,11 @@
   background: transparent;
   color: var(--admin-muted);
   cursor: pointer;
+}
+
+.admin-language-select {
+  width: 100%;
+  margin-top: 10px;
 }
 
 .admin-main {
@@ -599,6 +620,11 @@
     margin: 0 0 0 auto;
   }
 
+  .admin-language-select {
+    width: auto;
+    margin: 0 0 0 8px;
+  }
+
   .admin-topbar {
     display: none;
   }
@@ -646,6 +672,11 @@
 
   .admin-login__brand {
     left: 20px;
+  }
+
+  .admin-login__language {
+    top: 72px;
+    right: 20px;
   }
 
   .admin-login__card {

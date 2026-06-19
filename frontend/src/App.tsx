@@ -25,6 +25,7 @@ import { AdminLayout } from './pages/Admin/AdminLayout';
 import { AdminUsersPage } from './pages/Admin/AdminUsersPage';
 import { AdminListingsPage } from './pages/Admin/AdminListingsPage';
 import { AdminProtectedRoute } from './components/admin/AdminProtectedRoute';
+import { AutoTranslate } from './i18n/AutoTranslate';
 
 function App() {
   const { isInitialized, setCurrentUser, markInitialized, logout } = useAuthStore();
@@ -62,6 +63,7 @@ function App() {
 
   return (
     <BrowserRouter>
+      <AutoTranslate />
       <Routes>
         <Route path="/admin/login" element={<AdminLoginPage />} />
         <Route

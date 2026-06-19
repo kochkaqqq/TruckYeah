@@ -1,5 +1,6 @@
 import { NavLink, Outlet, useNavigate } from 'react-router-dom';
 import { useModeratorStore } from '../../store/moderatorStore';
+import { LanguageSelect } from '../../components/layout/LanguageSelect';
 import './Admin.css';
 
 const navItems = [
@@ -47,6 +48,7 @@ export const AdminLayout = () => {
         >
           Выйти
         </button>
+        <LanguageSelect className="admin-language-select" />
       </aside>
 
       <main className="admin-main">

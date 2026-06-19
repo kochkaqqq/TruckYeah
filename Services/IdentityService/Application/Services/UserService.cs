@@ -156,9 +156,10 @@ public sealed class UserService : IUserService
             }
 
             user.FullName = new FullName(request.Surname, request.Name, request.MiddleName);
-            user.VatId = string.IsNullOrWhiteSpace(request.VatId)
-                ? null
-                : new VatId(request.VatId);
+            user.VatId = request.UserType == UserType.Individual &&
+                         !string.IsNullOrWhiteSpace(request.VatId)
+                ? new VatId(request.VatId)
+                : null;
         }
 
         await _dbContext.Users.AddAsync(user);

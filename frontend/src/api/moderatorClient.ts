@@ -43,7 +43,9 @@ interface JwtPayload {
 function readJwtPayload(token: string): JwtPayload | null {
   try {
     const part = token.split('.')[1];
-    const normalized = part.replace(/-/g, '+').replace(/_/g, '/');
+    if (!part) return null;
+    const base64 = part.replace(/-/g, '+').replace(/_/g, '/');
+    const normalized = base64.padEnd(Math.ceil(base64.length / 4) * 4, '=');
     const decoded = decodeURIComponent(
       atob(normalized)
         .split('')

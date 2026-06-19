@@ -18,6 +18,7 @@ interface ToastData {
 
 export const AuthPage = () => {
   const [mode, setMode] = useState<AuthMode>('select');
+  const [loginIdentifier, setLoginIdentifier] = useState('');
   const [email, setEmail] = useState('');
   const [phone, setPhone] = useState('');
   const [password, setPassword] = useState('');
@@ -82,32 +83,28 @@ export const AuthPage = () => {
   };
 
   const handleLoginPhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
-    if (value.includes('@')) {
-      setEmail(value);
-      setPhone('');
-    } else {
-      const formatted = formatPhone(value);
-      setPhone(formatted);
-      setEmail('');
-    }
+    setLoginIdentifier(e.target.value);
   };
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    const identifier = email || getDigitsFromPhone(phone);
+    const identifier = loginIdentifier.trim();
     if (!identifier) {
       showToast('Введите email или номер телефона', 'error');
       return;
     }
 
-    if (email && !isValidEmail(email)) {
+    const loginByEmail = identifier.includes('@');
+    const loginEmail = loginByEmail ? identifier : '';
+    const loginPhone = loginByEmail ? '' : getDigitsFromPhone(identifier);
+
+    if (loginByEmail && !isValidEmail(loginEmail)) {
       showToast('Неверный формат email', 'error');
       return;
     }
 
-    if (phone && !isValidPhone(phone)) {
+    if (!loginByEmail && !isValidPhone(identifier)) {
       showToast('Неверный формат телефона', 'error');
       return;
     }
@@ -131,8 +128,8 @@ export const AuthPage = () => {
         deviceId: 'browser-' + Date.now().toString(),
       };
 
-      if (email) loginData.email = email;
-      if (getDigitsFromPhone(phone)) loginData.phone = getDigitsFromPhone(phone);
+      if (loginEmail) loginData.email = loginEmail;
+      if (loginPhone) loginData.phone = loginPhone;
 
       console.log('Отправка логина:', loginData);
 
@@ -156,8 +153,8 @@ export const AuthPage = () => {
 
           const user = {
             id: userData.id || 'unknown',
-            email: userData.email || email,
-            phone: userData.phone || getDigitsFromPhone(phone),
+            email: userData.email || loginEmail,
+            phone: userData.phone || loginPhone,
             name: userName,
             surname: userSurname,
             fullName: fullName,
@@ -236,7 +233,7 @@ export const AuthPage = () => {
       return;
     }
 
-    if (userType === 0 && !vatId.trim()) {
+    if (userType === UserType.Business && !vatId.trim()) {
       showToast('Для компании необходимо указать VAT ID', 'error');
       return;
     }
@@ -258,7 +255,7 @@ export const AuthPage = () => {
         middleName: undefined,
         countryId: selectedCountryId,
         postcode: '000000',
-        vatId: vatId.trim(),
+        vatId: userType === UserType.Private ? undefined : vatId.trim() || undefined,
         companyName: userType === UserType.Business ? companyName.trim() : undefined,
         avatarLink: '',
         deviceId: 'browser-' + Date.now().toString(),
@@ -456,16 +453,23 @@ export const AuthPage = () => {
                 </select>
               </div>
 
-              <div className="auth__field">
-                <label className="auth__label">VAT ID (опционально, для компаний обязательно)</label>
-                <input
-                  type="text"
-                  className="auth__input"
-                  placeholder="DE123456789"
-                  value={vatId}
-                  onChange={(e) => setVatId(e.target.value)}
-                />
-              </div>
+              {userType !== UserType.Private && (
+                <div className="auth__field">
+                  <label className="auth__label">
+                    {userType === UserType.Business
+                      ? 'VAT ID (обязательно)'
+                      : 'VAT ID (опционально)'}
+                  </label>
+                  <input
+                    type="text"
+                    className="auth__input"
+                    placeholder="DE123456789"
+                    value={vatId}
+                    onChange={(e) => setVatId(e.target.value)}
+                    required={userType === UserType.Business}
+                  />
+                </div>
+              )}
 
               {userType === UserType.Business && (
                 <div className="auth__field">
@@ -533,7 +537,7 @@ export const AuthPage = () => {
                   type="text"
                   className="auth__input"
                   placeholder="example@ati.su или +7 (999) 999-99-99"
-                  value={email || phone}
+                  value={loginIdentifier}
                   onChange={handleLoginPhoneChange}
                 />
               </div>

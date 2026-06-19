@@ -7,7 +7,7 @@ import './VehiclesPage.css';
 
 export const VehiclesPage = () => {
   const navigate = useNavigate();
-  const { isAuthenticated } = useAuthStore();
+  const { isAuthenticated, currentUser } = useAuthStore();
   const { t } = useTranslation(); // ← Добавили перевод
   
   const [trucks, setTrucks] = useState<TruckResponse[]>([]);
@@ -91,6 +91,7 @@ export const VehiclesPage = () => {
       navigate('/auth');
       return;
     }
+    if (currentUser?.id === truck.userId) return;
 
     try {
       const owner = await api.users.getCurrent(truck.userId);
@@ -106,6 +107,7 @@ export const VehiclesPage = () => {
       navigate('/auth');
       return;
     }
+    if (currentUser?.id === truck.userId) return;
 
     try {
       const chat = await api.chats.create({
@@ -339,20 +341,22 @@ export const VehiclesPage = () => {
                     {formatPrice(truck.price)}
                   </div>
 
-                  <div className="truck-card__actions">
-                    <button 
-                      className="truck-card__btn truck-card__btn--contacts"
-                      onClick={() => handleContactClick(truck)}
-                    >
-                      {t('vehicle.contacts')}
-                    </button>
-                    <button 
-                      className="truck-card__btn truck-card__btn--chat"
-                      onClick={() => handleChatClick(truck)}
-                    >
-                      {t('vehicle.writeToChat')}
-                    </button>
-                  </div>
+                  {currentUser?.id !== truck.userId && (
+                    <div className="truck-card__actions">
+                      <button
+                        className="truck-card__btn truck-card__btn--contacts"
+                        onClick={() => handleContactClick(truck)}
+                      >
+                        {t('vehicle.contacts')}
+                      </button>
+                      <button
+                        className="truck-card__btn truck-card__btn--chat"
+                        onClick={() => handleChatClick(truck)}
+                      >
+                        {t('vehicle.writeToChat')}
+                      </button>
+                    </div>
+                  )}
                 </div>
               ))}
             </div>

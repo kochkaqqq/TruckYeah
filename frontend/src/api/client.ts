@@ -62,7 +62,7 @@ export interface RegistrationDto {
   middleName?: string;
   countryId: string;
   postcode: string;
-  vatId: string;
+  vatId?: string;
   companyId?: string;
   companyName?: string;
   avatarLink?: string;

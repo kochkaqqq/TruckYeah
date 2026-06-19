@@ -8,7 +8,7 @@ import './CargoPage.css';
 
 export const CargoPage = () => {
   const navigate = useNavigate();
-  const { isAuthenticated } = useAuthStore();
+  const { isAuthenticated, currentUser } = useAuthStore();
   
   const [cargos, setCargos] = useState<CargoResponse[]>([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -97,6 +97,7 @@ export const CargoPage = () => {
       navigate('/auth');
       return;
     }
+    if (currentUser?.id === cargo.userId) return;
     setSelectedCargo(cargo);
     setBidPrice(cargo.startingPrice?.toString() || '');
     setShowBidModal(true);
@@ -137,6 +138,7 @@ export const CargoPage = () => {
       navigate('/auth');
       return;
     }
+    if (currentUser?.id === cargo.userId) return;
 
     try {
       const owner = await api.users.getCurrent(cargo.userId);
@@ -152,6 +154,7 @@ export const CargoPage = () => {
       navigate('/auth');
       return;
     }
+    if (currentUser?.id === cargo.userId) return;
 
     try {
       const chat = await api.chats.create({
@@ -405,26 +408,28 @@ export const CargoPage = () => {
                     {formatPrice(cargo.startingPrice)}
                   </div>
 
-                  <div className="cargo-card__actions">
-                    <button 
-                      className="cargo-card__btn cargo-card__btn--contacts"
-                      onClick={() => handleContactClick(cargo)}
-                    >
-                      Контакты
-                    </button>
-                    <button 
-                      className="cargo-card__btn cargo-card__btn--bid"
-                      onClick={() => handleBidClick(cargo)}
-                    >
-                      Сделать ставку
-                    </button>
-                    <button 
-                      className="cargo-card__btn cargo-card__btn--chat"
-                      onClick={() => handleChatClick(cargo)}
-                    >
-                      Написать в чат
-                    </button>
-                  </div>
+                  {currentUser?.id !== cargo.userId && (
+                    <div className="cargo-card__actions">
+                      <button
+                        className="cargo-card__btn cargo-card__btn--contacts"
+                        onClick={() => handleContactClick(cargo)}
+                      >
+                        Контакты
+                      </button>
+                      <button
+                        className="cargo-card__btn cargo-card__btn--bid"
+                        onClick={() => handleBidClick(cargo)}
+                      >
+                        Сделать ставку
+                      </button>
+                      <button
+                        className="cargo-card__btn cargo-card__btn--chat"
+                        onClick={() => handleChatClick(cargo)}
+                      >
+                        Написать в чат
+                      </button>
+                    </div>
+                  )}
                 </div>
               ))}
             </div>

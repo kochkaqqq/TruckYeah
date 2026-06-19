@@ -31,28 +31,14 @@ export const MyListingPage = () => {
   const loadMyListings = async () => {
   try {
     setIsLoading(true);
-    
-    console.log('🔑 Токен:', localStorage.getItem('authToken'));
-    const token = localStorage.getItem('authToken');
-    if (token) {
-      const payload = JSON.parse(atob(token.split('.')[1]));
-      console.log('👤 Payload токена:', payload);
-    }
-    
+
     const [myCargos, myTrucks] = await Promise.all([
       api.cargos.getMyCargos(),
       api.trucks.getMyTrucks(),
     ]);
-    
-    console.log('📦 Мои грузы (ответ от /my):', myCargos);
-    console.log('🚛 Мои машины (ответ от /my):', myTrucks);
-    
-    // Также получим все грузы для сравнения
-    const allCargos = await api.cargos.search({ Page: 1, PageSize: 100 });
-    console.log('📦 Все грузы (для сравнения):', allCargos);
-    
-    setCargos(myCargos);
-    setTrucks(myTrucks);
+
+    setCargos(myCargos ?? []);
+    setTrucks(myTrucks ?? []);
   } catch (error) {
     console.error('❌ Ошибка загрузки:', error);
     showToast('Не удалось загрузить данные', 'error');
